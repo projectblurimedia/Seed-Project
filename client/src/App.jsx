@@ -105,6 +105,7 @@ function App() {
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
+        width: '100vw',
         fontSize: '18px',
         fontFamily: 'Poppins'
       }}>
@@ -114,34 +115,46 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route 
-          path="/login" 
-          element={isAuth ? <Navigate to="/" replace /> : <Login setIsAuth={setIsAuth} />} 
-        />
+    <div 
+      style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        width: '100vw',
+        fontSize: '18px',
+        fontFamily: 'Poppins'
+      }}
+    >
+      <BrowserRouter>
+        <Routes>
+          <Route 
+            path="/login" 
+            element={!isAuth ? <Navigate to="/" replace /> : <Login setIsAuth={setIsAuth} />} 
+          />
 
-        <Route
-          path="/"
-          element={isAuth ? <Home setIsAuth={setIsAuth} /> : <Navigate to="/login" replace />}
-        />
+          <Route
+            path="/"
+            element={!isAuth ? <Home setIsAuth={setIsAuth} /> : <Navigate to="/login" replace />}
+          />
 
-        <Route
-          path="/farmers"
-          element={isAuth ? <Farmers /> : <Navigate to="/login" replace />}
-        />
+          <Route
+            path="/farmers"
+            element={!isAuth ? <Farmers /> : <Navigate to="/login" replace />}
+          />
 
-        <Route
-          path="/create-farmer"
-          element={isAuth ? <CreateFarmer /> : <Navigate to="/login" replace />}
-        />
+          <Route
+            path="/create-farmer"
+            element={!isAuth ? <CreateFarmer /> : <Navigate to="/login" replace />}
+          />
 
-        <Route
-          path="/create-crop"
-          element={isAuth ? <CreateCrop /> : <Navigate to="/login" replace />}
-        />
-      </Routes>
-    </BrowserRouter>
+          <Route
+            path="/create-crop"
+            element={!isAuth ? <CreateCrop /> : <Navigate to="/login" replace />}
+          />
+        </Routes>
+      </BrowserRouter>
+    </div>
   )
 }
 
