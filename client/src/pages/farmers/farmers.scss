@@ -1,0 +1,233 @@
+.farmersContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; 
+  width: 100vw;
+  background: ghostwhite;
+  overflow: hidden;   
+  font-family: 'Poppins', sans-serif;
+
+  .headerSection {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: linear-gradient(90deg, #0274d1, #1a9afb);
+    color: #fff;
+    padding: 0.6rem 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+    .titleIcon {
+      font-size: 1.4rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+  }
+
+  .filterSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    background: #fff;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    gap: 5rem;
+
+    .searchBox {
+      flex: 1;
+      min-width: 220px;
+
+      input {
+        width: 100%;
+        padding: 0.6rem 1rem;
+        background: rgb(242, 244, 247);
+        color: #1d9bf0;
+        border-radius: 50px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        border: 1.5px solid #e3e7ee;
+        outline: none;
+        transition: all 0.2s ease;
+        font-family: 'Poppins', serif;
+        color: #001727;
+
+        &:focus {
+          border: 1.5px solid #1d9bf0;
+          background-color: ghostwhite;
+          box-shadow: 0 0 3px rgba(29,155,240,0.4);
+        }
+      }
+    }
+
+    .filterIcons {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.6rem 1rem;
+        background: #e5f0ff;
+        color: #1d9bf0;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: #1d9bf0;
+          color: #fff;
+          transform: scale(1.02);
+        }
+      }
+
+      .getBtn {
+        background: #1d9bf0;
+        color: #fff;
+
+        &:hover {
+          background: #0274d1;
+        }
+      }
+    }
+  }
+
+  .farmersList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #1d9bf0 aliceblue;
+
+    &::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #1d9bf0;
+      border-radius: 4px;
+    }
+
+    .farmerCard {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: transform 0.2s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+
+      .profile {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+
+        .avatar {
+          width: 44px;
+          height: 44px;
+          background: #1d9bf0;
+          color: #fff;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          font-size: 1rem;
+        }
+
+        .info {
+          display: flex;
+          flex-direction: column;
+          .name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #222;
+          }
+          .crop {
+            font-size: 0.85rem;
+            color: #555;
+            font-weight: 500;
+
+            svg {
+              color: #1d9bf0;
+            }
+          }
+        }
+      }
+
+      .details {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+
+        .pill {
+          padding: 0.4rem 0.8rem;
+          border-radius: 50px;
+          background: #f2f6fb;
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: #333;
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          border: 1.5px solid #e0e8f3;
+
+          svg {
+            color: #1d9bf0;
+          }
+
+          &.status.completed {
+            background: #e7f9ef;
+            color: #2e7d32;
+            border-color: #b9e4c5;
+
+            svg {
+              color: #2e7d32;
+            }
+          }
+
+          &.status.inProgress {
+            background: #fff7e6;
+            color: #f57c00;
+            border-color: #ffe0b2;
+
+            svg {
+              color: #f57c00;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .filterSection {
+      flex-direction: column;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .farmerCard {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.7rem;
+    }
+  }
+}
