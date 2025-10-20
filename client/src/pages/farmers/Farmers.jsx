@@ -17,7 +17,9 @@ export const Farmers = () => {
     { name: 'Kiran Kumar', crop: 'Sweet Corn 120', acres: '18', location: 'GTR', status: 'Completed' },
     { name: 'Manikanta Yerraguntla', crop: 'Baby Corn 210', acres: '30', location: 'NLR', status: 'In Progress' },
     { name: 'Suresh Babu', crop: 'Popcorn Seed 150', acres: '25', location: 'ONG', status: 'Completed' },
+    { name: 'Manikanta Yerraguntla', crop: 'Baby Corn 210', acres: '30', location: 'NLR', status: 'In Progress' },
     { name: 'Haritha Kotha', crop: 'Hybrid Maize 175', acres: '22', location: 'KNL', status: 'In Progress' },
+    { name: 'Manikanta Yerraguntla', crop: 'Baby Corn 210', acres: '30', location: 'NLR', status: 'In Progress' },
   ]
 
   const getInitials = (name) =>

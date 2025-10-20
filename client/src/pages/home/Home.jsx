@@ -3,13 +3,13 @@ import './home.scss'
 import { HomeHeader } from '../../components/homeHeader/HomeHeader'
 import { DailyUpdates } from '../../components/dailyUpdates/DailyUpdates'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faPlus } from '@fortawesome/free-solid-svg-icons'
+import {   faUserGroup, faPlus, faPenToSquare, faCirclePlus } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 
 export const Home = () => {
   const navigate = useNavigate()
-  const handleNavigate = () => {
-    navigate('/farmers')
+  const handleNavigate = (path) => {
+    navigate(path)
   }
 
   return (
@@ -24,13 +24,18 @@ export const Home = () => {
 
       <div className='stickyButtons'>
         <button className='farmersBtn' onClick={() => handleNavigate('farmers')}>
-          <FontAwesomeIcon icon={faUser} className='icon' />
           <span>Farmers</span>
+          <FontAwesomeIcon icon={faUserGroup} className='icon' />
         </button>
 
         <button className='addBtn'>
-          <FontAwesomeIcon icon={faPlus} className='icon' />
-          <span>Add</span>
+          <span>Update</span>
+          <FontAwesomeIcon icon={faPenToSquare} className='icon' />
+        </button>
+
+        <button className='farmersBtn' onClick={() => handleNavigate('create-farmer')}>
+          <span>Create</span>
+          <FontAwesomeIcon icon={faCirclePlus} className='icon' />
         </button>
       </div>
     </div>

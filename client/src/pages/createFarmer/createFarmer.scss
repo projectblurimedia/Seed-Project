@@ -1,0 +1,198 @@
+.createFarmerContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; 
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+  background: ghostwhite;
+  overflow-x: hidden;   
+  font-family: 'Poppins', sans-serif;
+
+  .formCard {
+    background: ghostwhite;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+
+    .formHeader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 2px solid #f1f5f9;
+
+      h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #0274d1;
+        text-align: center;
+      }
+
+      .undoBtn {
+        position: absolute;
+        left: -20px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #0274d1;
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        outline: none;
+
+        &:hover {
+          transform: translateY(-50%) scale(1.1);
+        }
+      }
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      .inputGroup {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+
+        label {
+          font-weight: 600;
+          font-size: 0.9rem;
+          color: #333;
+        }
+
+        // select {
+        //   padding: 0.7rem 1rem;
+        //   border-radius: 10px;
+        //   border: 1.5px solid #e0e8f3;
+        //   font-size: 0.95rem;
+        //   font-weight: 500;
+        //   color: #333;
+        //   background: #f8fafc;
+        //   outline: none;
+        //   transition: all 0.2s ease;
+
+        //   &:focus {
+        //     border: 1.5px solid #0274d1;
+        //     background: #fff;
+        //     box-shadow: 0 0 3px rgba(2, 116, 209, 0.3);
+        //   }
+        // }
+      }
+
+      .locationGroup {
+        .locationRow {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+
+          button {
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+          }
+
+          .customBtn {
+            background: #e6f2ff;
+            color: #0274d1;
+
+            &:hover {
+              background: #0274d1;
+              color: #fff;
+            }
+          }
+
+          .addBtn {
+            background: #0274d1;
+            color: #fff;
+
+            &:hover {
+              background: #005fa3;
+              transform: scale(1.03);
+            }
+          }
+
+          .cancelBtn {
+            background: #f8d7da;
+            color: #c82333;
+
+            &:hover {
+              background: #dc3545;
+              color: #fff;
+              transform: scale(1.03);
+            }
+          }
+        }
+      }
+
+      .createBtn {
+        background: linear-gradient(90deg, #0274d1, #1a9afb);
+        color: #fff;
+        font-weight: 600;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 10px rgba(2, 116, 209, 0.3);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    .formCard {
+      padding: 1.2rem;
+      max-width: 95%;
+      border-radius: 12px;
+
+      .formHeader {
+        h2 {
+          font-size: 1.2rem;
+        }
+
+        .undoBtn {
+          font-size: 1.1rem;
+        }
+      }
+
+      form {
+        gap: 0.8rem;
+
+        .locationGroup .locationRow {
+          flex-direction: column;
+          align-items: stretch;
+
+          button {
+            width: 100%;
+          }
+        }
+
+        .createBtn {
+          margin-top: 0.8rem;
+        }
+      }
+    }
+  }
+}

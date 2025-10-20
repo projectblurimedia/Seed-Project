@@ -4,6 +4,7 @@
   font-family: 'Poppins', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  user-select: none;
 
   color-scheme: light dark;
   color: #000000;
@@ -86,6 +87,85 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+input {
+  flex: 1;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background-color: #f7fafc;
+  color: #222c3c;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: 'Poppins';
+  outline: none;
+}
+
+input:focus {
+  outline: none;
+  border-color: #1d9bf0;
+  box-shadow: 0 0 0 3px #1d9bf050;
+}
+
+input::placeholder {
+  color: #7f8a97;
+  font-weight: 500;
+  font-family: 'Poppins', serif;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #f7fafc inset !important;
+  box-shadow: 0 0 0 30px #f7fafc inset !important;
+  -webkit-text-fill-color: #2d3748 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+select {
+  flex: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #222c3c;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+select:focus {
+  border-color: #1d9bf0;
+  box-shadow: 0 0 0 3px #1d9bf050;
+  background-color: #fff;
+}
+
+select:hover {
+  border-color: #1d9bf0;
+}
+
+select option {
+  background: #fff;
+  color: #222c3c;
+  font-weight: 500;
+  padding: 0.5rem;
+}
+
+select option:hover {
+  background: #e6f4ff;
+}
+
+
+
 
 @media (prefers-color-scheme: light) {
   :root {
