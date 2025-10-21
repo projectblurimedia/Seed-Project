@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import './createFarmer.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faCaretLeft, faChevronLeft, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faPlus, faXmark, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from 'react-router-dom'
 
 export const CreateFarmer = () => {
+  const navigate = useNavigate()
   const [locations, setLocations] = useState(['Vijayawada', 'Guntur', 'Nellore', 'Kurnool'])
   const [form, setForm] = useState({
     firstName: '',
@@ -14,6 +16,8 @@ export const CreateFarmer = () => {
   })
   const [isCustom, setIsCustom] = useState(false)
   const [customLocation, setCustomLocation] = useState('')
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -38,12 +42,37 @@ export const CreateFarmer = () => {
     setForm({ firstName: '', lastName: '', aadhar: '', mobile: '', location: '' })
     setCustomLocation('')
     setIsCustom(false)
+    setIsDropdownOpen(false)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    alert(`✅ Farmer Created Successfully!\n\n${JSON.stringify(form, null, 2)}`)
+    navigate(`/create-crop/${form.aadhar}`)
   }
+
+  const handleLocationSelect = (location) => {
+    setForm((prev) => ({ ...prev, location }))
+    setIsDropdownOpen(false)
+  }
+
+  const handleCustomClick = () => {
+    setIsCustom(true)
+    setIsDropdownOpen(false)
+  }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <div className="createFarmerContainer">
@@ -109,27 +138,42 @@ export const CreateFarmer = () => {
           <div className="inputGroup locationGroup">
             <label>Location</label>
             {!isCustom ? (
-              <div className="locationRow">
-                <select
-                  name="location"
-                  value={form.location}
-                  onChange={handleChange}
-                  required
+              <div className="locationRow" ref={dropdownRef}>
+                <div 
+                  className="customSelect"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
-                  <option value="">Select location</option>
-                  {locations.map((loc, i) => (
-                    <option key={i} value={loc}>
-                      {loc}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  className="customBtn"
-                  onClick={() => setIsCustom(true)}
-                >
-                  Custom
-                </button>
+                  <span className={`selectedValue ${!form.location ? 'placeholder' : ''}`}>
+                    {form.location || 'Select location'}
+                  </span>
+                  <FontAwesomeIcon 
+                    icon={faChevronDown} 
+                    className={`dropdownIcon ${!isDropdownOpen ? 'open' : ''}`}
+                  />
+                </div>
+                
+                {isDropdownOpen && (
+                  <div className="dropdownMenu">
+                    {locations.map((location, index) => (
+                      <div
+                        key={index}
+                        className={`dropdownItem ${
+                          form.location === location ? 'selected' : ''
+                        }`}
+                        onClick={() => handleLocationSelect(location)}
+                      >
+                        {location}
+                      </div>
+                    ))}
+                    <div 
+                      className="dropdownItem customOption"
+                      onClick={handleCustomClick}
+                    >
+                      <FontAwesomeIcon icon={faPlus} />
+                      Add Custom Location
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="locationRow">

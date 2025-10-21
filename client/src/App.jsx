@@ -149,7 +149,7 @@ function App() {
           />
 
           <Route
-            path="/create-crop"
+            path="/create-crop/:aadhar"
             element={!isAuth ? <CreateCrop /> : <Navigate to="/login" replace />}
           />
         </Routes>

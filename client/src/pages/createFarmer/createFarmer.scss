@@ -67,34 +67,152 @@
         label {
           font-weight: 600;
           font-size: 0.9rem;
-          color: #333;
+          color: #444c52;
         }
 
-        // select {
-        //   padding: 0.7rem 1rem;
-        //   border-radius: 10px;
-        //   border: 1.5px solid #e0e8f3;
-        //   font-size: 0.95rem;
-        //   font-weight: 500;
-        //   color: #333;
-        //   background: #f8fafc;
-        //   outline: none;
-        //   transition: all 0.2s ease;
+        input {
+          padding: 0.8rem;
+          border: 2px solid #e2e8f0;
+          border-radius: 8px;
+          font-size: .9rem;
+          transition: all 0.3s ease;
+          background: white;
+          color: #334155;
 
-        //   &:focus {
-        //     border: 1.5px solid #0274d1;
-        //     background: #fff;
-        //     box-shadow: 0 0 3px rgba(2, 116, 209, 0.3);
-        //   }
-        // }
+          &:focus {
+            outline: none;
+            border-color: #0274d1;
+            box-shadow: 0 0 0 3px rgba(2, 116, 209, 0.1);
+          }
+
+          &::placeholder {
+            font-size: 14px;
+            color: #94a3b8;
+          }
+        }
       }
 
       .locationGroup {
+        position: relative;
+
         .locationRow {
           display: flex;
           align-items: center;
           gap: 0.5rem;
           flex-wrap: wrap;
+          position: relative;
+
+          .customSelect {
+            flex: 1;
+            position: relative;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0rem .8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            min-height: 50px;
+
+            &:hover {
+              border-color: #cbd5e1;
+            }
+
+            .selectedValue {
+              font-size: .9rem;
+              font-weight: 600;
+              color: #334155;
+
+              &.placeholder {
+                font-size: 14px;
+                color: #94a3b8;
+                font-weight: 600;
+              }
+            }
+
+            .dropdownIcon {
+              color: #64748b;
+              transition: transform 0.3s ease;
+              font-size: 0.9rem;
+
+              &.open {
+                transform: rotate(180deg);
+              }
+            }
+          }
+
+          .dropdownMenu {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            font-weight: 600;
+
+            &::-webkit-scrollbar {
+              width: 6px;
+            }
+
+            &::-webkit-scrollbar-track {
+              background: #f1f5f9;
+              border-radius: 3px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+              background: #cbd5e1;
+              border-radius: 3px;
+            }
+
+            &::-webkit-scrollbar-thumb:hover {
+              background: #94a3b8;
+            }
+
+            .dropdownItem {
+              padding: 0.8rem 1rem;
+              cursor: pointer;
+              border-bottom: 1px solid #f1f5f9;
+              transition: all 0.2s ease;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              font-size: 15px;
+              font-weight: 500;
+              color: #334155;
+
+              &:last-child {
+                border-bottom: none;
+              }
+
+              &:hover {
+                background: #f8fafc;
+              }
+
+              &.selected {
+                background: #e6f2ff;
+                color: #0274d1;
+                font-weight: 600;
+              }
+
+              &.customOption {
+                color: #0274d1;
+                font-weight: 600;
+                border-top: 2px solid #f1f5f9;
+
+                &:hover {
+                  background: #e6f2ff;
+                }
+              }
+            }
+          }
 
           button {
             border: none;
@@ -107,16 +225,7 @@
             display: flex;
             align-items: center;
             gap: 0.3rem;
-          }
-
-          .customBtn {
-            background: #e6f2ff;
-            color: #0274d1;
-
-            &:hover {
-              background: #0274d1;
-              color: #fff;
-            }
+            white-space: nowrap;
           }
 
           .addBtn {
@@ -152,6 +261,7 @@
         font-size: 1rem;
         cursor: pointer;
         transition: all 0.3s ease;
+        margin-top: 0.5rem;
 
         &:hover {
           transform: translateY(-2px);
@@ -180,12 +290,24 @@
       form {
         gap: 0.8rem;
 
-        .locationGroup .locationRow {
-          flex-direction: column;
-          align-items: stretch;
+        .locationGroup {
+          .locationRow {
+            .customSelect {
+              width: 100%;
+            }
 
-          button {
-            width: 100%;
+            .dropdownMenu {
+              max-height: 150px;
+            }
+
+            input {
+              width: 100%;
+            }
+
+            button {
+              width: 100%;
+              justify-content: center;
+            }
           }
         }
 

@@ -1,0 +1,396 @@
+.createCropContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  justify-content: flex-start; 
+  align-items: center;
+  background: ghostwhite;
+  overflow-x: hidden;
+  font-family: 'Poppins', sans-serif;
+  padding: 1rem;
+  box-sizing: border-box;
+
+  .formCard {
+    background: ghostwhite;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    box-sizing: border-box;
+
+    .formHeader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 2px solid #f1f5f9;
+      margin-bottom: 0.5rem;
+
+      h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #0274d1;
+        text-align: center;
+        margin: 0;
+        flex: 1;
+      }
+
+      .undoBtn {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #0274d1;
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          transform: translateY(-50%) scale(1.1);
+        }
+      }
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      width: 100%;
+
+      .inputRow {
+        display: flex;
+        gap: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+
+        .inputGroup {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+          min-width: 0; // Prevents overflow
+
+          label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          input {
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: white;
+            width: 100%;
+            box-sizing: border-box;
+
+            &:focus {
+              outline: none;
+              border-color: #0274d1;
+              box-shadow: 0 0 0 3px rgba(2, 116, 209, 0.1);
+            }
+
+            &::placeholder {
+              color: #94a3b8;
+            }
+
+            &[type="date"] {
+              padding-right: 2.5rem;
+            }
+          }
+
+          .dateInputContainer {
+            position: relative;
+            width: 100%;
+
+            .calendarIcon {
+              position: absolute;
+              right: 0.8rem;
+              top: 50%;
+              transform: translateY(-50%);
+              color: #64748b;
+              pointer-events: none;
+            }
+          }
+
+          .dropdownContainer {
+            position: relative;
+            width: 100%;
+
+            .customSelect {
+              position: relative;
+              background: white;
+              border: 2px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 0.8rem;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              transition: all 0.3s ease;
+              min-height: 50px;
+              width: 100%;
+              box-sizing: border-box;
+
+              &:hover {
+                border-color: #cbd5e1;
+              }
+
+              .selectedValue {
+                font-size: .9rem;
+                color: #334155;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                flex: 1;
+                font-weight: 600;
+                &.placeholder {
+                  font-weight: 500;
+                  color: #94a3b8;
+                }
+              }
+
+              .dropdownIcon {
+                color: #64748b;
+                transition: transform 0.3s ease;
+                font-size: 0.9rem;
+                flex-shrink: 0;
+                margin-left: 0.5rem;
+
+                &.open {
+                  transform: rotate(180deg);
+                }
+              }
+            }
+
+            .dropdownMenu {
+              position: absolute;
+              top: 100%;
+              left: 0;
+              right: 0;
+              background: white;
+              border: 2px solid #e2e8f0;
+              border-radius: 8px;
+              margin-top: 4px;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+              z-index: 1000;
+              max-height: 200px;
+              overflow-y: auto;
+              font-weight: 600;
+              color: #334155;
+
+              &::-webkit-scrollbar {
+                width: 6px;
+              }
+
+              &::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 3px;
+              }
+
+              &::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+              }
+
+              &::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+              }
+
+              .dropdownItem {
+                padding: 0.8rem 1rem;
+                cursor: pointer;
+                border-bottom: 1px solid #f1f5f9;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-size: 0.95rem;
+
+                &:last-child {
+                  border-bottom: none;
+                }
+
+                &:hover {
+                  background: #f8fafc;
+                }
+
+                &.selected {
+                  background: #e6f2ff;
+                  color: #0274d1;
+                  font-weight: 600;
+                }
+
+                &.customOption {
+                  color: #0274d1;
+                  font-weight: 600;
+                  border-top: 2px solid #f1f5f9;
+
+                  &:hover {
+                    background: #e6f2ff;
+                  }
+                }
+              }
+            }
+          }
+
+          .customInputRow {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+
+            input {
+              width: 100%;
+            }
+
+            .customButtons {
+              display: flex;
+              gap: 0.5rem;
+              width: 100%;
+
+              button {
+                border: none;
+                border-radius: 8px;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.85rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.3rem;
+                flex: 1;
+                white-space: nowrap;
+              }
+
+              .addBtn {
+                background: #0274d1;
+                color: #fff;
+
+                &:hover {
+                  background: #005fa3;
+                  transform: scale(1.03);
+                }
+              }
+
+              .cancelBtn {
+                background: #f8d7da;
+                color: #c82333;
+
+                &:hover {
+                  background: #dc3545;
+                  color: #fff;
+                  transform: scale(1.03);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .createBtn {
+        background: linear-gradient(90deg, #0274d1, #1a9afb);
+        color: #fff;
+        font-weight: 600;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+        width: 100%;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 10px rgba(2, 116, 209, 0.3);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+
+    .formCard {
+      padding: 1.2rem;
+      max-width: 100%;
+      border-radius: 12px;
+
+      .formHeader {
+        h2 {
+          font-size: 1.2rem;
+        }
+
+        .undoBtn {
+          font-size: 1.1rem;
+          position: relative;
+          transform: none;
+          align-self: flex-start;
+
+          &:hover {
+            transform: scale(1.1);
+          }
+        }
+      }
+
+      form {
+        gap: 1rem;
+
+        .inputRow {
+          flex-direction: column;
+          gap: 0.8rem;
+        }
+
+        .inputGroup {
+          .customInputRow {
+            .customButtons {
+              flex-direction: column;
+            }
+          }
+        }
+
+        .createBtn {
+          margin-top: 0.8rem;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .formCard {
+      padding: 1rem;
+
+      form {
+        .inputGroup {
+          .customInputRow {
+            .customButtons {
+              button {
+                padding: 0.5rem 0.7rem;
+                font-size: 0.8rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
