@@ -9,9 +9,11 @@ export const CreateCrop = () => {
   const navigate = useNavigate()
   
   const [seedTypes, setSeedTypes] = useState(['Babycorn Seed', 'Popcorn', 'Maize 161', 'Sweet Corn', 'Field Corn'])
+  const [regions, setRegions] = useState(['Jangareddygudem', 'Vijayanagaram'])
   const [pesticides, setPesticides] = useState(['Urea', 'DAP', 'NPK', 'Organic Manure', 'Potassium Nitrate'])
   const [form, setForm] = useState({
     seedType: '',
+    region: '',
     acres: '',
     malePackets: '',
     femalePackets: '',
@@ -25,13 +27,23 @@ export const CreateCrop = () => {
     yield: ''
   })
   const [isCustomSeed, setIsCustomSeed] = useState(false)
+  const [isCustomRegion, setIsCustomRegion] = useState(false)
   const [isCustomPesticide, setIsCustomPesticide] = useState(false)
   const [customSeed, setCustomSeed] = useState('')
+  const [customRegion, setCustomRegion] = useState('')
   const [customPesticide, setCustomPesticide] = useState('')
   const [isSeedDropdownOpen, setIsSeedDropdownOpen] = useState(false)
+  const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false)
   const [isPesticideDropdownOpen, setIsPesticideDropdownOpen] = useState(false)
+  
   const seedDropdownRef = useRef(null)
+  const regionDropdownRef = useRef(null)
   const pesticideDropdownRef = useRef(null)
+  const sowingDateMaleRef = useRef(null)
+  const sowingDateFemaleRef = useRef(null)
+  const firstDetachingDateRef = useRef(null)
+  const secondDetachingDateRef = useRef(null)
+  const harvestingDateRef = useRef(null)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -46,6 +58,16 @@ export const CreateCrop = () => {
     }
     setCustomSeed('')
     setIsCustomSeed(false)
+  }
+
+  const handleAddRegion = () => {
+    const trimmed = customRegion.trim()
+    if (trimmed && !regions.includes(trimmed)) {
+      setRegions((prev) => [...prev, trimmed])
+      setForm((prev) => ({ ...prev, region: trimmed }))
+    }
+    setCustomRegion('')
+    setIsCustomRegion(false)
   }
 
   const handleAddPesticide = () => {
@@ -72,9 +94,20 @@ export const CreateCrop = () => {
     setIsSeedDropdownOpen(false)
   }
 
+  const handleRegionSelect = (region) => {
+    setForm((prev) => ({ ...prev, region }))
+    setIsRegionDropdownOpen(false)
+  }
+
   const handlePesticideSelect = (pesticide) => {
     setForm((prev) => ({ ...prev, pesticide }))
     setIsPesticideDropdownOpen(false)
+  }
+
+  const handleDateContainerClick = (dateRef) => {
+    if (dateRef.current) {
+      dateRef.current.showPicker()
+    }
   }
 
   // Close dropdowns when clicking outside
@@ -82,6 +115,9 @@ export const CreateCrop = () => {
     const handleClickOutside = (event) => {
       if (seedDropdownRef.current && !seedDropdownRef.current.contains(event.target)) {
         setIsSeedDropdownOpen(false)
+      }
+      if (regionDropdownRef.current && !regionDropdownRef.current.contains(event.target)) {
+        setIsRegionDropdownOpen(false)
       }
       if (pesticideDropdownRef.current && !pesticideDropdownRef.current.contains(event.target)) {
         setIsPesticideDropdownOpen(false)
@@ -105,7 +141,7 @@ export const CreateCrop = () => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Seed Type & Acres */}
+          {/* Seed Type & Region */}
           <div className="inputRow">
             <div className="inputGroup">
               <label>Seed Type</label>
@@ -179,17 +215,74 @@ export const CreateCrop = () => {
             </div>
 
             <div className="inputGroup">
-              <label>Acres</label>
-              <input
-                type="number"
-                name="acres"
-                value={form.acres}
-                onChange={handleChange}
-                placeholder="Enter acres"
-                min="0"
-                step="0.01"
-                required
-              />
+              <label>Region</label>
+              {!isCustomRegion ? (
+                <div className="dropdownContainer" ref={regionDropdownRef}>
+                  <div 
+                    className="customSelect"
+                    onClick={() => setIsRegionDropdownOpen(!isRegionDropdownOpen)}
+                  >
+                    <span className={`selectedValue ${!form.region ? 'placeholder' : ''}`}>
+                      {form.region || 'Select region'}
+                    </span>
+                    <FontAwesomeIcon 
+                      icon={faChevronDown} 
+                      className={`dropdownIcon ${isRegionDropdownOpen ? 'open' : ''}`}
+                    />
+                  </div>
+                  
+                  {isRegionDropdownOpen && (
+                    <div className="dropdownMenu">
+                      {regions.map((region, index) => (
+                        <div
+                          key={index}
+                          className={`dropdownItem ${
+                            form.region === region ? 'selected' : ''
+                          }`}
+                          onClick={() => handleRegionSelect(region)}
+                        >
+                          {region}
+                        </div>
+                      ))}
+                      <div 
+                        className="dropdownItem customOption"
+                        onClick={() => setIsCustomRegion(true)}
+                      >
+                        <FontAwesomeIcon icon={faPlus} />
+                        Add Custom Region
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="customInputRow">
+                  <input
+                    type="text"
+                    placeholder="Enter new region"
+                    value={customRegion}
+                    onChange={(e) => setCustomRegion(e.target.value)}
+                  />
+                  <div className="customButtons">
+                    <button
+                      type="button"
+                      className="addBtn"
+                      onClick={handleAddRegion}
+                    >
+                      <FontAwesomeIcon icon={faPlus} /> Add
+                    </button>
+                    <button
+                      type="button"
+                      className="cancelBtn"
+                      onClick={() => {
+                        setIsCustomRegion(false)
+                        setCustomRegion('')
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faXmark} /> Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -226,8 +319,12 @@ export const CreateCrop = () => {
           <div className="inputRow">
             <div className="inputGroup">
               <label>Date of Sowing (Male)</label>
-              <div className="dateInputContainer">
+              <div 
+                className="dateInputContainer"
+                onClick={() => handleDateContainerClick(sowingDateMaleRef)}
+              >
                 <input
+                  ref={sowingDateMaleRef}
                   type="date"
                   name="sowingDateMale"
                   value={form.sowingDateMale}
@@ -240,8 +337,12 @@ export const CreateCrop = () => {
 
             <div className="inputGroup">
               <label>Date of Sowing (Female)</label>
-              <div className="dateInputContainer">
+              <div 
+                className="dateInputContainer"
+                onClick={() => handleDateContainerClick(sowingDateFemaleRef)}
+              >
                 <input
+                  ref={sowingDateFemaleRef}
                   type="date"
                   name="sowingDateFemale"
                   value={form.sowingDateFemale}
@@ -257,8 +358,12 @@ export const CreateCrop = () => {
           <div className="inputRow">
             <div className="inputGroup">
               <label>First Detaching Date</label>
-              <div className="dateInputContainer">
+              <div 
+                className="dateInputContainer"
+                onClick={() => handleDateContainerClick(firstDetachingDateRef)}
+              >
                 <input
+                  ref={firstDetachingDateRef}
                   type="date"
                   name="firstDetachingDate"
                   value={form.firstDetachingDate}
@@ -271,8 +376,12 @@ export const CreateCrop = () => {
 
             <div className="inputGroup">
               <label>Second Detaching Date</label>
-              <div className="dateInputContainer">
+              <div 
+                className="dateInputContainer"
+                onClick={() => handleDateContainerClick(secondDetachingDateRef)}
+              >
                 <input
+                  ref={secondDetachingDateRef}
                   type="date"
                   name="secondDetachingDate"
                   value={form.secondDetachingDate}
@@ -359,8 +468,12 @@ export const CreateCrop = () => {
 
             <div className="inputGroup">
               <label>Date of Harvesting</label>
-              <div className="dateInputContainer">
+              <div 
+                className="dateInputContainer"
+                onClick={() => handleDateContainerClick(harvestingDateRef)}
+              >
                 <input
+                  ref={harvestingDateRef}
                   type="date"
                   name="harvestingDate"
                   value={form.harvestingDate}
@@ -372,8 +485,22 @@ export const CreateCrop = () => {
             </div>
           </div>
 
-          {/* Payment & Yield */}
-          <div className="inputRow">
+          {/* Acres, Payment & Yield - Three Items Row */}
+          <div className="inputRow threeColumns">
+            <div className="inputGroup">
+              <label>Acres</label>
+              <input
+                type="number"
+                name="acres"
+                value={form.acres}
+                onChange={handleChange}
+                placeholder="Enter acres"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+
             <div className="inputGroup">
               <label>Payment (₹)</label>
               <input
