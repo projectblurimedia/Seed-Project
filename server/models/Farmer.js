@@ -28,6 +28,13 @@ const farmerSchema = new mongoose.Schema({
     trim: true,
     index: true // Remove this line if you're using schema.index() below
   },
+  bankAccountNumber: {
+    type: String,
+    required: [true, 'Bank account number is required'],
+    match: [/^\d{9,18}$/, 'Bank account number must be between 9 and 18 digits'],
+    trim: true,
+    unique: true // optional, but usually useful
+  },
   village: {
     type: String,
     required: [true, 'Village name is required'],
