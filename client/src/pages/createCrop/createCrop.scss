@@ -14,7 +14,7 @@
   .formCard {
     background: ghostwhite;
     width: 100%;
-    max-width: 700px; // Increased max-width for three columns
+    max-width: 700px;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
@@ -68,17 +68,83 @@
       gap: 1.2rem;
       width: 100%;
 
+      .section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 12px;
+        border: 2px solid #f1f5f9;
+
+        .addSectionBtn {
+          background: linear-gradient(90deg, #4b667d, #0c4571);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          padding: 1rem;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+          }
+        }
+
+        .dynamicSection {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+
+          .sectionHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+
+            h3 {
+              font-size: 1.1rem;
+              font-weight: 600;
+              color: #0274d1;
+              margin: 0;
+            }
+
+            .addEntryBtn {
+              background: #0274d1;
+              color: white;
+              border: none;
+              border-radius: 6px;
+              padding: 0.5rem 1rem;
+              font-size: 0.9rem;
+              font-weight: 500;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              display: flex;
+              align-items: center;
+              gap: 0.3rem;
+
+              &:hover {
+                background: #005fa3;
+                transform: scale(1.05);
+              }
+            }
+          }
+        }
+      }
+
       .inputRow {
         display: flex;
         gap: 1rem;
         width: 100%;
         box-sizing: border-box;
-
-        &.threeColumns {
-          .inputGroup {
-            flex: 1;
-          }
-        }
+        align-items: flex-start;
 
         .inputGroup {
           flex: 1;
@@ -87,6 +153,18 @@
           gap: 0.4rem;
           min-width: 0;
 
+          // Pesticide dropdown gets more space
+          &.pesticideDropdown {
+            flex: 1.5;
+          }
+
+          &.deleteGroup {
+            flex: 0.3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
           label {
             font-weight: 600;
             font-size: 0.9rem;
@@ -94,6 +172,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            height: 1.2rem;
           }
 
           input {
@@ -105,6 +184,7 @@
             background: white;
             width: 100%;
             box-sizing: border-box;
+            min-height: 46px;
 
             &:focus {
               outline: none;
@@ -118,6 +198,29 @@
 
             &[type="date"] {
               padding-right: 2.5rem;
+            }
+          }
+
+          .removeBtn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.8rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 46px;
+            margin-top: 0;
+
+            &:hover {
+              background: #c82333;
+              transform: scale(1.05);
+              box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
             }
           }
 
@@ -150,7 +253,7 @@
               align-items: center;
               justify-content: space-between;
               transition: all 0.3s ease;
-              min-height: 50px;
+              min-height: 46px;
               width: 100%;
               box-sizing: border-box;
 
@@ -362,14 +465,96 @@
       form {
         gap: 1rem;
 
-        .inputRow {
-          flex-direction: column;
-          gap: 0.8rem;
+        .section {
+          padding: 0.8rem;
 
-          &.threeColumns {
-            .inputGroup {
-              flex: 1;
+          .dynamicSection {
+            .sectionHeader {
+              flex-direction: column;
+              gap: 0.5rem;
+              align-items: stretch;
+
+              .addEntryBtn {
+                align-self: flex-start;
+              }
             }
+          }
+        }
+
+        .inputRow {
+          .inputGroup {
+            width: 100%;
+            flex: 1 !important;
+
+            &.pesticideDropdown {
+              flex: 1 !important;
+            }
+
+            &.deleteGroup {
+              flex: 1 !important;
+              align-items: stretch;
+              
+              .removeBtn {
+                margin-top: -30px;
+                width: 100%;
+              }
+            }
+          }
+        }
+
+        .pesticideEntry {
+          background: #f8fafc;
+          padding: 1rem;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.8rem;
+          
+          .inputGroup {
+            margin-bottom: 0;
+            
+            // Pesticide dropdown spans full width
+            &:first-child {
+              grid-column: 1 / -1;
+            }
+            
+            // Quantity and Amount in first row
+            &:nth-child(2) {
+              grid-column: 1;
+            }
+            
+            &:nth-child(3) {
+              grid-column: 2;
+            }
+            
+            // Delete button spans full width below
+            &.deleteGroup {
+              grid-column: 1 / -1;
+              margin-top: 0.5rem;
+            }
+          }
+        }
+
+        // Coolie entries remain column layout
+        .coolieEntry {
+          background: #f8fafc;
+          padding: 1rem;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          
+          .inputGroup {
+            margin-bottom: 0.5rem;
+            width: 100%;
+            flex: 1 !important;
+            
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+          
+          .deleteGroup {
+            margin-top: 0.5rem;
           }
         }
 
@@ -393,12 +578,29 @@
       padding: 1rem;
 
       form {
-        .inputGroup {
-          .customInputRow {
-            .customButtons {
-              button {
-                padding: 0.5rem 0.7rem;
-                font-size: 0.8rem;
+        // For very small screens, make pesticide entries full column
+        .pesticideEntry {
+          grid-template-columns: 1fr;
+          
+          .inputGroup {
+            grid-column: 1 !important;
+            
+            &.deleteGroup {
+              grid-column: 1 !important;
+            }
+          }
+        }
+
+        .inputRow{
+          flex-direction: column;
+          gap: 0.8rem;
+          .inputGroup {
+            .customInputRow {
+              .customButtons {
+                button {
+                  padding: 0.5rem 0.7rem;
+                  font-size: 0.8rem;
+                }
               }
             }
           }
