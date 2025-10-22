@@ -3,7 +3,7 @@ import './home.scss'
 import { HomeHeader } from '../../components/homeHeader/HomeHeader'
 import { DailyUpdates } from '../../components/dailyUpdates/DailyUpdates'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {   faUserGroup, faPlus, faPenToSquare, faCirclePlus } from '@fortawesome/free-solid-svg-icons'
+import {   faUserGroup, faPenToSquare, faCirclePlus } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 
 export const Home = () => {

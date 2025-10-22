@@ -1,4 +1,4 @@
-.createCropContainer {
+.updateCropContainer {
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -416,7 +416,7 @@
         }
       }
 
-      .createBtn {
+      .updateBtn {
         background: linear-gradient(90deg, #0274d1, #1a9afb);
         color: #fff;
         font-weight: 600;
@@ -566,7 +566,7 @@
           }
         }
 
-        .createBtn {
+        .updateBtn {
           margin-top: 0.8rem;
         }
       }

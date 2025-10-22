@@ -1,4 +1,4 @@
-.createFarmerContainer {
+.updateFarmerContainer {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -35,7 +35,7 @@
       h2 {
         font-size: 1.3rem;
         font-weight: 600;
-        color: #0274d1;
+        color: #0ea5e9;
         text-align: center;
         margin: 0;
         flex: 1;
@@ -48,7 +48,7 @@
         transform: translateY(-50%);
         background: none;
         border: none;
-        color: #0274d1;
+        color: #0ea5e9;
         font-size: 1.3rem;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -67,28 +67,21 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      width: 100%;
 
       .inputRow {
         display: flex;
         gap: 1rem;
-        width: 100%;
-        box-sizing: border-box;
 
         .inputGroup {
           flex: 1;
           display: flex;
           flex-direction: column;
           gap: 0.3rem;
-          min-width: 0; // Prevents overflow
 
           label {
             font-weight: 600;
             font-size: 0.9rem;
             color: #444c52;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
           }
 
           input {
@@ -99,60 +92,22 @@
             transition: all 0.3s ease;
             background: white;
             color: #334155;
-            width: 100%;
-            box-sizing: border-box;
 
             &:focus {
               outline: none;
-              border-color: #0274d1;
-              box-shadow: 0 0 0 3px rgba(2, 116, 209, 0.1);
+              border-color: #0ea5e9;
+              box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
             }
 
             &::placeholder {
-              font-size: 0.85rem;
               color: #94a3b8;
             }
           }
         }
       }
 
-      .inputGroup {
-        display: flex;
-        flex-direction: column;
-        gap: 0.3rem;
-
-        label {
-          font-weight: 600;
-          font-size: 0.9rem;
-          color: #444c52;
-        }
-
-        input {
-          padding: 0.8rem;
-          border: 2px solid #e2e8f0;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          transition: all 0.3s ease;
-          background: white;
-          color: #334155;
-          width: 100%;
-          box-sizing: border-box;
-
-          &:focus {
-            outline: none;
-            border-color: #0274d1;
-            box-shadow: 0 0 0 3px rgba(2, 116, 209, 0.1);
-          }
-
-          &::placeholder {
-            font-size: 0.85rem;
-            color: #94a3b8;
-          }
-        }
-      }
-      
-      .createBtn {
-        background: linear-gradient(90deg, #0274d1, #1a9afb);
+      .updateBtn {
+        background: linear-gradient(90deg, #0284c7, #0ea5e9);
         color: #fff;
         font-weight: 600;
         padding: 0.8rem;
@@ -162,11 +117,10 @@
         cursor: pointer;
         transition: all 0.3s ease;
         margin-top: 0.5rem;
-        width: 100%;
 
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 4px 10px rgba(2, 116, 209, 0.3);
+          box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
         }
       }
     }
@@ -178,12 +132,9 @@
     .formCard {
       padding: 1.2rem;
       max-width: 95%;
-      border-radius: 12px;
 
       .inputRow {
         flex-direction: column;
-        gap: 1rem;
-        width: 100%;
       }
 
       .formHeader {
@@ -193,29 +144,9 @@
 
         .undoBtn {
           font-size: 1.1rem;
-          position: relative;
           transform: none;
-          align-self: flex-start;
-
-          &:hover {
-            transform: scale(1.1);
-          }
         }
       }
-
-      form {
-        gap: 0.8rem;
-
-        .createBtn {
-          margin-top: 0.8rem;
-        }
-      }
-    }
-  }
-
-  @media (max-width: 480px) {
-    .formCard {
-      padding: 1rem;
     }
   }
 }
