@@ -111,42 +111,52 @@ const getFarmerByAadhar = async (req, res) => {
 // @access  Public
 const updateFarmer = async (req, res) => {
   try {
+    const aadhar = req.params.aadhar.trim(); // Ensure no spaces
+    console.log("🟡 Update request received");
+    console.log("Params aadhar:", aadhar);
+    console.log("Update body:", req.body);
+
     const farmer = await Farmer.findOneAndUpdate(
-      { aadhar: req.params.aadhar },
-      req.body,
-      { new: true, runValidators: true }
-    )
+      { aadhar },                         // find by aadhar
+      { $set: req.body },                 // use $set to ensure partial updates
+      { new: true, runValidators: true }  // return updated doc and validate
+    );
 
     if (!farmer) {
       return res.status(404).json({
         success: false,
         message: 'Farmer not found'
-      })
+      });
     }
+
+    console.log("✅ Updated farmer:", farmer);
 
     res.status(200).json({
       success: true,
       message: 'Farmer updated successfully',
       data: farmer
-    })
+    });
+
   } catch (error) {
-    console.error('Error updating farmer:', error)
-    
+    console.error('❌ Error updating farmer:', error);
+
     if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(err => err.message)
+      const messages = Object.values(error.errors).map(err => err.message);
       return res.status(400).json({
         success: false,
         message: 'Validation error',
         errors: messages
-      })
+      });
     }
 
     res.status(500).json({
       success: false,
-      message: 'Server error while updating farmer'
-    })
+      message: 'Server error while updating farmer',
+      error: error.message
+    });
   }
-}
+};
+
 
 // @desc    Delete farmer
 // @route   DELETE /api/farmers/:aadhar
