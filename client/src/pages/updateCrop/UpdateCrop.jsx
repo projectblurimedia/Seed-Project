@@ -11,6 +11,8 @@ export const UpdateCrop = () => {
   const [seedTypes, setSeedTypes] = useState(['Babycorn Seed', 'Popcorn', 'Maize 161', 'Sweet Corn', 'Field Corn'])
   const [regions, setRegions] = useState(['Jangareddygudem', 'Vijayanagaram'])
   const [pesticides, setPesticides] = useState(['Urea', 'DAP', 'NPK', 'Organic Manure', 'Potassium Nitrate'])
+  const [paymentMethods, setPaymentMethods] = useState(['Cash', 'PhonePe', 'Bank Transfer', 'UPI', 'Cheque'])
+  const [daysOptions, setDaysOptions] = useState(Array.from({ length: 30 }, (_, i) => (i + 1).toString()))
   
   // Static crop data that will pre-fill the form
   const staticCropData = {
@@ -24,23 +26,29 @@ export const UpdateCrop = () => {
     firstDetachingDate: '2024-04-10',
     secondDetachingDate: '2024-04-25',
     harvestingDate: '2024-06-15',
-    payment: '25000',
+    totalIncome: '25000',
     yield: '1200'
   }
 
   const staticPesticideEntries = [
-    { pesticide: 'Urea', quantity: '50', amount: '1500' },
-    { pesticide: 'DAP', quantity: '25', amount: '2000' }
+    { pesticide: 'Urea', quantity: '50', amount: '1500', date: '2024-03-25' },
+    { pesticide: 'DAP', quantity: '25', amount: '2000', date: '2024-04-05' }
   ]
 
   const staticCoolieEntries = [
-    { count: '5', amount: '2500' },
-    { count: '3', amount: '1500' }
+    { count: '5', amount: '2500', date: '2024-03-15', days: '2' },
+    { count: '3', amount: '1500', date: '2024-06-15', days: '1' }
+  ]
+
+  const staticPaymentEntries = [
+    { amount: '10000', date: '2024-03-15', purpose: 'Advance Payment', method: 'Cash' },
+    { amount: '8000', date: '2024-05-20', purpose: 'Progress Payment', method: 'PhonePe' }
   ]
 
   const [form, setForm] = useState(staticCropData)
   const [pesticideEntries, setPesticideEntries] = useState(staticPesticideEntries)
   const [coolieEntries, setCoolieEntries] = useState(staticCoolieEntries)
+  const [paymentEntries, setPaymentEntries] = useState(staticPaymentEntries)
   
   const [isCustomSeed, setIsCustomSeed] = useState(false)
   const [isCustomRegion, setIsCustomRegion] = useState(false)
@@ -51,13 +59,18 @@ export const UpdateCrop = () => {
   const [isSeedDropdownOpen, setIsSeedDropdownOpen] = useState(false)
   const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false)
   const [isPesticideDropdownOpen, setIsPesticideDropdownOpen] = useState(false)
+  const [isDaysDropdownOpen, setIsDaysDropdownOpen] = useState(false)
+  const [isPaymentMethodDropdownOpen, setIsPaymentMethodDropdownOpen] = useState(false)
 
   const [showPesticideForm, setShowPesticideForm] = useState(true)
   const [showCoolieForm, setShowCoolieForm] = useState(true)
+  const [showPaymentForm, setShowPaymentForm] = useState(true)
 
   const seedDropdownRef = useRef(null)
   const regionDropdownRef = useRef(null)
   const pesticideDropdownRef = useRef(null)
+  const daysDropdownRef = useRef(null)
+  const paymentMethodDropdownRef = useRef(null)
   const sowingDateMaleRef = useRef(null)
   const sowingDateFemaleRef = useRef(null)
   const firstDetachingDateRef = useRef(null)
@@ -79,6 +92,12 @@ export const UpdateCrop = () => {
     const updatedEntries = [...coolieEntries]
     updatedEntries[index] = { ...updatedEntries[index], [field]: value }
     setCoolieEntries(updatedEntries)
+  }
+
+  const handlePaymentChange = (index, field, value) => {
+    const updatedEntries = [...paymentEntries]
+    updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    setPaymentEntries(updatedEntries)
   }
 
   const handleAddSeed = () => {
@@ -111,7 +130,7 @@ export const UpdateCrop = () => {
   }
 
   const handleAddPesticideEntry = () => {
-    setPesticideEntries(prev => [...prev, { pesticide: '', quantity: '', amount: '' }])
+    setPesticideEntries(prev => [...prev, { pesticide: '', quantity: '', amount: '', date: '' }])
     setShowPesticideForm(true)
   }
 
@@ -123,7 +142,7 @@ export const UpdateCrop = () => {
   }
 
   const handleAddCoolieEntry = () => {
-    setCoolieEntries(prev => [...prev, { count: '', amount: '' }])
+    setCoolieEntries(prev => [...prev, { count: '', amount: '', date: '', days: '1' }])
     setShowCoolieForm(true)
   }
 
@@ -134,6 +153,18 @@ export const UpdateCrop = () => {
     }
   }
 
+  const handleAddPaymentEntry = () => {
+    setPaymentEntries(prev => [...prev, { amount: '', date: '', purpose: '', method: 'Cash' }])
+    setShowPaymentForm(true)
+  }
+
+  const handleRemovePaymentEntry = (index) => {
+    setPaymentEntries(prev => prev.filter((_, i) => i !== index))
+    if (paymentEntries.length === 1) {
+      setShowPaymentForm(false)
+    }
+  }
+
   const handleUndo = () => navigate(-1)
 
   const handleSubmit = (e) => {
@@ -141,7 +172,8 @@ export const UpdateCrop = () => {
     const formData = {
       ...form,
       pesticideEntries,
-      coolieEntries
+      coolieEntries,
+      paymentEntries
     }
     alert(`✅ Crop Updated Successfully!\n\nFarmer Aadhar: ${aadhar}\n${JSON.stringify(formData, null, 2)}`)
     navigate('/') // Navigate back to home or crops list
@@ -158,6 +190,16 @@ export const UpdateCrop = () => {
     setIsPesticideDropdownOpen(false)
   }
 
+  const handleDaysSelect = (index, value) => {
+    handleCoolieChange(index, 'days', value)
+    setIsDaysDropdownOpen(false)
+  }
+
+  const handlePaymentMethodSelect = (index, value) => {
+    handlePaymentChange(index, 'method', value)
+    setIsPaymentMethodDropdownOpen(false)
+  }
+
   const handleDateContainerClick = (dateRef) => dateRef.current?.showPicker()
 
   // Close dropdowns on outside click
@@ -166,6 +208,8 @@ export const UpdateCrop = () => {
       if (seedDropdownRef.current && !seedDropdownRef.current.contains(e.target)) setIsSeedDropdownOpen(false)
       if (regionDropdownRef.current && !regionDropdownRef.current.contains(e.target)) setIsRegionDropdownOpen(false)
       if (pesticideDropdownRef.current && !pesticideDropdownRef.current.contains(e.target)) setIsPesticideDropdownOpen(false)
+      if (daysDropdownRef.current && !daysDropdownRef.current.contains(e.target)) setIsDaysDropdownOpen(false)
+      if (paymentMethodDropdownRef.current && !paymentMethodDropdownRef.current.contains(e.target)) setIsPaymentMethodDropdownOpen(false)
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -326,11 +370,11 @@ export const UpdateCrop = () => {
             </div>
           </div>
 
-          {/* Payment & Yield */}
+          {/* Total Income & Yield */}
           <div className="inputRow">
             <div className="inputGroup">
-              <label>Payment (₹)</label>
-              <input type="number" name="payment" value={form.payment} onChange={handleChange} placeholder="Enter amount" min="0" required />
+              <label>Total Income (₹)</label>
+              <input type="number" name="totalIncome" value={form.totalIncome} onChange={handleChange} placeholder="Enter total income" min="0" required />
             </div>
             <div className="inputGroup">
               <label>Yield (kg)</label>
@@ -347,89 +391,107 @@ export const UpdateCrop = () => {
             ) : (
               <div className="dynamicSection">
                 <div className="sectionHeader">
-                  <h3>Pesticides/Fertilizers</h3>
+                  <h3>Pesticides</h3>
                   <button type="button" className="addEntryBtn" onClick={handleAddPesticideEntry}>
                     <FontAwesomeIcon icon={faPlus} /> Add Another
                   </button>
                 </div>
                 
                 {pesticideEntries.map((entry, index) => (
-                  <div key={index} className="pesticideEntry inputRow">
-                    {/* Pesticide Dropdown - flex 1.5 */}
-                    <div className="inputGroup pesticideDropdown">
-                      <label>Pesticide/Fertilizer</label>
-                      {!isCustomPesticide ? (
-                        <div className="dropdownContainer" ref={pesticideDropdownRef}>
-                          <div className="customSelect" onClick={() => setIsPesticideDropdownOpen(!isPesticideDropdownOpen)}>
-                            <span className={`selectedValue ${!entry.pesticide ? 'placeholder' : ''}`}>
-                              {entry.pesticide || 'Select pesticide'}
-                            </span>
-                            <FontAwesomeIcon icon={faChevronDown} className={`dropdownIcon ${isPesticideDropdownOpen ? 'open' : ''}`} />
-                          </div>
-                          {isPesticideDropdownOpen && (
-                            <div className="dropdownMenu">
-                              {pesticides.map((p, i) => (
-                                <div key={i} className={`dropdownItem ${entry.pesticide === p ? 'selected' : ''}`} onClick={() => handlePesticideSelect(index, p)}>
-                                  {p}
-                                </div>
-                              ))}
-                              <div className="dropdownItem customOption" onClick={() => setIsCustomPesticide(true)}>
-                                <FontAwesomeIcon icon={faPlus} /> Add Custom Pesticide
-                              </div>
+                  <div key={index} className="pesticideEntry">
+                    <div className="inputRow">
+                      {/* Pesticide Dropdown */}
+                      <div className="inputGroup pesticideDropdown">
+                        <label>Pesticide/Fertilizer</label>
+                        {!isCustomPesticide ? (
+                          <div className="dropdownContainer" ref={pesticideDropdownRef}>
+                            <div className="customSelect" onClick={() => setIsPesticideDropdownOpen(!isPesticideDropdownOpen)}>
+                              <span className={`selectedValue ${!entry.pesticide ? 'placeholder' : ''}`}>
+                                {entry.pesticide || 'Select pesticide'}
+                              </span>
+                              <FontAwesomeIcon icon={faChevronDown} className={`dropdownIcon ${isPesticideDropdownOpen ? 'open' : ''}`} />
                             </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="customInputRow">
-                          <input type="text" placeholder="Enter new pesticide" value={customPesticide} onChange={(e) => setCustomPesticide(e.target.value)} />
-                          <div className="customButtons">
-                            <button type="button" className="addBtn" onClick={handleAddPesticide}>
-                              <FontAwesomeIcon icon={faPlus} /> Add
-                            </button>
-                            <button type="button" className="cancelBtn" onClick={() => { setIsCustomPesticide(false); setCustomPesticide('') }}>
-                              <FontAwesomeIcon icon={faXmark} /> Cancel
-                            </button>
+                            {isPesticideDropdownOpen && (
+                              <div className="dropdownMenu">
+                                {pesticides.map((p, i) => (
+                                  <div key={i} className={`dropdownItem ${entry.pesticide === p ? 'selected' : ''}`} onClick={() => handlePesticideSelect(index, p)}>
+                                    {p}
+                                  </div>
+                                ))}
+                                <div className="dropdownItem customOption" onClick={() => setIsCustomPesticide(true)}>
+                                  <FontAwesomeIcon icon={faPlus} /> Add Custom Pesticide
+                                </div>
+                              </div>
+                            )}
                           </div>
+                        ) : (
+                          <div className="customInputRow">
+                            <input type="text" placeholder="Enter new pesticide" value={customPesticide} onChange={(e) => setCustomPesticide(e.target.value)} />
+                            <div className="customButtons">
+                              <button type="button" className="addBtn" onClick={handleAddPesticide}>
+                                <FontAwesomeIcon icon={faPlus} /> Add
+                              </button>
+                              <button type="button" className="cancelBtn" onClick={() => { setIsCustomPesticide(false); setCustomPesticide('') }}>
+                                <FontAwesomeIcon icon={faXmark} /> Cancel
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Quantity */}
+                      <div className="inputGroup">
+                        <label>Quantity (kg/liters)</label>
+                        <input 
+                          type="number" 
+                          value={entry.quantity} 
+                          onChange={(e) => handlePesticideChange(index, 'quantity', e.target.value)} 
+                          placeholder="Enter quantity" 
+                          min="0" 
+                          step="0.01" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="inputRow">
+                      {/* Amount */}
+                      <div className="inputGroup">
+                        <label>Amount (₹)</label>
+                        <input 
+                          type="number" 
+                          value={entry.amount} 
+                          onChange={(e) => handlePesticideChange(index, 'amount', e.target.value)} 
+                          placeholder="Enter amount" 
+                          min="0" 
+                        />
+                      </div>
+
+                      {/* Date */}
+                      <div className="inputGroup">
+                        <label>Date</label>
+                        <div className="dateInputContainer">
+                          <input 
+                            type="date" 
+                            value={entry.date} 
+                            onChange={(e) => handlePesticideChange(index, 'date', e.target.value)} 
+                            required 
+                          />
+                          <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
                         </div>
-                      )}
-                    </div>
+                      </div>
 
-                    {/* Quantity */}
-                    <div className="inputGroup">
-                      <label>Quantity (kg/liters)</label>
-                      <input 
-                        type="number" 
-                        value={entry.quantity} 
-                        onChange={(e) => handlePesticideChange(index, 'quantity', e.target.value)} 
-                        placeholder="Enter quantity" 
-                        min="0" 
-                        step="0.01" 
-                      />
-                    </div>
-
-                    {/* Amount */}
-                    <div className="inputGroup">
-                      <label>Amount (₹)</label>
-                      <input 
-                        type="number" 
-                        value={entry.amount} 
-                        onChange={(e) => handlePesticideChange(index, 'amount', e.target.value)} 
-                        placeholder="Enter amount" 
-                        min="0" 
-                      />
-                    </div>
-
-                    {/* Delete Button */}
-                    <div className="inputGroup deleteGroup">
-                      <label>&nbsp;</label>
-                      <button 
-                        type="button" 
-                        className="removeBtn" 
-                        onClick={() => handleRemovePesticideEntry(index)}
-                        title="Remove this entry"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
+                      {/* Delete Button */}
+                      <div className="inputGroup deleteGroup">
+                        <label>&nbsp;</label>
+                        <button 
+                          type="button" 
+                          className="removeBtn" 
+                          onClick={() => handleRemovePesticideEntry(index)}
+                          title="Remove this entry"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -446,49 +508,189 @@ export const UpdateCrop = () => {
             ) : (
               <div className="dynamicSection">
                 <div className="sectionHeader">
-                  <h3>Coolies</h3>
+                  <h3>Labor & Workforce</h3>
                   <button type="button" className="addEntryBtn" onClick={handleAddCoolieEntry}>
                     <FontAwesomeIcon icon={faPlus} /> Add Another
                   </button>
                 </div>
                 
                 {coolieEntries.map((entry, index) => (
-                  <div key={index} className="coolieEntry inputRow">
-                    {/* Coolie Count */}
-                    <div className="inputGroup">
-                      <label>No. of Coolies</label>
-                      <input 
-                        type="number" 
-                        value={entry.count} 
-                        onChange={(e) => handleCoolieChange(index, 'count', e.target.value)} 
-                        placeholder="Enter count" 
-                        min="0" 
-                      />
+                  <div key={index} className="coolieEntry">
+                    <div className="inputRow">
+                      {/* Coolie Count */}
+                      <div className="inputGroup">
+                        <label>No. of Coolies</label>
+                        <input 
+                          type="number" 
+                          value={entry.count} 
+                          onChange={(e) => handleCoolieChange(index, 'count', e.target.value)} 
+                          placeholder="Enter count" 
+                          min="0" 
+                        />
+                      </div>
+
+                      {/* Coolie Amount */}
+                      <div className="inputGroup">
+                        <label>Coolie Amount (₹)</label>
+                        <input 
+                          type="number" 
+                          value={entry.amount} 
+                          onChange={(e) => handleCoolieChange(index, 'amount', e.target.value)} 
+                          placeholder="Enter amount" 
+                          min="0" 
+                        />
+                      </div>
                     </div>
 
-                    {/* Coolie Amount */}
-                    <div className="inputGroup">
-                      <label>Coolie Amount (₹)</label>
-                      <input 
-                        type="number" 
-                        value={entry.amount} 
-                        onChange={(e) => handleCoolieChange(index, 'amount', e.target.value)} 
-                        placeholder="Enter amount" 
-                        min="0" 
-                      />
+                    <div className="inputRow">
+                      {/* Date */}
+                      <div className="inputGroup">
+                        <label>Date</label>
+                        <div className="dateInputContainer">
+                          <input 
+                            type="date" 
+                            value={entry.date} 
+                            onChange={(e) => handleCoolieChange(index, 'date', e.target.value)} 
+                            required 
+                          />
+                          <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
+                        </div>
+                      </div>
+
+                      {/* Days Dropdown */}
+                      <div className="inputGroup">
+                        <label>No. of Days</label>
+                        <div className="dropdownContainer" ref={daysDropdownRef}>
+                          <div className="customSelect" onClick={() => setIsDaysDropdownOpen(!isDaysDropdownOpen)}>
+                            <span className={`selectedValue ${!entry.days ? 'placeholder' : ''}`}>
+                              {entry.days ? `${entry.days} day${entry.days !== '1' ? 's' : ''}` : 'Select days'}
+                            </span>
+                            <FontAwesomeIcon icon={faChevronDown} className={`dropdownIcon ${isDaysDropdownOpen ? 'open' : ''}`} />
+                          </div>
+                          {isDaysDropdownOpen && (
+                            <div className="dropdownMenu">
+                              {daysOptions.map((day, i) => (
+                                <div key={i} className={`dropdownItem ${entry.days === day ? 'selected' : ''}`} onClick={() => handleDaysSelect(index, day)}>
+                                  {day} day{day !== '1' ? 's' : ''}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Delete Button */}
+                      <div className="inputGroup deleteGroup">
+                        <label>&nbsp;</label>
+                        <button 
+                          type="button" 
+                          className="removeBtn" 
+                          onClick={() => handleRemoveCoolieEntry(index)}
+                          title="Remove this entry"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Payments Section */}
+          <div className="section">
+            {!showPaymentForm ? (
+              <button type="button" className="addSectionBtn" onClick={handleAddPaymentEntry}>
+                <FontAwesomeIcon icon={faPlus} /> Add Payments
+              </button>
+            ) : (
+              <div className="dynamicSection">
+                <div className="sectionHeader">
+                  <h3>Farmer Payments</h3>
+                  <button type="button" className="addEntryBtn" onClick={handleAddPaymentEntry}>
+                    <FontAwesomeIcon icon={faPlus} /> Add Another
+                  </button>
+                </div>
+                
+                {paymentEntries.map((entry, index) => (
+                  <div key={index} className="paymentEntry">
+                    <div className="inputRow">
+                      {/* Amount */}
+                      <div className="inputGroup">
+                        <label>Amount (₹)</label>
+                        <input 
+                          type="number" 
+                          value={entry.amount} 
+                          onChange={(e) => handlePaymentChange(index, 'amount', e.target.value)} 
+                          placeholder="Enter amount" 
+                          min="0" 
+                          required 
+                        />
+                      </div>
+
+                      {/* Date */}
+                      <div className="inputGroup">
+                        <label>Date</label>
+                        <div className="dateInputContainer">
+                          <input 
+                            type="date" 
+                            value={entry.date} 
+                            onChange={(e) => handlePaymentChange(index, 'date', e.target.value)} 
+                            required 
+                          />
+                          <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Delete Button */}
-                    <div className="inputGroup deleteGroup">
-                      <label>&nbsp;</label>
-                      <button 
-                        type="button" 
-                        className="removeBtn" 
-                        onClick={() => handleRemoveCoolieEntry(index)}
-                        title="Remove this entry"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
+                    <div className="inputRow">
+                      {/* Purpose */}
+                      <div className="inputGroup">
+                        <label>Purpose</label>
+                        <input 
+                          type="text" 
+                          value={entry.purpose} 
+                          onChange={(e) => handlePaymentChange(index, 'purpose', e.target.value)} 
+                          placeholder="e.g., Advance, Progress, Final" 
+                          required 
+                        />
+                      </div>
+
+                      {/* Payment Method */}
+                      <div className="inputGroup">
+                        <label>Payment Method</label>
+                        <div className="dropdownContainer" ref={paymentMethodDropdownRef}>
+                          <div className="customSelect" onClick={() => setIsPaymentMethodDropdownOpen(!isPaymentMethodDropdownOpen)}>
+                            <span className={`selectedValue ${!entry.method ? 'placeholder' : ''}`}>
+                              {entry.method || 'Select payment method'}
+                            </span>
+                            <FontAwesomeIcon icon={faChevronDown} className={`dropdownIcon ${isPaymentMethodDropdownOpen ? 'open' : ''}`} />
+                          </div>
+                          {isPaymentMethodDropdownOpen && (
+                            <div className="dropdownMenu">
+                              {paymentMethods.map((method, i) => (
+                                <div key={i} className={`dropdownItem ${entry.method === method ? 'selected' : ''}`} onClick={() => handlePaymentMethodSelect(index, method)}>
+                                  {method}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Delete Button */}
+                      <div className="inputGroup deleteGroup">
+                        <label>&nbsp;</label>
+                        <button 
+                          type="button" 
+                          className="removeBtn" 
+                          onClick={() => handleRemovePaymentEntry(index)}
+                          title="Remove this entry"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

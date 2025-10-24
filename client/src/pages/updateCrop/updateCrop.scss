@@ -14,7 +14,7 @@
   .formCard {
     background: ghostwhite;
     width: 100%;
-    max-width: 700px;
+    max-width: 800px;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
@@ -78,11 +78,11 @@
         border: 2px solid #f1f5f9;
 
         .addSectionBtn {
-          background: linear-gradient(90deg, #3d6e96, #185a8c);
+          background: linear-gradient(90deg, #4c87b8, #1f72b2);
           color: white;
           border: none;
           border-radius: 8px;
-          padding: 1rem;
+          padding: .6rem 1rem;
           font-size: 1rem;
           font-weight: 600;
           cursor: pointer;
@@ -155,7 +155,7 @@
 
           // Pesticide dropdown gets more space
           &.pesticideDropdown {
-            flex: 1.5;
+            flex: 1.2;
           }
 
           &.deleteGroup {
@@ -198,6 +198,46 @@
 
             &[type="date"] {
               padding-right: 2.5rem;
+            }
+          }
+
+          .daysDropdown, .paymentMethodDropdown {
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: white;
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 46px;
+            cursor: pointer;
+            appearance: none;
+            font-weight: 600;
+            color: #334155;
+
+            &:focus {
+              outline: none;
+              border-color: #0274d1;
+              box-shadow: 0 0 0 3px rgba(2, 116, 209, 0.1);
+            }
+
+            option {
+              padding: 0.8rem;
+              font-size: 0.9rem;
+              font-weight: 600;
+              color: #334155;
+              background: white;
+              border: none;
+
+              &:hover {
+                background: #f8fafc;
+              }
+
+              &:checked {
+                background: #e6f2ff;
+                color: #0274d1;
+              }
             }
           }
 
@@ -416,6 +456,74 @@
         }
       }
 
+      // Specific styles for different entry types
+      .pesticideEntry, .coolieEntry, .paymentEntry {
+        background: #f6fafd;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 0.8rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .inputRow {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          margin-bottom: 1rem;
+
+          // First two items in one row
+          .inputGroup:nth-child(-n+2) {
+            flex: 1;
+            min-width: calc(50% - 0.5rem);
+          }
+
+          // Next three items in one row
+          .inputGroup:nth-child(n+3):nth-child(-n+5) {
+            flex: 1;
+            min-width: calc(33.333% - 0.67rem);
+          }
+
+          // Delete button gets fixed width
+          .inputGroup.deleteGroup {
+            margin-top: -20px;
+            grid-column: 1 / -1;
+            margin-left: 50%;
+            transform: translateX(-50%);
+          }
+        }
+      }
+
+      // Specific adjustments for each section
+      .pesticideEntry .inputRow {
+        .inputGroup:nth-child(-n+2) {
+          min-width: calc(50% - 0.5rem);
+        }
+        .inputGroup:nth-child(n+3):nth-child(-n+5) {
+          min-width: calc(33.333% - 0.67rem);
+        }
+      }
+
+      .coolieEntry .inputRow {
+        .inputGroup:nth-child(-n+2) {
+          min-width: calc(50% - 0.5rem);
+        }
+        .inputGroup:nth-child(n+3):nth-child(-n+5) {
+          min-width: calc(33.333% - 0.67rem);
+        }
+      }
+
+      .paymentEntry .inputRow {
+        .inputGroup:nth-child(-n+2) {
+          min-width: calc(50% - 0.5rem);
+        }
+        .inputGroup:nth-child(n+3):nth-child(-n+5) {
+          min-width: calc(33.333% - 0.67rem);
+        }
+      }
+
       .updateBtn {
         background: linear-gradient(90deg, #0274d1, #1a9afb);
         color: #fff;
@@ -449,17 +557,6 @@
         h2 {
           font-size: 1.2rem;
         }
-
-        .undoBtn {
-          font-size: 1.1rem;
-          position: relative;
-          transform: none;
-          align-self: flex-start;
-
-          &:hover {
-            transform: scale(1.1);
-          }
-        }
       }
 
       form {
@@ -470,10 +567,6 @@
 
           .dynamicSection {
             .sectionHeader {
-              flex-direction: column;
-              gap: 0.5rem;
-              align-items: stretch;
-
               .addEntryBtn {
                 align-self: flex-start;
               }
@@ -482,6 +575,9 @@
         }
 
         .inputRow {
+          flex-direction: column;
+          gap: 0.8rem;
+
           .inputGroup {
             width: 100%;
             flex: 1 !important;
@@ -495,66 +591,39 @@
               align-items: stretch;
               
               .removeBtn {
-                margin-top: -30px;
+                margin-top: 0;
                 width: 100%;
               }
             }
           }
         }
 
-        .pesticideEntry {
-          background: #f8fafc;
-          padding: 1rem;
-          border-radius: 8px;
-          border: 1px solid #e2e8f0;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0.8rem;
-          
-          .inputGroup {
-            margin-bottom: 0;
+        .pesticideEntry, .coolieEntry, .paymentEntry {
+          .inputRow {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
             
-            // Pesticide dropdown spans full width
-            &:first-child {
-              grid-column: 1 / -1;
-            }
-            
-            // Quantity and Amount in first row
-            &:nth-child(2) {
-              grid-column: 1;
-            }
-            
-            &:nth-child(3) {
-              grid-column: 2;
-            }
-            
-            // Delete button spans full width below
-            &.deleteGroup {
-              grid-column: 1 / -1;
-              margin-top: 0.5rem;
-            }
-          }
-        }
-
-        // Coolie entries remain column layout
-        .coolieEntry {
-          background: #f8fafc;
-          padding: 1rem;
-          border-radius: 8px;
-          border: 1px solid #e2e8f0;
-          
-          .inputGroup {
-            margin-bottom: 0.5rem;
-            width: 100%;
-            flex: 1 !important;
-            
-            &:last-child {
+            .inputGroup {
               margin-bottom: 0;
+              
+              // First two items in first row
+              &:nth-child(-n+2) {
+                grid-column: span 1;
+              }
+              
+              // Next three items in second row
+              &:nth-child(n+3):nth-child(-n+5) {
+                grid-column: span 1;
+              }
+              
+              // Delete button spans full width below
+              &.deleteGroup {
+                grid-column: 1 / -1;
+                margin-left: 100%;
+                transform: translateX(-50%);
+              }
             }
-          }
-          
-          .deleteGroup {
-            margin-top: 0.5rem;
           }
         }
 
@@ -578,22 +647,23 @@
       padding: 1rem;
 
       form {
-        // For very small screens, make pesticide entries full column
-        .pesticideEntry {
-          grid-template-columns: 1fr;
-          
-          .inputGroup {
-            grid-column: 1 !important;
+        .pesticideEntry, .coolieEntry, .paymentEntry {
+          .inputRow {
+            grid-template-columns: 1fr;
             
-            &.deleteGroup {
+            .inputGroup {
               grid-column: 1 !important;
+              
+              &.deleteGroup {
+                grid-column: 1 !important;
+                margin-left: 50%;
+                transform: translateX(-50%);
+              }
             }
           }
         }
 
         .inputRow{
-          flex-direction: column;
-          gap: 0.8rem;
           .inputGroup {
             .customInputRow {
               .customButtons {
