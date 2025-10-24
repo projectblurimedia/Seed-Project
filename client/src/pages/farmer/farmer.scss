@@ -8,415 +8,645 @@
   background: ghostwhite;
   overflow-x: hidden;
   font-family: 'Poppins', sans-serif;
-  padding: 1rem;
   box-sizing: border-box;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
   .detailCard {
     background: white;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    max-width: 900px;
     margin: 0 auto;
     width: 100%;
+
     .detailHeader {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.5rem 2rem;
+      padding: 1rem 2rem;
       background: linear-gradient(135deg, #0274d1, #1a9afb);
       color: white;
-  
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
       h1 {
         margin: 0;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 600;
+        letter-spacing: -0.2px;
       }
-  
+
       .backBtn {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.15);
         border: none;
         color: white;
-        padding: 0.8rem;
-        border-radius: 50%;
+        padding: 0.7rem;
+        border-radius: 12px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-  
+        width: 40px;
+        height: 40px;
+
         &:hover {
-          background: rgba(255, 255, 255, 0.3);
-          transform: scale(1.1);
+          background: rgba(255, 255, 255, 0.25);
+          transform: scale(1.05);
         }
       }
-  
+
       .editBtn {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
         color: white;
         padding: 0.6rem 1.2rem;
-        border-radius: 25px;
+        border-radius: 10px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        font-size: 0.85rem;
         font-weight: 500;
-  
+
         &:hover {
-          background: rgba(255, 255, 255, 0.3);
-          transform: translateY(-2px);
+          background: rgba(255, 255, 255, 0.25);
+          transform: translateY(-1px);
         }
       }
     }
-  
+
     .profileSection {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       padding: 2rem;
       background: white;
-      border-bottom: 1px solid #e2e8f0;
-  
-      .avatar {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, #0274d1, #1a9afb);
-        border-radius: 50%;
+      border-bottom: 1px solid #f1f5f9;
+      gap: 2rem;
+
+      .profileMain {
         display: flex;
         align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 2rem;
-        margin-right: 1.5rem;
-      }
-  
-      .profileInfo {
-        h2 {
-          margin: 0 0 0.5rem 0;
-          font-size: 1.8rem;
-          font-weight: 600;
-          color: #1e293b;
-        }
-  
-        .farmerId {
-          margin: 0 0 0.5rem 0;
-          color: #64748b;
-          font-size: 0.9rem;
-        }
-  
-        .statusBadge {
-          padding: 0.3rem 1rem;
-          border-radius: 20px;
-          font-size: 0.8rem;
-          font-weight: 600;
-          text-transform: uppercase;
-  
-          &.active {
-            background: #dcfce7;
-            color: #166534;
-          }
-  
-          &.inactive {
-            background: #fecaca;
-            color: #dc2626;
-          }
-        }
-      }
-    }
-  
-    .statsGrid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      padding: 1.5rem 2rem;
-      background: #f8fafc;
-  
-      .statCard {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        transition: transform 0.3s ease;
-  
-        &:hover {
-          transform: translateY(-5px);
-        }
-  
-        .statIcon {
-          width: 50px;
-          height: 50px;
-          border-radius: 12px;
+        gap: 1.2rem;
+        flex: 1;
+
+        .avatar {
+          width: 80px;
+          height: 80px;
+          background: linear-gradient(135deg, #0274d1, #1a9afb);
+          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 1.2rem;
           color: white;
-  
-          &.crops {
-            background: linear-gradient(135deg, #10b981, #059669);
-          }
-  
-          &.land {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-          }
-  
-          &.earnings {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-          }
+          font-size: 1.4rem;
+          font-weight: 600;
+          box-shadow: 0 6px 15px rgba(2, 116, 209, 0.25);
+          flex-shrink: 0;
         }
-  
-        .statInfo {
-          h3 {
-            margin: 0;
-            font-size: 1.5rem;
+
+        .profileInfo {
+          h2 {
+            margin: 0 0 0.8rem 0;
+            font-size: 1.3rem;
             font-weight: 600;
             color: #1e293b;
+            letter-spacing: -0.2px;
           }
-  
-          p {
-            margin: 0.3rem 0 0 0;
-            color: #64748b;
-            font-size: 0.9rem;
+
+          .profileMeta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+
+            .statusBadge {
+              padding: 0.4rem 1rem;
+              border-radius: 12px;
+              font-size: 0.75rem;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+
+              &.active {
+                background: #dcfce7;
+                color: #166534;
+                border: 1px solid #bbf7d0;
+              }
+
+              &.inactive {
+                background: #fecaca;
+                color: #dc2626;
+                border: 1px solid #fca5a5;
+              }
+            }
+
+            .joinDate {
+              display: flex;
+              align-items: center;
+              gap: 0.4rem;
+              color: #64748b;
+              font-size: 0.8rem;
+              font-weight: 500;
+
+              svg {
+                font-size: 0.7rem;
+                opacity: 0.7;
+              }
+            }
+          }
+        }
+      }
+
+      .profileStats {
+        display: flex;
+        gap: 3rem;
+        align-items: center;
+
+        .statCircle {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+
+          .circleIcon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+
+            &:hover {
+              transform: scale(1.1);
+              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            }
+
+            &.crops {
+              background: linear-gradient(135deg, #10b981, #059669);
+            }
+
+            &.land {
+              background: linear-gradient(135deg, #f59e0b, #d97706);
+            }
+          }
+
+          .circleInfo {
+            h3 {
+              margin: 0;
+              font-size: 1.2rem;
+              font-weight: 700;
+              color: #27364e;
+              line-height: 1;
+            }
+
+            p {
+              margin: 0.3rem 0 0 0;
+              color: #64748b;
+              font-size: 0.8rem;
+              font-weight: 500;
+            }
           }
         }
       }
     }
-  
+
     .infoSection {
       padding: 2rem;
-  
+
       h3 {
         margin: 0 0 1.5rem 0;
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         font-weight: 600;
         color: #1e293b;
+        position: relative;
+        padding-bottom: 0.6rem;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 80px;
+          height: 3px;
+          background: linear-gradient(135deg, #0274d1, #1a9afb);
+          border-radius: 2px;
+        }
       }
-  
-      .infoGrid {
+
+      .infoCardsGrid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-  
-        .infoItem {
-          display: flex;
-          align-items: flex-start;
-          gap: 1rem;
-          padding: 1rem;
-          background: #f8fafc;
-          border-radius: 12px;
-          transition: all 0.3s ease;
-  
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.2rem;
+
+        .infoCard {
+          background: white;
+          border-radius: 16px;
+          overflow: hidden;
+          transition: all 0.25s ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          border: 1px solid #f1f5f9;
+
           &:hover {
-            background: #e2e8f0;
-            transform: translateX(5px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
           }
-  
-          .infoIcon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #0274d1, #1a9afb);
-            border-radius: 10px;
+
+          .cardHeader {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
             color: white;
-            font-size: 1rem;
-            flex-shrink: 0;
+            position: relative;
+
+            &::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            }
+
+            .cardIcon {
+              width: 45px;
+              height: 45px;
+              border-radius: 12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 1.1rem;
+              color: white;
+              background: rgba(255, 255, 255, 0.2);
+              backdrop-filter: blur(10px);
+              position: relative;
+              z-index: 1;
+            }
+
+            h4 {
+              margin: 0;
+              font-size: 1.1rem;
+              font-weight: 600;
+              position: relative;
+              z-index: 1;
+            }
+
+            &.identity {
+              background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            }
+
+            &.contact {
+              background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+            }
+
+            &.financial {
+              background: linear-gradient(135deg, #10b981, #059669);
+            }
+
+            &.village {
+              background: linear-gradient(135deg, #f59e0b, #d97706);
+            }
           }
-  
-          .infoContent {
-            label {
-              display: block;
-              font-size: 0.8rem;
-              color: #64748b;
-              font-weight: 500;
-              margin-bottom: 0.3rem;
+
+          .cardContent {
+            padding: 1.2rem;
+
+            .infoField {
+              label {
+                display: block;
+                font-size: 0.7rem;
+                color: #64748b;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+              }
+
+              p {
+                margin: 0;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #1e293b;
+                word-break: break-word;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .cropsSection {
+      padding: 0 2rem 2rem 2rem;
+
+      .sectionHeader {
+        margin-bottom: 1.5rem;
+
+        h3 {
+          margin: 0;
+          font-size: 1.2rem;
+          font-weight: 600;
+          color: #1e293b;
+          position: relative;
+          padding-bottom: 0.6rem;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 2px;
+          }
+        }
+      }
+
+      .cropsGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.2rem;
+
+        .cropCard {
+          background: white;
+          border: 1px solid #f1f5f9;
+          border-radius: 14px;
+          padding: 1.5rem;
+          transition: all 0.25s ease;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+          position: relative;
+          overflow: hidden;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            border-color: #dcfce7;
+          }
+
+          .cropHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+
+            .cropIcon {
+              font-size: 2rem;
+            }
+
+            .cropStatus {
+              padding: 0.3rem 0.8rem;
+              border-radius: 10px;
+              font-size: 0.7rem;
+              font-weight: 600;
               text-transform: uppercase;
               letter-spacing: 0.5px;
+
+              &.active {
+                background: #dcfce7;
+                color: #166534;
+                border: 1px solid #bbf7d0;
+              }
+
+              &.completed {
+                background: #f1f5f9;
+                color: #64748b;
+                border: 1px solid #e2e8f0;
+              }
             }
-  
-            p {
-              margin: 0;
+          }
+
+          .cropInfo {
+            margin-bottom: 1.2rem;
+
+            h4 {
+              margin: 0 0 0.3rem 0;
               font-size: 1rem;
               font-weight: 600;
               color: #1e293b;
             }
-          }
-        }
-      }
-    }
-  
-    .cropsSection {
-      padding: 0 2rem 2rem 2rem;
-  
-      .sectionHeader {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-  
-        h3 {
-          margin: 0;
-          font-size: 1.3rem;
-          font-weight: 600;
-          color: #1e293b;
-        }
-  
-        .viewAllBtn {
-          background: #0274d1;
-          color: white;
-          border: none;
-          padding: 0.6rem 1.2rem;
-          border-radius: 8px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.3s ease;
-  
-          &:hover {
-            background: #005fa3;
-            transform: translateY(-2px);
-          }
-        }
-      }
-  
-      .cropsList {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-  
-        .cropItem {
-          display: flex;
-          align-items: center;
-          padding: 1.2rem;
-          background: #f8fafc;
-          border-radius: 12px;
-          transition: all 0.3s ease;
-          border-left: 4px solid #10b981;
-  
-          &:hover {
-            background: #e2e8f0;
-            transform: translateX(5px);
-          }
-  
-          .cropIcon {
-            font-size: 2rem;
-            margin-right: 1rem;
-          }
-  
-          .cropInfo {
-            flex: 1;
-  
-            h4 {
-              margin: 0 0 0.3rem 0;
-              font-size: 1.1rem;
-              font-weight: 600;
-              color: #1e293b;
-            }
-  
+
             p {
               margin: 0;
               color: #64748b;
-              font-size: 0.9rem;
+              font-size: 0.8rem;
+              font-weight: 500;
             }
           }
-  
+
+          .cropStats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+
+            .cropStat {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              flex: 1;
+
+              .statLabel {
+                font-size: 0.7rem;
+                color: #64748b;
+                font-weight: 500;
+                margin-bottom: 0.2rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              }
+
+              .statValue {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #1e293b;
+              }
+            }
+          }
+
           .cropEarnings {
-            font-size: 1.2rem;
-            font-weight: 600;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
             color: #059669;
+            background: #f0fdf4;
+            padding: 0.8rem;
+            border-radius: 10px;
+            border: 1px solid #dcfce7;
           }
         }
       }
     }
   }
 
-
   @media (max-width: 768px) {
-    padding: 0.5rem;
+    font-size: 13px;
 
     .detailCard {
-      border-radius: 15px;
-    }
+      border-radius: 12px;
 
-    .detailHeader {
-      padding: 1rem 1.5rem;
+      .detailHeader {
+        padding: 1rem 1.2rem;
 
-      h1 {
-        font-size: 1.3rem;
+        h1 {
+          font-size: 1.1rem;
+        }
+
+        .backBtn {
+          width: 36px;
+          height: 36px;
+          padding: 0.6rem;
+        }
+
+        .editBtn {
+          padding: 0.5rem 1rem;
+          font-size: 0.8rem;
+        }
       }
-    }
 
-    .profileSection {
-      padding: 1.5rem;
-      flex-direction: column;
-      text-align: center;
-
-      .avatar {
-        margin-right: 0;
-        margin-bottom: 1rem;
-      }
-    }
-
-    .statsGrid {
-      grid-template-columns: 1fr;
-      padding: 1rem;
-      gap: 0.8rem;
-    }
-
-    .infoSection {
-      padding: 1.5rem;
-
-      .infoGrid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-    }
-
-    .cropsSection {
-      padding: 0 1.5rem 1.5rem 1.5rem;
-
-      .sectionHeader {
+      .profileSection {
         flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 1.5rem;
 
-        .viewAllBtn {
-          align-self: flex-start;
+        .profileMain {
+          width: 100%;
+          flex-direction: column;
+          text-align: center;
+          gap: 1rem;
+
+          .avatar {
+            margin-right: 0;
+            width: 60px;
+            height: 60px;
+            font-size: 1.2rem;
+          }
+
+          .profileInfo {
+            h2 {
+              font-size: 1.4rem;
+            }
+
+            .profileMeta {
+              justify-content: center;
+              flex-direction: column;
+              gap: 0.5rem;
+            }
+          }
+        }
+
+        .profileStats {
+          width: 100%;
+          justify-content: space-around;
+          gap: 1rem;
+
+          .statCircle {
+            .circleIcon {
+              width: 60px;
+              height: 60px;
+              font-size: 1.2rem;
+            }
+
+            .circleInfo {
+              h3 {
+                font-size: 1.3rem;
+              }
+
+              p {
+                font-size: 0.75rem;
+              }
+            }
+          }
+        }
+      }
+
+      .infoSection {
+        padding: 1.5rem;
+
+        .infoCardsGrid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+      }
+
+      .cropsSection {
+        padding: 0 1.5rem 1.5rem 1.5rem;
+
+        .cropsGrid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
         }
       }
     }
   }
 
   @media (max-width: 480px) {
-    .detailHeader {
-      flex-direction: column;
-      gap: 1rem;
-      text-align: center;
+    font-size: 12px;
 
-      .backBtn {
-        align-self: flex-start;
-      }
-
-      .editBtn {
-        align-self: flex-end;
-        margin-top: -3rem;
-      }
-    }
-
-    .cropItem {
-      flex-direction: column;
-      text-align: center;
-      gap: 1rem;
-
-      .cropEarnings {
-        align-self: stretch;
+    .detailCard {
+      .detailHeader {
+        flex-direction: row;
         text-align: center;
-        padding-top: 0.5rem;
-        border-top: 1px solid #e2e8f0;
+
+        h1 {
+          font-size: 1rem;
+        }
+      }
+
+      .profileSection {
+        .profileMain {
+          .avatar {
+            width: 55px;
+            height: 55px;
+            font-size: 1.1rem;
+          }
+
+          .profileInfo {
+            h2 {
+              font-size: 1.2rem;
+            }
+          }
+        }
+
+        .profileStats {
+          .statCircle {
+            .circleIcon {
+              width: 55px;
+              height: 55px;
+              font-size: 1.1rem;
+            }
+
+            .circleInfo {
+              h3 {
+                font-size: 1.2rem;
+              }
+            }
+          }
+        }
+      }
+
+      .infoSection {
+        padding: 1.2rem 1rem;
+
+        .infoCardsGrid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .cropsSection {
+        padding: 0 1rem 1.2rem 1rem;
       }
     }
   }
