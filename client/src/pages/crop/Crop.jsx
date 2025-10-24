@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faSeedling, faMapMarkerAlt, faRupeeSign, faWeight, faEdit, faUsers, faSprayCanSparkles, faCalendar, faUser, faMoneyBillWave, faMobileAlt, faCreditCard, faHandHoldingUsd } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faSeedling, faMapMarkerAlt, faRupeeSign, faWeight, faEdit, faUsers, faSprayCanSparkles, faCalendar, faUser, faMobileAlt, faCreditCard, faHandHoldingUsd, faIndianRupeeSign } from '@fortawesome/free-solid-svg-icons'
 import './crop.scss'
 import { useNavigate } from 'react-router-dom'
 
@@ -27,10 +27,10 @@ export const Crop = () => {
   }
 
   const pesticideData = [
-    { name: 'Urea Fertilizer', quantity: '50 kg', amount: 1500, date: '2024-03-25', supplier: 'Agro Mart' },
-    { name: 'DAP Fertilizer', quantity: '25 kg', amount: 2000, date: '2024-04-05', supplier: 'Agro Mart' },
-    { name: 'Organic Manure', quantity: '100 kg', amount: 3000, date: '2024-03-20', supplier: 'Local Vendor' },
-    { name: 'Pesticide Spray', quantity: '5 liters', amount: 1200, date: '2024-04-15', supplier: 'Crop Care' }
+    { name: 'Urea Fertilizer', quantity: '50 kg', amount: 1500, date: '2024-03-25' },
+    { name: 'DAP Fertilizer', quantity: '25 kg', amount: 2000, date: '2024-04-05' },
+    { name: 'Organic Manure', quantity: '100 kg', amount: 3000, date: '2024-03-20' },
+    { name: 'Pesticide Spray', quantity: '5 liters', amount: 1200, date: '2024-04-15' }
   ]
 
   const coolieData = [
@@ -71,7 +71,7 @@ export const Crop = () => {
 
   const getPaymentMethodIcon = (method) => {
     switch (method) {
-      case 'Cash': return faMoneyBillWave
+      case 'Cash': return faIndianRupeeSign
       case 'PhonePe': return faMobileAlt
       case 'Bank Transfer': return faCreditCard
       default: return faHandHoldingUsd
@@ -283,7 +283,6 @@ export const Crop = () => {
                   <div className="expenseTitle">
                     <h4>{item.name}</h4>
                     <span className="quantity">{item.quantity}</span>
-                    <span className="supplier">From {item.supplier}</span>
                   </div>
                 </div>
                 <div className="expenseDetails">
