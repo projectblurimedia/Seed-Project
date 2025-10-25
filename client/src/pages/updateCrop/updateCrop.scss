@@ -20,7 +20,7 @@
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1.5rem;
     box-sizing: border-box;
 
     .formHeader {
@@ -30,6 +30,7 @@
       position: relative;
       border-bottom: 2px solid #f1f5f9;
       margin-bottom: 0.5rem;
+      padding-bottom: 1rem;
 
       h2 {
         font-size: 1.3rem;
@@ -65,36 +66,107 @@
     form {
       display: flex;
       flex-direction: column;
-      gap: 1.2rem;
+      gap: 1.5rem;
       width: 100%;
 
       .section {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
         background: white;
         border-radius: 12px;
         border: 2px solid #f1f5f9;
+        overflow: hidden;
 
-        .addSectionBtn {
-          background: linear-gradient(90deg, #4c87b8, #1f72b2);
-          color: white;
+        &.open {
+          padding: 0;
+        }
+
+        &.closed {
+          padding: 0;
           border: none;
-          border-radius: 8px;
-          padding: .6rem 1rem;
-          font-size: 1rem;
-          font-weight: 600;
+
+          .sectionHeader {
+            margin: 0;
+            border-radius: 12px;
+            border: 2px solid #f1f5f9;
+          }
+        }
+
+        &.pesticides-section {
+          border-color: #d1fae5;
+
+          .sectionHeader {
+            background: #ecfdf5;
+            color: #059669;
+
+            h3 {
+              color: #059669;
+            }
+          }
+
+          .entryCard {
+            border-color: #d1fae5;
+          }
+        }
+
+        &.coolies-section {
+          border-color: #ffedd5;
+
+          .sectionHeader {
+            background: #fff7ed;
+            color: #d97706;
+
+            h3 {
+              color: #d97706;
+            }
+          }
+
+          .entryCard {
+            border-color: #ffedd5;
+          }
+        }
+
+        &.payments-section {
+          border-color: #dbeafe;
+
+          .sectionHeader {
+            background: #eff6ff;
+            color: #3b82f6;
+
+            h3 {
+              color: #3b82f6;
+            }
+          }
+
+          .entryCard {
+            border-color: #dbeafe;
+          }
+        }
+
+        .sectionHeader {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem 1.2rem;
           cursor: pointer;
           transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
+          border-radius: 8px;
+          margin: 0;
 
           &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            background: #f1f5f9;
+          }
+
+          h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+          }
+
+          .sectionToggleIcon {
+            color: #64748b;
+            transition: transform 0.3s ease;
+            font-size: 0.9rem;
           }
         }
 
@@ -102,37 +174,378 @@
           display: flex;
           flex-direction: column;
           gap: 1rem;
+          padding: 1.2rem;
 
-          .sectionHeader {
+          .sectionActions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-
-            h3 {
-              font-size: 1.1rem;
-              font-weight: 600;
-              color: #0274d1;
-              margin: 0;
-            }
+            justify-content: center;
+            margin-top: 0.5rem;
 
             .addEntryBtn {
               background: #0274d1;
               color: white;
               border: none;
               border-radius: 6px;
-              padding: 0.5rem 1rem;
-              font-size: 0.9rem;
+              padding: 0.6rem 1.2rem;
+              font-size: 0.95rem;
               font-weight: 500;
               cursor: pointer;
               transition: all 0.3s ease;
               display: flex;
               align-items: center;
-              gap: 0.3rem;
+              gap: 0.4rem;
 
               &:hover {
                 background: #005fa3;
                 transform: scale(1.05);
+              }
+            }
+          }
+
+          .entryCard {
+            background: #f6fafd;
+            border-radius: 8px;
+            border: 2px solid #ecf1f7;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+
+            &.closed {
+              padding-bottom: 0;
+              margin-bottom: 0;
+
+              .entryHeader {
+                margin-bottom: 0;
+                border-bottom: none;
+              }
+
+              .entryContent {
+                display: none;
+              }
+            }
+
+            &:nth-child(odd) {
+              background: #f9fafb;
+            }
+
+            &:nth-child(even) {
+              background: #ffffff;
+            }
+
+            .entryHeader {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 0.8rem 1rem;
+              background: white;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              border-bottom: 2px solid #ecf1f7;
+              margin: 0;
+
+              &:hover {
+                background: #f8fafc;
+              }
+
+              .entryTitle {
+                font-weight: 600;
+                color: #334155;
+                font-size: 0.95rem;
+              }
+
+              .entryToggleIcon {
+                color: #64748b;
+                transition: transform 0.3s ease;
+                font-size: 0.8rem;
+              }
+            }
+
+            .entryContent {
+              padding: 1rem;
+              background: #fafcfd;
+
+              .inputRow {
+                display: flex;
+                gap: 1.2rem;
+                margin-bottom: 1.2rem;
+
+                &:last-of-type {
+                  margin-bottom: 0;
+                }
+
+                .inputGroup {
+                  flex: 1;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.5rem;
+
+                  &.deleteGroup {
+                    display: flex;
+                    align-items: flex-end;
+
+                    .removeBtn {
+                      background: #dc3545;
+                      color: white;
+                      border: none;
+                      border-radius: 6px;
+                      padding: 0.7rem 1rem;
+                      font-size: 0.9rem;
+                      cursor: pointer;
+                      transition: all 0.3s ease;
+                      display: flex;
+                      align-items: center;
+                      gap: 0.4rem;
+                      width: 100%;
+                      justify-content: center;
+
+                      &:hover {
+                        background: #9e0e1d;
+                        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+                      }
+                    }
+                  }
+
+                  label {
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    color: #333;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    height: 1.2rem;
+                  }
+
+                  input {
+                    padding: 0.8rem;
+                    border: 2px solid #e2e8f0;
+                    border-radius: 8px;
+                    font-size: 0.9rem;
+                    transition: all 0.3s ease;
+                    background: white;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 46px;
+
+                    &:focus {
+                      outline: none;
+                      border-color: #0274d1;
+                      box-shadow: 0 0 0 3px rgba(2, 116, 209, 0.1);
+                    }
+
+                    &::placeholder {
+                      color: #94a3b8;
+                    }
+
+                    &[type="date"] {
+                      padding-right: 2.5rem;
+                    }
+
+                    &.number-input {
+                      &::-webkit-outer-spin-button,
+                      &::-webkit-inner-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                      }
+                      
+                      -moz-appearance: textfield;
+                      appearance: textfield;
+                    }
+                  }
+
+                  .dateInputContainer {
+                    position: relative;
+                    width: 100%;
+
+                    input {
+                      width: 100%;
+                    }
+
+                    .calendarIcon {
+                      position: absolute;
+                      right: 0.8rem;
+                      top: 50%;
+                      transform: translateY(-50%);
+                      color: #64748b;
+                      pointer-events: none;
+                    }
+                  }
+
+                  .dropdownContainer {
+                    position: relative;
+                    width: 100%;
+
+                    .customSelect {
+                      position: relative;
+                      background: white;
+                      border: 2px solid #e2e8f0;
+                      border-radius: 8px;
+                      padding: 0.8rem;
+                      cursor: pointer;
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                      transition: all 0.3s ease;
+                      min-height: 46px;
+                      width: 100%;
+                      box-sizing: border-box;
+
+                      &:hover {
+                        border-color: #cbd5e1;
+                      }
+
+                      .selectedValue {
+                        font-size: .9rem;
+                        color: #334155;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        flex: 1;
+                        font-weight: 600;
+                        
+                        &.placeholder {
+                          font-weight: 500;
+                          color: #94a3b8;
+                        }
+                      }
+
+                      .dropdownIcon {
+                        color: #64748b;
+                        transition: transform 0.3s ease;
+                        font-size: 0.9rem;
+                        flex-shrink: 0;
+                        margin-left: 0.5rem;
+
+                        &.open {
+                          transform: rotate(180deg);
+                        }
+                      }
+                    }
+
+                    .dropdownMenu {
+                      position: absolute;
+                      top: 100%;
+                      left: 0;
+                      right: 0;
+                      background: white;
+                      border: 2px solid #e2e8f0;
+                      border-radius: 8px;
+                      margin-top: 4px;
+                      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                      z-index: 1000;
+                      max-height: 200px;
+                      overflow-y: auto;
+                      font-weight: 600;
+                      color: #334155;
+
+                      &::-webkit-scrollbar {
+                        width: 6px;
+                      }
+
+                      &::-webkit-scrollbar-track {
+                        background: #f1f5f9;
+                        border-radius: 3px;
+                      }
+
+                      &::-webkit-scrollbar-thumb {
+                        background: #cbd5e1;
+                        border-radius: 3px;
+                      }
+
+                      &::-webkit-scrollbar-thumb:hover {
+                        background: #94a3b8;
+                      }
+
+                      .dropdownItem {
+                        padding: 0.8rem 1rem;
+                        cursor: pointer;
+                        border-bottom: 1px solid #f1f5f9;
+                        transition: all 0.2s ease;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        font-size: 0.95rem;
+
+                        &:last-child {
+                          border-bottom: none;
+                        }
+
+                        &:hover {
+                          background: #f8fafc;
+                        }
+
+                        &.selected {
+                          background: #e6f2ff;
+                          color: #0274d1;
+                          font-weight: 600;
+                        }
+
+                        &.customOption {
+                          color: #0274d1;
+                          font-weight: 600;
+                          border-top: 2px solid #f1f5f9;
+
+                          &:hover {
+                            background: #e6f2ff;
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                  .customInputRow {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    width: 100%;
+
+                    input {
+                      width: 100%;
+                    }
+
+                    .customButtons {
+                      display: flex;
+                      gap: 0.5rem;
+                      width: 100%;
+
+                      button {
+                        border: none;
+                        border-radius: 8px;
+                        padding: 0.6rem 0.8rem;
+                        font-size: 0.85rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 0.3rem;
+                        flex: 1;
+                        white-space: nowrap;
+                      }
+
+                      .addBtn {
+                        background: #0274d1;
+                        color: #fff;
+
+                        &:hover {
+                          background: #005fa3;
+                          transform: scale(1.03);
+                        }
+                      }
+
+                      .cancelBtn {
+                        background: #f8d7da;
+                        color: #c82333;
+
+                        &:hover {
+                          background: #dc3545;
+                          color: #fff;
+                          transform: scale(1.03);
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -141,7 +554,7 @@
 
       .inputRow {
         display: flex;
-        gap: 1rem;
+        gap: 1.2rem;
         width: 100%;
         box-sizing: border-box;
         align-items: flex-start;
@@ -150,20 +563,8 @@
           flex: 1;
           display: flex;
           flex-direction: column;
-          gap: 0.4rem;
+          gap: 0.5rem;
           min-width: 0;
-
-          // Pesticide dropdown gets more space
-          &.pesticideDropdown {
-            flex: 1.2;
-          }
-
-          &.deleteGroup {
-            flex: 0.3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
 
           label {
             font-weight: 600;
@@ -199,74 +600,26 @@
             &[type="date"] {
               padding-right: 2.5rem;
             }
-          }
 
-          .daysDropdown, .paymentMethodDropdown {
-            padding: 0.8rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            background: white;
-            width: 100%;
-            box-sizing: border-box;
-            min-height: 46px;
-            cursor: pointer;
-            appearance: none;
-            font-weight: 600;
-            color: #334155;
-
-            &:focus {
-              outline: none;
-              border-color: #0274d1;
-              box-shadow: 0 0 0 3px rgba(2, 116, 209, 0.1);
-            }
-
-            option {
-              padding: 0.8rem;
-              font-size: 0.9rem;
-              font-weight: 600;
-              color: #334155;
-              background: white;
-              border: none;
-
-              &:hover {
-                background: #f8fafc;
+            &.number-input {
+              &::-webkit-outer-spin-button,
+              &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
               }
-
-              &:checked {
-                background: #e6f2ff;
-                color: #0274d1;
-              }
-            }
-          }
-
-          .removeBtn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 0.8rem;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            min-height: 46px;
-            margin-top: 0;
-
-            &:hover {
-              background: #c82333;
-              transform: scale(1.05);
-              box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+              
+              -moz-appearance: textfield;
+              appearance: textfield;
             }
           }
 
           .dateInputContainer {
             position: relative;
             width: 100%;
+
+            input {
+              width: 100%;
+            }
 
             .calendarIcon {
               position: absolute;
@@ -456,74 +809,6 @@
         }
       }
 
-      // Specific styles for different entry types
-      .pesticideEntry, .coolieEntry, .paymentEntry {
-        background: #f6fafd;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        margin-bottom: 0.8rem;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-
-        .inputRow {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-          margin-bottom: 1rem;
-
-          // First two items in one row
-          .inputGroup:nth-child(-n+2) {
-            flex: 1;
-            min-width: calc(50% - 0.5rem);
-          }
-
-          // Next three items in one row
-          .inputGroup:nth-child(n+3):nth-child(-n+5) {
-            flex: 1;
-            min-width: calc(33.333% - 0.67rem);
-          }
-
-          // Delete button gets fixed width
-          .inputGroup.deleteGroup {
-            margin-top: -20px;
-            grid-column: 1 / -1;
-            margin-left: 50%;
-            transform: translateX(-50%);
-          }
-        }
-      }
-
-      // Specific adjustments for each section
-      .pesticideEntry .inputRow {
-        .inputGroup:nth-child(-n+2) {
-          min-width: calc(50% - 0.5rem);
-        }
-        .inputGroup:nth-child(n+3):nth-child(-n+5) {
-          min-width: calc(33.333% - 0.67rem);
-        }
-      }
-
-      .coolieEntry .inputRow {
-        .inputGroup:nth-child(-n+2) {
-          min-width: calc(50% - 0.5rem);
-        }
-        .inputGroup:nth-child(n+3):nth-child(-n+5) {
-          min-width: calc(33.333% - 0.67rem);
-        }
-      }
-
-      .paymentEntry .inputRow {
-        .inputGroup:nth-child(-n+2) {
-          min-width: calc(50% - 0.5rem);
-        }
-        .inputGroup:nth-child(n+3):nth-child(-n+5) {
-          min-width: calc(33.333% - 0.67rem);
-        }
-      }
-
       .updateBtn {
         background: linear-gradient(90deg, #0274d1, #1a9afb);
         color: #fff;
@@ -534,7 +819,7 @@
         font-size: 1rem;
         cursor: pointer;
         transition: all 0.3s ease;
-        margin-top: 1rem;
+        margin-top: 1.5rem;
         width: 100%;
 
         &:hover {
@@ -552,6 +837,7 @@
       padding: 1.2rem;
       max-width: 100%;
       border-radius: 12px;
+      gap: 1.2rem;
 
       .formHeader {
         h2 {
@@ -560,31 +846,23 @@
       }
 
       form {
-        gap: 1rem;
+        gap: 1.2rem;
 
         .section {
-          padding: 0.8rem;
-
-          .dynamicSection {
-            .sectionHeader {
-              .addEntryBtn {
-                align-self: flex-start;
-              }
+          &.open {
+            .dynamicSection {
+              padding: 1rem;
             }
           }
         }
 
         .inputRow {
           flex-direction: column;
-          gap: 0.8rem;
+          gap: 1rem;
 
           .inputGroup {
             width: 100%;
             flex: 1 !important;
-
-            &.pesticideDropdown {
-              flex: 1 !important;
-            }
 
             &.deleteGroup {
               flex: 1 !important;
@@ -598,31 +876,13 @@
           }
         }
 
-        .pesticideEntry, .coolieEntry, .paymentEntry {
-          .inputRow {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.8rem;
-            
-            .inputGroup {
-              margin-bottom: 0;
-              
-              // First two items in first row
-              &:nth-child(-n+2) {
-                grid-column: span 1;
-              }
-              
-              // Next three items in second row
-              &:nth-child(n+3):nth-child(-n+5) {
-                grid-column: span 1;
-              }
-              
-              // Delete button spans full width below
-              &.deleteGroup {
-                grid-column: 1 / -1;
-                margin-left: 100%;
-                transform: translateX(-50%);
-              }
+        .entryCard {
+          .entryContent {
+            padding: 0.8rem;
+
+            .inputRow {
+              flex-direction: column;
+              gap: 1rem;
             }
           }
         }
@@ -636,7 +896,7 @@
         }
 
         .updateBtn {
-          margin-top: 0.8rem;
+          margin-top: 1rem;
         }
       }
     }
@@ -647,29 +907,19 @@
       padding: 1rem;
 
       form {
-        .pesticideEntry, .coolieEntry, .paymentEntry {
-          .inputRow {
-            grid-template-columns: 1fr;
-            
-            .inputGroup {
-              grid-column: 1 !important;
-              
-              &.deleteGroup {
-                grid-column: 1 !important;
-                margin-left: 50%;
-                transform: translateX(-50%);
-              }
-            }
-          }
-        }
+        .entryCard {
+          .entryContent {
+            padding: 0.6rem;
 
-        .inputRow{
-          .inputGroup {
-            .customInputRow {
-              .customButtons {
-                button {
-                  padding: 0.5rem 0.7rem;
-                  font-size: 0.8rem;
+            .inputRow {
+              .inputGroup {
+                .customInputRow {
+                  .customButtons {
+                    button {
+                      padding: 0.5rem 0.7rem;
+                      font-size: 0.8rem;
+                    }
+                  }
                 }
               }
             }
