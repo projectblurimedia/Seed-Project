@@ -75,7 +75,6 @@
         background: white;
         border-radius: 12px;
         border: 2px solid #f1f5f9;
-        overflow: hidden;
 
         &.open {
           padding: 0;
@@ -206,7 +205,6 @@
             background: #f6fafd;
             border-radius: 8px;
             border: 2px solid #ecf1f7;
-            overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             transition: all 0.3s ease;
 
