@@ -1,21 +1,57 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './updateFarmer.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import axios from 'axios'
 
 export const UpdateFarmer = () => {
   const navigate = useNavigate()
+  const { aadhar } = useParams()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  // Static sample data (to simulate an existing farmer record)
   const [form, setForm] = useState({
-    firstName: 'Ravi',
-    lastName: 'Patel',
-    aadhar: '123456789012',
-    mobile: '9876543210',
-    account: '1234567890',
-    village: 'Shantipur',
+    firstName: '',
+    lastName: '',
+    aadhar: '',
+    mobile: '',
+    bankAccountNumber: '',
+    village: '',
   })
+
+  // Fetch farmer details on component mount
+  useEffect(() => {
+    const fetchFarmerDetails = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        // Fetch farmer details by Aadhar
+        const response = await axios.get(`/farmers/${aadhar}`)
+        const farmerData = response.data
+        
+        setForm({
+          firstName: farmerData.firstName || '',
+          lastName: farmerData.lastName || '',
+          aadhar: farmerData.aadhar || '',
+          mobile: farmerData.mobile || '',
+          bankAccountNumber: farmerData.bankAccountNumber || '',
+          village: farmerData.village || '',
+        })
+        
+      } catch (err) {
+        console.error('Error fetching farmer details:', err)
+        setError('Failed to load farmer details. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (aadhar) {
+      fetchFarmerDetails()
+    }
+  }, [aadhar])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -27,13 +63,57 @@ export const UpdateFarmer = () => {
   }
 
   const handleUndo = () => {
-    navigate('/')
+    navigate(-1)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    alert('Farmer details updated successfully!')
-    navigate('/')
+    
+    try {
+      setLoading(true)
+      
+      await axios.put(`/farmers/${aadhar}`, form)
+      
+      alert('Farmer details updated successfully!')
+      navigate(`/farmers/${aadhar}`)
+      
+    } catch (err) {
+      console.error('Error updating farmer:', err)
+      alert('Error updating farmer details. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="updateFarmerContainer">
+        <div className="loadingState">
+          <div className="spinner"></div>
+          <p>Loading farmer details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div className="updateFarmerContainer">
+        <div className="errorState">
+          <div className="errorIcon">⚠️</div>
+          <h3>Unable to Load Farmer Details</h3>
+          <p>{error}</p>
+          <button className="retryBtn" onClick={() => window.location.reload()}>
+            Try Again
+          </button>
+          <button className="backBtn" onClick={handleUndo}>
+            Go Back
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -105,8 +185,8 @@ export const UpdateFarmer = () => {
               <label>Account Number</label>
               <input
                 type="text"
-                name="account"
-                value={form.account}
+                name="bankAccountNumber"
+                value={form.bankAccountNumber}
                 onChange={handleChange}
                 required
               />
@@ -124,8 +204,8 @@ export const UpdateFarmer = () => {
             </div>
           </div>
 
-          <button type="submit" className="updateBtn">
-            Update Farmer
+          <button type="submit" className="updateBtn" disabled={loading}>
+            {loading ? 'Updating...' : 'Update Farmer'}
           </button>
         </form>
       </div>

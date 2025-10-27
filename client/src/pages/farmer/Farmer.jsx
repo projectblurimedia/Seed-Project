@@ -1,32 +1,105 @@
 import './farmer.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft, faUser, faIdCard, faPhone, faMapMarkerAlt, faRupeeSign, faEdit, faCalendar, faSeedling, faTractor } from '@fortawesome/free-solid-svg-icons'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 export const Farmer = () => {
   const navigate = useNavigate()
+  const { aadhar } = useParams()
+  const [farmerData, setFarmerData] = useState(null)
+  const [cropsData, setCropsData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const farmerData = {
-    id: 'FARM001',
-    firstName: 'Rajesh',
-    lastName: 'Kumar',
-    aadhar: '1234 5678 9012',
-    mobile: '+91 98765 43210',
-    account: '12345678901234',
-    village: 'Mohanpur',
-    totalCrops: 3,
-    totalLand: 12.5,
-    totalEarnings: 125000,
-    joinDate: '2023-01-15',
-    status: 'Active'
-  }
+  useEffect(() => {
+    const fetchFarmerDetails = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        // Fetch farmer details
+        const farmerResponse = await axios.get(`/farmers/${aadhar}`)
+        setFarmerData(farmerResponse.data)
+        
+        const cropsResponse = await axios.get(`/crops/farmer/${aadhar}`)
+        setCropsData(cropsResponse.data)
+        
+      } catch (err) {
+        console.error('Error fetching data:', err)
+        setError('Failed to load farmer details. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (aadhar) {
+      fetchFarmerDetails()
+    }
+  }, [aadhar])
 
   const handleBack = () => navigate(-1)
-  const handleEdit = () => navigate(`/update-farmer/${farmerData.aadhar}`)
+  const handleEdit = () => navigate(`/update-farmer/${aadhar}`)
+
+  const handleNavigateToCrop = (id) => {
+    navigate(`/crops/${id}`)
+  }
 
   const getInitials = (firstName, lastName) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
   }
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    })
+  }
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(amount)
+  }
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="farmerDetailContainer">
+        <div className="loadingState">
+          <div className="spinner"></div>
+          <p>Loading farmer details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div className="farmerDetailContainer">
+        <div className="errorState">
+          <div className="errorIcon">⚠️</div>
+          <h3>Unable to Load Farmer Details</h3>
+          <p>{error}</p>
+          <button className="retryBtn" onClick={() => window.location.reload()}>
+            Try Again
+          </button>
+          <button className="backBtn" onClick={handleBack}>
+            Go Back
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Calculate totals from crops data
+  const totalCrops = cropsData?.length
+  const totalLand = cropsData?.reduce((sum, crop) => sum + (crop.acres || 0), 0)
 
   return (
     <div className="farmerDetailContainer">
@@ -52,12 +125,12 @@ export const Farmer = () => {
             <div className="profileInfo">
               <h2>{farmerData.firstName} {farmerData.lastName}</h2>
               <div className="profileMeta">
-                <span className={`statusBadge ${farmerData.status.toLowerCase()}`}>
-                  {farmerData.status}
+                <span className={`statusBadge ${farmerData.status?.toLowerCase() || 'active'}`}>
+                  {farmerData.status || 'Active'}
                 </span>
                 <span className="joinDate">
                   <FontAwesomeIcon icon={faCalendar} />
-                  Joined {new Date(farmerData.joinDate).toLocaleDateString('en-IN')}
+                  Joined {farmerData.createdAt ? formatDate(farmerData.createdAt) : 'N/A'}
                 </span>
               </div>
             </div>
@@ -70,7 +143,7 @@ export const Farmer = () => {
                 <FontAwesomeIcon icon={faSeedling} />
               </div>
               <div className="circleInfo">
-                <h3>{farmerData.totalCrops}</h3>
+                <h3>{totalCrops}</h3>
                 <p>Total Crops</p>
               </div>
             </div>
@@ -79,7 +152,7 @@ export const Farmer = () => {
                 <FontAwesomeIcon icon={faTractor} />
               </div>
               <div className="circleInfo">
-                <h3>{farmerData.totalLand}</h3>
+                <h3>{totalLand?.toFixed(1)}</h3>
                 <p>Land Area</p>
               </div>
             </div>
@@ -115,7 +188,7 @@ export const Farmer = () => {
               <div className="cardContent">
                 <div className="infoField">
                   <label>Mobile Number</label>
-                  <p>{farmerData.mobile}</p>
+                  <p>{farmerData.mobile || 'N/A'}</p>
                 </div>
               </div>
             </div>
@@ -130,7 +203,7 @@ export const Farmer = () => {
               <div className="cardContent">
                 <div className="infoField">
                   <label>Account Number</label>
-                  <p>{farmerData.account}</p>
+                  <p>{farmerData.bankAccountNumber || 'N/A'}</p>
                 </div>
               </div>
             </div>
@@ -145,7 +218,7 @@ export const Farmer = () => {
               <div className="cardContent">
                 <div className="infoField">
                   <label>Location</label>
-                  <p>{farmerData.village}</p>
+                  <p>{farmerData.village || 'N/A'}</p>
                 </div>
               </div>
             </div>
@@ -157,73 +230,46 @@ export const Farmer = () => {
           <div className="sectionHeader">
             <h3>Recent Crops</h3>
           </div>
-          <div className="cropsGrid">
-            <div className="cropCard">
-              <div className="cropHeader">
-                <div className="cropIcon">🌽</div>
-                <div className="cropStatus active">Active</div>
-              </div>
-              <div className="cropInfo">
-                <h4>Babycorn - Season 1</h4>
-                <p>Planted on 15 Mar 2024</p>
-              </div>
-              <div className="cropStats">
-                <div className="cropStat">
-                  <span className="statLabel">Area</span>
-                  <span className="statValue">5.5 acres</span>
-                </div>
-                <div className="cropStat">
-                  <span className="statLabel">Yield</span>
-                  <span className="statValue">2.5 ton</span>
-                </div>
-              </div>
-              <div className="cropEarnings">₹25,000</div>
+          {cropsData?.length === 0 ? (
+            <div className="noCropsMessage">
+              <p>No crops found for this farmer.</p>
             </div>
-
-            <div className="cropCard">
-              <div className="cropHeader">
-                <div className="cropIcon">🌽</div>
-                <div className="cropStatus completed">Completed</div>
-              </div>
-              <div className="cropInfo">
-                <h4>Babycorn - Season 2</h4>
-                <p>Harvested on 20 Sep 2024</p>
-              </div>
-              <div className="cropStats">
-                <div className="cropStat">
-                  <span className="statLabel">Area</span>
-                  <span className="statValue">4.0 acres</span>
+          ) : (
+            <div className="cropsGrid">
+              {cropsData?.map((crop, index) => (
+                <div key={crop._id || index} className="cropCard" onClick={() => handleNavigateToCrop(crop._id)}>
+                  <div className="cropHeader">
+                    <div className="cropIcon">🌽</div>
+                    <div className={`cropStatus ${crop.status?.toLowerCase() || 'active'}`}>
+                      {crop.status || 'Active'}
+                    </div>
+                  </div>
+                  <div className="cropInfo">
+                    <h4>{crop.seedType} - Season {index + 1}</h4>
+                    <p>
+                      {crop.sowingDateMale 
+                        ? `Planted on ${formatDate(crop.sowingDateMale)}`
+                        : 'Planting date not available'
+                      }
+                    </p>
+                  </div>
+                  <div className="cropStats">
+                    <div className="cropStat">
+                      <span className="statLabel">Area</span>
+                      <span className="statValue">{crop.acres || 0} acres</span>
+                    </div>
+                    <div className="cropStat">
+                      <span className="statLabel">Yield</span>
+                      <span className="statValue">{crop.yield || 0} kg</span>
+                    </div>
+                  </div>
+                  <div className="cropEarnings">
+                    {formatCurrency(crop.totalIncome || 0)}
+                  </div>
                 </div>
-                <div className="cropStat">
-                  <span className="statLabel">Yield</span>
-                  <span className="statValue">1.8 ton</span>
-                </div>
-              </div>
-              <div className="cropEarnings">₹18,000</div>
+              ))}
             </div>
-
-            <div className="cropCard">
-              <div className="cropHeader">
-                <div className="cropIcon">🌾</div>
-                <div className="cropStatus completed">Completed</div>
-              </div>
-              <div className="cropInfo">
-                <h4>Wheat - Winter</h4>
-                <p>Harvested on 10 Mar 2024</p>
-              </div>
-              <div className="cropStats">
-                <div className="cropStat">
-                  <span className="statLabel">Area</span>
-                  <span className="statValue">3.0 acres</span>
-                </div>
-                <div className="cropStat">
-                  <span className="statLabel">Yield</span>
-                  <span className="statValue">1.2 ton</span>
-                </div>
-              </div>
-              <div className="cropEarnings">₹32,000</div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,68 +1,63 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft, faSeedling, faMapMarkerAlt, faRupeeSign, faWeight, faEdit, faUsers, faSprayCanSparkles, faCalendar, faUser, faMobileAlt, faCreditCard, faHandHoldingUsd, faIndianRupeeSign } from '@fortawesome/free-solid-svg-icons'
 import './crop.scss'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 export const Crop = () => {
   const navigate = useNavigate()
+  const { id } = useParams()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [cropData, setCropData] = useState(null)
 
-  // Static crop data
-  const cropData = {
-    id: 'CROP001',
-    seedType: 'Babycorn Seed',
-    region: 'Jangareddygudem',
-    acres: 5.5,
-    malePackets: 25,
-    femalePackets: 30,
-    sowingDateMale: '2024-03-15',
-    sowingDateFemale: '2024-03-20',
-    firstDetachingDate: '2024-04-10',
-    secondDetachingDate: '2024-04-25',
-    harvestingDate: '2024-06-15',
-    totalPayment: 25000,
-    yield: 1200,
-    status: 'Harvested',
-    farmerName: 'Rajesh Kumar',
-    farmerMobile: '+91 98765 43210'
-  }
+  // Fetch crop details by ID
+  useEffect(() => {
+    const fetchCropDetails = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        // Fetch crop details by ID
+        const response = await axios.get(`/crops/${id}`)
+        setCropData(response.data)
+        
+      } catch (err) {
+        console.error('Error fetching crop details:', err)
+        setError('Failed to load crop details. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const pesticideData = [
-    { name: 'Urea Fertilizer', quantity: '50 kg', amount: 1500, date: '2024-03-25' },
-    { name: 'DAP Fertilizer', quantity: '25 kg', amount: 2000, date: '2024-04-05' },
-    { name: 'Organic Manure', quantity: '100 kg', amount: 3000, date: '2024-03-20' },
-    { name: 'Pesticide Spray', quantity: '5 liters', amount: 1200, date: '2024-04-15' }
-  ]
+    if (id) {
+      fetchCropDetails()
+    }
+  }, [id])
 
-  const coolieData = [
-    { count: 5, amount: 2500, work: 'Field Preparation', date: '2024-03-10', duration: '2 days' },
-    { count: 3, amount: 1500, work: 'Sowing Work', date: '2024-03-15', duration: '1 day' },
-    { count: 4, amount: 2000, work: 'Weeding & Maintenance', date: '2024-04-20', duration: '2 days' },
-    { count: 6, amount: 3000, work: 'Harvesting Labor', date: '2024-06-15', duration: '1 day' }
-  ]
-
-  const paymentData = [
-    { amount: 10000, date: '2024-03-15', purpose: 'Advance Payment', method: 'Cash' },
-    { amount: 8000, date: '2024-05-20', purpose: 'Progress Payment', method: 'PhonePe' },
-    { amount: 7000, date: '2024-06-20', purpose: 'Final Settlement', method: 'Bank Transfer' }
-  ]
-
-  const handleBack = () => navigate(-1)
-  const handleEdit = () => navigate(`/update-crop/${cropData.id}`)
+  const handleBack = () => navigate('/')
+  const handleEdit = () => navigate(`/update-crop/${id}`)
 
   const getInitials = (fullName) => {
+    if (!fullName) return 'NA'
     return fullName.split(' ').map(name => name.charAt(0)).join('').toUpperCase()
   }
 
+  // Calculate totals from crop data
   const calculateTotalPesticides = () => {
-    return pesticideData.reduce((total, item) => total + item.amount, 0)
+    if (!cropData?.pesticideEntries) return 0
+    return cropData.pesticideEntries.reduce((total, item) => total + (item.amount || 0), 0)
   }
 
   const calculateTotalCoolies = () => {
-    return coolieData.reduce((total, item) => total + item.amount, 0)
+    if (!cropData?.coolieEntries) return 0
+    return cropData.coolieEntries.reduce((total, item) => total + (item.amount || 0), 0)
   }
 
   const calculateTotalPayments = () => {
-    return paymentData.reduce((total, item) => total + item.amount, 0)
+    if (!cropData?.paymentEntries) return 0
+    return cropData.paymentEntries.reduce((total, item) => total + (item.amount || 0), 0)
   }
 
   const calculateTotalExpenses = () => {
@@ -87,6 +82,58 @@ export const Crop = () => {
     }
   }
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A'
+    return new Date(dateString).toLocaleDateString('en-IN')
+  }
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="cropDetailContainer">
+        <div className="loadingState">
+          <div className="spinner"></div>
+          <p>Loading crop details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div className="cropDetailContainer">
+        <div className="errorState">
+          <div className="errorIcon">⚠️</div>
+          <h3>Unable to Load Crop Details</h3>
+          <p>{error}</p>
+          <button className="retryBtn" onClick={() => window.location.reload()}>
+            Try Again
+          </button>
+          <button className="backBtn" onClick={handleBack}>
+            Go Back
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // If no crop data found
+  if (!cropData) {
+    return (
+      <div className="cropDetailContainer">
+        <div className="errorState">
+          <div className="errorIcon">❌</div>
+          <h3>Crop Not Found</h3>
+          <p>The requested crop details could not be found.</p>
+          <button className="backBtn" onClick={handleBack}>
+            Go Back
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="cropDetailContainer">
       <div className="detailCard">
@@ -109,14 +156,14 @@ export const Crop = () => {
               <FontAwesomeIcon icon={faSeedling} />
             </div>
             <div className="cropInfo">
-              <h2>{cropData.seedType}</h2>
+              <h2>{cropData.seedType || 'N/A'}</h2>
               <div className="cropMeta">
-                <span className={`statusBadge ${cropData.status.toLowerCase()}`}>
-                  {cropData.status}
+                <span className={`statusBadge ${cropData.status?.toLowerCase() || 'active'}`}>
+                  {cropData.status || 'Active'}
                 </span>
                 <span className="region">
                   <FontAwesomeIcon icon={faMapMarkerAlt} />
-                  {cropData.region}
+                  {cropData.region || 'N/A'}
                 </span>
               </div>
             </div>
@@ -125,14 +172,14 @@ export const Crop = () => {
           <div className="farmerProfile">
             <div className="profileMain">
               <div className="avatar">
-                {getInitials(cropData.farmerName)}
+                {getInitials(cropData.farmerDetails?.firstName + ' ' + cropData.farmerDetails?.lastName)}
               </div>
               <div className="profileInfo">
-                <h3>{cropData.farmerName}</h3>
+                <h3>{cropData.farmerDetails?.firstName} {cropData.farmerDetails?.lastName}</h3>
                 <div className="profileMeta">
                   <span className="mobile">
                     <FontAwesomeIcon icon={faUser} />
-                    {cropData.farmerMobile}
+                    {cropData.farmerDetails?.mobile || 'N/A'}
                   </span>
                 </div>
               </div>
@@ -147,7 +194,7 @@ export const Crop = () => {
               <FontAwesomeIcon icon={faMapMarkerAlt} />
             </div>
             <div className="metricContent">
-              <h3>{cropData.acres}</h3>
+              <h3>{cropData.acres || 0}</h3>
               <p>Land Area</p>
             </div>
           </div>
@@ -156,7 +203,7 @@ export const Crop = () => {
               <FontAwesomeIcon icon={faWeight} />
             </div>
             <div className="metricContent">
-              <h3>{cropData.yield}</h3>
+              <h3>{cropData.yield || 0}</h3>
               <p>Total Yield</p>
             </div>
           </div>
@@ -165,8 +212,8 @@ export const Crop = () => {
               <FontAwesomeIcon icon={faRupeeSign} />
             </div>
             <div className="metricContent">
-              <h3>₹{(cropData.totalPayment/1000).toFixed(0)}K</h3>
-              <p>Total Payment</p>
+              <h3>₹{((cropData.totalIncome || 0)/1000).toFixed(0)}K</h3>
+              <p>Total Income</p>
             </div>
           </div>
           <div className="metricCard">
@@ -192,7 +239,7 @@ export const Crop = () => {
                 <h4>Male Packets</h4>
               </div>
               <div className="cardContent">
-                <div className="packetCount">{cropData.malePackets}</div>
+                <div className="packetCount">{cropData.malePackets || 0}</div>
                 <p>Packets</p>
               </div>
             </div>
@@ -205,7 +252,7 @@ export const Crop = () => {
                 <h4>Female Packets</h4>
               </div>
               <div className="cardContent">
-                <div className="packetCount">{cropData.femalePackets}</div>
+                <div className="packetCount">{cropData.femalePackets || 0}</div>
                 <p>Packets</p>
               </div>
             </div>
@@ -218,7 +265,7 @@ export const Crop = () => {
                 <h4>Total Packets</h4>
               </div>
               <div className="cardContent">
-                <div className="packetCount">{cropData.malePackets + cropData.femalePackets}</div>
+                <div className="packetCount">{(cropData.malePackets || 0) + (cropData.femalePackets || 0)}</div>
                 <p>Packets</p>
               </div>
             </div>
@@ -233,132 +280,138 @@ export const Crop = () => {
               <div className="timelineDot male"></div>
               <div className="timelineContent">
                 <h4>Male Sowing</h4>
-                <p>{new Date(cropData.sowingDateMale).toLocaleDateString('en-IN')}</p>
+                <p>{formatDate(cropData.sowingDateMale)}</p>
               </div>
             </div>
             <div className="timelineItem">
               <div className="timelineDot female"></div>
               <div className="timelineContent">
                 <h4>Female Sowing</h4>
-                <p>{new Date(cropData.sowingDateFemale).toLocaleDateString('en-IN')}</p>
+                <p>{formatDate(cropData.sowingDateFemale)}</p>
               </div>
             </div>
             <div className="timelineItem">
               <div className="timelineDot detach"></div>
               <div className="timelineContent">
                 <h4>First Detaching</h4>
-                <p>{new Date(cropData.firstDetachingDate).toLocaleDateString('en-IN')}</p>
+                <p>{formatDate(cropData.firstDetachingDate)}</p>
               </div>
             </div>
             <div className="timelineItem">
               <div className="timelineDot detach"></div>
               <div className="timelineContent">
                 <h4>Second Detaching</h4>
-                <p>{new Date(cropData.secondDetachingDate).toLocaleDateString('en-IN')}</p>
+                <p>{formatDate(cropData.secondDetachingDate)}</p>
               </div>
             </div>
             <div className="timelineItem">
               <div className="timelineDot harvest"></div>
               <div className="timelineContent">
                 <h4>Harvesting</h4>
-                <p>{new Date(cropData.harvestingDate).toLocaleDateString('en-IN')}</p>
+                <p>{formatDate(cropData.harvestingDate)}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Pesticides & Fertilizers */}
-        <div className="expenseSection pesticides">
-          <div className="sectionHeader">
-            <h3>Fertilizers & Crop Care</h3>
-            <span className="totalAmount">₹{calculateTotalPesticides().toLocaleString()}</span>
-          </div>
-          <div className="expenseCardsGrid">
-            {pesticideData.map((item, index) => (
-              <div key={index} className="expenseCard">
-                <div className="expenseHeader">
-                  <div className="expenseIcon pesticide">
-                    <FontAwesomeIcon icon={faSprayCanSparkles} />
+        {cropData.pesticideEntries && cropData.pesticideEntries.length > 0 && (
+          <div className="expenseSection pesticides">
+            <div className="sectionHeader">
+              <h3>Fertilizers & Crop Care</h3>
+              <span className="totalAmount">₹{calculateTotalPesticides().toLocaleString()}</span>
+            </div>
+            <div className="expenseCardsGrid">
+              {cropData.pesticideEntries.map((item, index) => (
+                <div key={index} className="expenseCard">
+                  <div className="expenseHeader">
+                    <div className="expenseIcon pesticide">
+                      <FontAwesomeIcon icon={faSprayCanSparkles} />
+                    </div>
+                    <div className="expenseTitle">
+                      <h4>{item.pesticide || 'N/A'}</h4>
+                      <span className="quantity">{item.quantity || 0} {item.quantity ? 'kg/liters' : ''}</span>
+                    </div>
                   </div>
-                  <div className="expenseTitle">
-                    <h4>{item.name}</h4>
-                    <span className="quantity">{item.quantity}</span>
+                  <div className="expenseDetails">
+                    <div className="expenseDate">
+                      <FontAwesomeIcon icon={faCalendar} />
+                      {formatDate(item.date)}
+                    </div>
+                    <div className="expenseAmount">₹{(item.amount || 0).toLocaleString()}</div>
                   </div>
                 </div>
-                <div className="expenseDetails">
-                  <div className="expenseDate">
-                    <FontAwesomeIcon icon={faCalendar} />
-                    {new Date(item.date).toLocaleDateString('en-IN')}
-                  </div>
-                  <div className="expenseAmount">₹{item.amount.toLocaleString()}</div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Coolie Information */}
-        <div className="expenseSection coolies">
-          <div className="sectionHeader">
-            <h3>Labor & Workforce</h3>
-            <span className="totalAmount">₹{calculateTotalCoolies().toLocaleString()}</span>
-          </div>
-          <div className="expenseCardsGrid">
-            {coolieData.map((item, index) => (
-              <div key={index} className="expenseCard">
-                <div className="expenseHeader">
-                  <div className="expenseIcon coolie">
-                    <FontAwesomeIcon icon={faUsers} />
+        {cropData.coolieEntries && cropData.coolieEntries.length > 0 && (
+          <div className="expenseSection coolies">
+            <div className="sectionHeader">
+              <h3>Labor & Workforce</h3>
+              <span className="totalAmount">₹{calculateTotalCoolies().toLocaleString()}</span>
+            </div>
+            <div className="expenseCardsGrid">
+              {cropData.coolieEntries.map((item, index) => (
+                <div key={index} className="expenseCard">
+                  <div className="expenseHeader">
+                    <div className="expenseIcon coolie">
+                      <FontAwesomeIcon icon={faUsers} />
+                    </div>
+                    <div className="expenseTitle">
+                      <h4>{item.work || 'Labor Work'}</h4>
+                      <span className="quantity">{item.count || 0} workers • {item.days || 1} days</span>
+                    </div>
                   </div>
-                  <div className="expenseTitle">
-                    <h4>{item.work}</h4>
-                    <span className="quantity">{item.count} workers • {item.duration}</span>
+                  <div className="expenseDetails">
+                    <div className="expenseDate">
+                      <FontAwesomeIcon icon={faCalendar} />
+                      {formatDate(item.date)}
+                    </div>
+                    <div className="expenseAmount">₹{(item.amount || 0).toLocaleString()}</div>
                   </div>
                 </div>
-                <div className="expenseDetails">
-                  <div className="expenseDate">
-                    <FontAwesomeIcon icon={faCalendar} />
-                    {new Date(item.date).toLocaleDateString('en-IN')}
-                  </div>
-                  <div className="expenseAmount">₹{item.amount.toLocaleString()}</div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Payments to Farmer */}
-        <div className="expenseSection payments">
-          <div className="sectionHeader">
-            <h3>Farmer Payments</h3>
-            <span className="totalAmount">₹{calculateTotalPayments().toLocaleString()}</span>
-          </div>
-          <div className="expenseCardsGrid">
-            {paymentData.map((item, index) => (
-              <div key={index} className="expenseCard">
-                <div className="expenseHeader">
-                  <div 
-                    className="expenseIcon payment"
-                    style={{ background: getPaymentMethodColor(item.method) }}
-                  >
-                    <FontAwesomeIcon icon={getPaymentMethodIcon(item.method)} />
+        {cropData.paymentEntries && cropData.paymentEntries.length > 0 && (
+          <div className="expenseSection payments">
+            <div className="sectionHeader">
+              <h3>Farmer Payments</h3>
+              <span className="totalAmount">₹{calculateTotalPayments().toLocaleString()}</span>
+            </div>
+            <div className="expenseCardsGrid">
+              {cropData.paymentEntries.map((item, index) => (
+                <div key={index} className="expenseCard">
+                  <div className="expenseHeader">
+                    <div 
+                      className="expenseIcon payment"
+                      style={{ background: getPaymentMethodColor(item.method) }}
+                    >
+                      <FontAwesomeIcon icon={getPaymentMethodIcon(item.method)} />
+                    </div>
+                    <div className="expenseTitle">
+                      <h4>{item.purpose || 'Payment'}</h4>
+                      <span className="quantity">{item.method || 'Cash'}</span>
+                    </div>
                   </div>
-                  <div className="expenseTitle">
-                    <h4>{item.purpose}</h4>
-                    <span className="quantity">{item.method}</span>
+                  <div className="expenseDetails">
+                    <div className="expenseDate">
+                      <FontAwesomeIcon icon={faCalendar} />
+                      {formatDate(item.date)}
+                    </div>
+                    <div className="expenseAmount">₹{(item.amount || 0).toLocaleString()}</div>
                   </div>
                 </div>
-                <div className="expenseDetails">
-                  <div className="expenseDate">
-                    <FontAwesomeIcon icon={faCalendar} />
-                    {new Date(item.date).toLocaleDateString('en-IN')}
-                  </div>
-                  <div className="expenseAmount">₹{item.amount.toLocaleString()}</div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Financial Summary */}
         <div className="financialSection">
@@ -383,7 +436,7 @@ export const Crop = () => {
                 <h4>Total Income</h4>
               </div>
               <div className="cardContent">
-                <div className="amount positive">₹{cropData.totalPayment.toLocaleString()}</div>
+                <div className="amount positive">₹{(cropData.totalIncome || 0).toLocaleString()}</div>
               </div>
             </div>
           </div>

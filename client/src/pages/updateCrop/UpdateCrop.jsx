@@ -3,10 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom'
 import './updateCrop.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft, faPlus, faXmark, faChevronDown, faCalendar, faTrash, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios'
 
 export const UpdateCrop = () => {
-  const { aadhar } = useParams()
+  const { id } = useParams()
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [updating, setUpdating] = useState(false)
 
   const [seedTypes, setSeedTypes] = useState(['Babycorn Seed', 'Popcorn', 'Maize 161', 'Sweet Corn', 'Field Corn'])
   const [regions, setRegions] = useState(['Jangareddygudem', 'Vijayanagaram'])
@@ -14,41 +18,24 @@ export const UpdateCrop = () => {
   const [paymentMethods, setPaymentMethods] = useState(['Cash', 'PhonePe', 'Bank Transfer', 'UPI', 'Cheque'])
   const [workTypes, setWorkTypes] = useState(['Field Preparation', 'Sowing Work', 'Weeding & Maintenance', 'Harvesting Labor'])
 
-  // Static crop data
-  const staticCropData = {
-    seedType: 'Babycorn Seed',
-    region: 'Jangareddygudem',
-    acres: '5.5',
-    malePackets: '25',
-    femalePackets: '30',
-    sowingDateMale: '2024-03-15',
-    sowingDateFemale: '2024-03-20',
-    firstDetachingDate: '2024-04-10',
-    secondDetachingDate: '2024-04-25',
-    harvestingDate: '2024-06-15',
-    totalIncome: '25000',
-    yield: '1200'
-  }
+  const [form, setForm] = useState({
+    seedType: '',
+    region: '',
+    acres: '',
+    malePackets: '',
+    femalePackets: '',
+    sowingDateMale: '',
+    sowingDateFemale: '',
+    firstDetachingDate: '',
+    secondDetachingDate: '',
+    harvestingDate: '',
+    totalIncome: '',
+    yield: ''
+  })
 
-  const staticPesticideEntries = [
-    { pesticide: 'Urea', quantity: '50', amount: '1500', date: '2024-03-25' },
-    { pesticide: 'DAP', quantity: '25', amount: '2000', date: '2024-04-05' }
-  ]
-
-  const staticCoolieEntries = [
-    { count: '5', amount: '2500', date: '2024-03-15', days: '2', work: 'Field Preparation' },
-    { count: '3', amount: '1500', date: '2024-06-15', days: '1', work: 'Harvesting Labor' }
-  ]
-
-  const staticPaymentEntries = [
-    { amount: '10000', date: '2024-03-15', purpose: 'Advance Payment', method: 'Cash' },
-    { amount: '8000', date: '2024-05-20', purpose: 'Progress Payment', method: 'PhonePe' }
-  ]
-
-  const [form, setForm] = useState(staticCropData)
-  const [pesticideEntries, setPesticideEntries] = useState(staticPesticideEntries)
-  const [coolieEntries, setCoolieEntries] = useState(staticCoolieEntries)
-  const [paymentEntries, setPaymentEntries] = useState(staticPaymentEntries)
+  const [pesticideEntries, setPesticideEntries] = useState([])
+  const [coolieEntries, setCoolieEntries] = useState([])
+  const [paymentEntries, setPaymentEntries] = useState([])
   
   // State for custom inputs
   const [isCustomSeed, setIsCustomSeed] = useState(false)
@@ -78,9 +65,9 @@ export const UpdateCrop = () => {
 
   // State for individual entry visibility
   const [entryVisibility, setEntryVisibility] = useState({
-    pesticides: pesticideEntries.map(() => true),
-    coolies: coolieEntries.map(() => true),
-    payments: paymentEntries.map(() => true)
+    pesticides: [],
+    coolies: [],
+    payments: []
   })
 
   const seedDropdownRef = useRef(null)
@@ -95,6 +82,72 @@ export const UpdateCrop = () => {
   const firstDetachingDateRef = useRef(null)
   const secondDetachingDateRef = useRef(null)
   const harvestingDateRef = useRef(null)
+
+  // Fetch crop details on component mount
+  useEffect(() => {
+    const fetchCropDetails = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        // Fetch crop details by ID
+        const response = await axios.get(`/crops/${id}`)
+        const cropData = response.data
+
+        const formatDateForInput = (dateString) => {
+          if (!dateString) return ''
+          const date = new Date(dateString)
+          return date.toISOString().split('T')[0]
+        }
+
+        
+        // Set main form data
+        setForm({
+          seedType: cropData.seedType || '',
+          region: cropData.region || '',
+          acres: cropData.acres || '',
+          malePackets: cropData.malePackets || '',
+          femalePackets: cropData.femalePackets || '',
+          sowingDateMale: formatDateForInput(cropData.sowingDateMale),
+          sowingDateFemale: formatDateForInput(cropData.sowingDateFemale),
+          firstDetachingDate: formatDateForInput(cropData.firstDetachingDate),
+          secondDetachingDate: formatDateForInput(cropData.secondDetachingDate),
+          harvestingDate: formatDateForInput(cropData.harvestingDate),
+          totalIncome: cropData.totalIncome || '',
+          yield: cropData.yield || ''
+        })
+
+        const formatArrayDates = (entries) => {
+          return (entries || []).map(entry => ({
+            ...entry,
+            date: formatDateForInput(entry.date)
+          }))
+        }
+
+        // Set array entries with formatted dates
+        setPesticideEntries(formatArrayDates(cropData.pesticideEntries))
+        setCoolieEntries(formatArrayDates(cropData.coolieEntries))
+        setPaymentEntries(formatArrayDates(cropData.paymentEntries))
+
+        // Initialize visibility states
+        setEntryVisibility({
+          pesticides: (cropData.pesticideEntries || []).map(() => true),
+          coolies: (cropData.coolieEntries || []).map(() => true),
+          payments: (cropData.paymentEntries || []).map(() => true)
+        })
+        
+      } catch (err) {
+        console.error('Error fetching crop details:', err)
+        setError('Failed to load crop details. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (id) {
+      fetchCropDetails()
+    }
+  }, [id])
 
   // Handle form changes
   const handleChange = (e) => {
@@ -265,16 +318,29 @@ export const UpdateCrop = () => {
 
   const handleUndo = () => navigate(-1)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const formData = {
-      ...form,
-      pesticideEntries,
-      coolieEntries,
-      paymentEntries
+    
+    try {
+      setUpdating(true)
+      
+      const formData = {
+        ...form,
+        pesticideEntries,
+        coolieEntries,
+        paymentEntries
+      }
+
+      const res = await axios.put(`/crops/${id}`, formData)
+      // console.log(res.data)
+      navigate(`/crops/${id}`)
+      
+    } catch (err) {
+      console.error('Error updating crop:', err)
+      alert('Error updating crop details. Please try again.')
+    } finally {
+      setUpdating(false)
     }
-    alert(`✅ Crop Updated Successfully!\n\nFarmer Aadhar: ${aadhar}\n${JSON.stringify(formData, null, 2)}`)
-    navigate('/')
   }
 
   // Fixed: Close dropdowns on outside click
@@ -311,6 +377,37 @@ export const UpdateCrop = () => {
     coolieWorkDropdownRefs.current = coolieWorkDropdownRefs.current.slice(0, coolieEntries.length)
     paymentMethodDropdownRefs.current = paymentMethodDropdownRefs.current.slice(0, paymentEntries.length)
   }, [pesticideEntries.length, coolieEntries.length, paymentEntries.length])
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="updateCropContainer">
+        <div className="loadingState">
+          <div className="spinner"></div>
+          <p>Loading crop details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div className="updateCropContainer">
+        <div className="errorState">
+          <div className="errorIcon">⚠️</div>
+          <h3>Unable to Load Crop Details</h3>
+          <p>{error}</p>
+          <button className="retryBtn" onClick={() => window.location.reload()}>
+            Try Again
+          </button>
+          <button className="backBtn" onClick={handleUndo}>
+            Go Back
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="updateCropContainer">
@@ -439,7 +536,6 @@ export const UpdateCrop = () => {
                 onChange={handleChange} 
                 placeholder="Enter count" 
                 min="0" 
-                required 
                 className="number-input"
               />
             </div>
@@ -451,8 +547,7 @@ export const UpdateCrop = () => {
                 value={form.femalePackets} 
                 onChange={handleChange} 
                 placeholder="Enter count" 
-                min="0" 
-                required 
+                min="0"  
                 className="number-input"
               />
             </div>
@@ -469,7 +564,7 @@ export const UpdateCrop = () => {
                   name="sowingDateMale" 
                   value={form.sowingDateMale} 
                   onChange={handleChange} 
-                  required 
+ 
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -483,7 +578,7 @@ export const UpdateCrop = () => {
                   name="sowingDateFemale" 
                   value={form.sowingDateFemale} 
                   onChange={handleChange} 
-                  required 
+ 
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -501,7 +596,7 @@ export const UpdateCrop = () => {
                   name="firstDetachingDate" 
                   value={form.firstDetachingDate} 
                   onChange={handleChange} 
-                  required 
+ 
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -515,7 +610,7 @@ export const UpdateCrop = () => {
                   name="secondDetachingDate" 
                   value={form.secondDetachingDate} 
                   onChange={handleChange} 
-                  required 
+ 
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -533,8 +628,7 @@ export const UpdateCrop = () => {
                 onChange={handleChange} 
                 placeholder="Enter acres" 
                 min="0" 
-                step="0.01" 
-                required 
+                step="0.01"  
                 className="number-input"
               />
             </div>
@@ -547,7 +641,7 @@ export const UpdateCrop = () => {
                   name="harvestingDate" 
                   value={form.harvestingDate} 
                   onChange={handleChange} 
-                  required 
+ 
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -564,8 +658,7 @@ export const UpdateCrop = () => {
                 value={form.totalIncome} 
                 onChange={handleChange} 
                 placeholder="Enter total income" 
-                min="0" 
-                required 
+                min="0"  
                 className="number-input"
               />
             </div>
@@ -577,8 +670,7 @@ export const UpdateCrop = () => {
                 value={form.yield} 
                 onChange={handleChange} 
                 placeholder="Enter yield" 
-                min="0" 
-                required 
+                min="0"  
                 className="number-input"
               />
             </div>
@@ -705,7 +797,7 @@ export const UpdateCrop = () => {
                                 type="date" 
                                 value={entry.date} 
                                 onChange={(e) => handlePesticideChange(index, 'date', e.target.value)} 
-                                required 
+               
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
                             </div>
@@ -861,7 +953,7 @@ export const UpdateCrop = () => {
                                 type="date" 
                                 value={entry.date} 
                                 onChange={(e) => handleCoolieChange(index, 'date', e.target.value)} 
-                                required 
+               
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
                             </div>
@@ -944,7 +1036,7 @@ export const UpdateCrop = () => {
                               onChange={(e) => handlePaymentChange(index, 'amount', e.target.value)} 
                               placeholder="Enter amount" 
                               min="0" 
-                              required 
+             
                               className="number-input"
                             />
                           </div>
@@ -957,7 +1049,7 @@ export const UpdateCrop = () => {
                                 type="date" 
                                 value={entry.date} 
                                 onChange={(e) => handlePaymentChange(index, 'date', e.target.value)} 
-                                required 
+               
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
                             </div>
@@ -973,7 +1065,7 @@ export const UpdateCrop = () => {
                               value={entry.purpose} 
                               onChange={(e) => handlePaymentChange(index, 'purpose', e.target.value)} 
                               placeholder="e.g., Advance, Progress, Final" 
-                              required 
+             
                             />
                           </div>
 
@@ -1040,7 +1132,9 @@ export const UpdateCrop = () => {
             )}
           </div>
 
-          <button type="submit" className="updateBtn">Update Crop</button>
+          <button type="submit" className="updateBtn" disabled={updating}>
+            {updating ? 'Updating...' : 'Update Crop'}
+          </button>
         </form>
       </div>
     </div>

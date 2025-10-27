@@ -10,6 +10,8 @@ import { UpdateFarmer } from './pages/updateFarmer/UpdateFarmer'
 import { UpdateCrop } from './pages/updateCrop/UpdateCrop'
 import { Farmer } from './pages/farmer/Farmer'
 import { Crop } from './pages/crop/Crop'
+import { Transactions } from './pages/transactions/Transactions'
+import { Crops } from './pages/crops/Crops'
 
 function App() {
   const [isAuth, setIsAuth] = useState(false)
@@ -148,6 +150,11 @@ function App() {
           />
 
           <Route
+            path="/crops"
+            element={!isAuth ? <Crops /> : <Navigate to="/login" replace />}
+          />
+
+          <Route
             path="/create-farmer"
             element={!isAuth ? <CreateFarmer /> : <Navigate to="/login" replace />}
           />
@@ -158,23 +165,28 @@ function App() {
           />
 
           <Route
-            path="/update-farmer"
+            path="/update-farmer/:aadhar"
             element={!isAuth ? <UpdateFarmer /> : <Navigate to="/login" replace />}
           />
 
           <Route
-            path="/update-crop/:aadhar"
+            path="/update-crop/:id"
             element={!isAuth ? <UpdateCrop /> : <Navigate to="/login" replace />}
           />
 
           <Route
-            path="/farmers/:id"
+            path="/farmers/:aadhar"
             element={!isAuth ? <Farmer /> : <Navigate to="/login" replace />}
           />
 
           <Route
             path="/crops/:id"
             element={!isAuth ? <Crop /> : <Navigate to="/login" replace />}
+          />
+
+          <Route
+            path="/transactions"
+            element={!isAuth ? <Transactions /> : <Navigate to="/login" replace />}
           />
         </Routes>
       </BrowserRouter>

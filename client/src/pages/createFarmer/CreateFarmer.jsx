@@ -3,6 +3,7 @@ import './createFarmer.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 export const CreateFarmer = () => {
   const navigate = useNavigate()
@@ -11,7 +12,7 @@ export const CreateFarmer = () => {
     lastName: '',
     aadhar: '',
     mobile: '',
-    account: '',
+    bankAccountNumber: '',
     village: '',
   })
 
@@ -29,9 +30,11 @@ export const CreateFarmer = () => {
     navigate('/')
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    navigate(`/create-crop/${form.aadhar}`)
+    const res = await axios.post('/farmers', form)
+    console.log(res.data)
+    // navigate(`/create-crop/${form.aadhar}`)
   }
 
   return (
@@ -106,8 +109,8 @@ export const CreateFarmer = () => {
               <label>Account Number</label>
               <input
                 type="text"
-                name="account"
-                value={form.account}
+                name="bankAccountNumber"
+                value={form.bankAccountNumber}
                 onChange={handleChange}
                 placeholder="Enter Account Number"
                 required

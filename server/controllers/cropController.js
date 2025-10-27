@@ -1,239 +1,103 @@
+const mongoose = require('mongoose')
 const Crop = require('../models/Crop')
-const Farmer = require('../models/Farmer')
 
-// @desc    Create a new crop
-// @route   POST /api/crops
-// @access  Public
-const createCrop = async (req, res) => {
+// Helper: Validate Aadhar
+const isValidAadhar = aadhar => /^\d{12}$/.test(aadhar)
+
+// GET all crops
+exports.getAllCrops = async (req, res) => {
   try {
-    const {
-      farmerAadhar,
-      seedType,
-      region,
-      acres,
-      malePackets,
-      femalePackets,
-      sowingDateMale,
-      sowingDateFemale,
-      firstDetachingDate,
-      secondDetachingDate,
-      pesticide,
-      harvestingDate,
-      payment,
-      yield
-    } = req.body
+    const crops = await Crop.find().lean()
+    res.status(200).json(crops)
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message })
+  }
+}
 
-    // Check if farmer exists
-    const farmer = await Farmer.findOne({ aadhar: farmerAadhar })
-    if (!farmer) {
-      return res.status(404).json({
-        success: false,
-        message: 'Farmer not found with the provided Aadhar number'
-      })
+// GET crop by ID
+exports.getCropById = async (req, res) => {
+  try {
+    const crop = await Crop.findById(req.params.id).lean()
+    if (!crop) return res.status(404).json({ message: 'Crop not found' })
+    res.status(200).json(crop)
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message })
+  }
+}
+
+// GET crops by farmer Aadhar
+exports.getCropsByFarmer = async (req, res) => {
+  try {
+    const { aadhar } = req.params
+    if (!isValidAadhar(aadhar)) return res.status(400).json({ message: 'Invalid Aadhar' })
+    const crops = await Crop.findByFarmerAadhar(aadhar)
+    res.status(200).json(crops)
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message })
+  }
+}
+
+// GET crop stats
+exports.getCropStats = async (req, res) => {
+  try {
+    const { aadhar } = req.query
+    if (aadhar && !isValidAadhar(aadhar)) return res.status(400).json({ message: 'Invalid Aadhar' })
+    const [stats] = await Crop.getCropStats(aadhar || null)
+    res.status(200).json(stats || {})
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message })
+  }
+}
+
+// POST create crop
+exports.createCrop = async (req, res) => {
+  try {
+    const { farmerDetails } = req.body
+    if (!farmerDetails || !isValidAadhar(farmerDetails.aadhar)) {
+      return res.status(400).json({ message: 'Valid farmer Aadhar is required' })
     }
-
-    // Create new crop
-    const crop = new Crop({
-      farmerAadhar,
-      seedType,
-      region,
-      acres,
-      malePackets,
-      femalePackets,
-      sowingDateMale,
-      sowingDateFemale,
-      firstDetachingDate,
-      secondDetachingDate,
-      pesticide,
-      harvestingDate,
-      payment,
-      yield
-    })
-
+    
+    const crop = new Crop(req.body)
     await crop.save()
-
-    // Populate farmer details in response
-    await crop.populate('farmer')
-
-    res.status(201).json({
-      success: true,
-      message: 'Crop created successfully',
-      data: crop
-    })
+    res.status(201).json(crop.getSummary())
   } catch (error) {
-    console.error('Error creating crop:', error)
-    
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(err => err.message)
-      return res.status(400).json({
-        success: false,
-        message: 'Validation error',
-        errors: messages
-      })
-    }
-
-    res.status(500).json({
-      success: false,
-      message: 'Server error while creating crop'
-    })
+    res.status(400).json({ message: 'Invalid data', error: error.message })
   }
 }
 
-// @desc    Get all crops
-// @route   GET /api/crops
-// @access  Public
-const getAllCrops = async (req, res) => {
+// PUT update crop (or append to arrays)
+exports.updateCrop = async (req, res) => {
   try {
-    const crops = await Crop.find()
-      .populate('farmer')
-      .sort({ createdAt: -1 })
+    const { id } = req.params
+    const updateData = req.body
+
+    if (updateData.farmerDetails && !isValidAadhar(updateData.farmerDetails.aadhar)) {
+      return res.status(400).json({ message: 'Invalid Aadhar in farmerDetails' })
+    }
+
+    // Remove the $push operations and directly set the arrays
+    // MongoDB will replace the entire arrays with the new data
+    const crop = await Crop.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true
+    })
     
-    res.status(200).json({
-      success: true,
-      count: crops.length,
-      data: crops
-    })
-  } catch (error) {
-    console.error('Error fetching crops:', error)
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching crops'
-    })
-  }
-}
-
-// @desc    Get crops by farmer Aadhar
-// @route   GET /api/crops/farmer/:aadhar
-// @access  Public
-const getCropsByFarmerAadhar = async (req, res) => {
-  try {
-    const crops = await Crop.find({ farmerAadhar: req.params.aadhar })
-      .populate('farmer')
-      .sort({ createdAt: -1 })
-
-    if (crops.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'No crops found for this farmer'
-      })
-    }
-
-    res.status(200).json({
-      success: true,
-      count: crops.length,
-      data: crops
-    })
-  } catch (error) {
-    console.error('Error fetching crops by farmer:', error)
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching crops'
-    })
-  }
-}
-
-// @desc    Get crop by ID
-// @route   GET /api/crops/:id
-// @access  Public
-const getCropById = async (req, res) => {
-  try {
-    const crop = await Crop.findById(req.params.id).populate('farmer')
+    if (!crop) return res.status(404).json({ message: 'Crop not found' })
     
-    if (!crop) {
-      return res.status(404).json({
-        success: false,
-        message: 'Crop not found'
-      })
-    }
-
-    res.status(200).json({
-      success: true,
-      data: crop
-    })
+    await crop.save() 
+    res.status(200).json(crop.getSummary())
   } catch (error) {
-    console.error('Error fetching crop:', error)
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching crop'
-    })
+    res.status(400).json({ message: 'Invalid update data', error: error.message })
   }
 }
 
-// @desc    Update crop
-// @route   PUT /api/crops/:id
-// @access  Public
-const updateCrop = async (req, res) => {
-  try {
-    const crop = await Crop.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    ).populate('farmer')
-
-    if (!crop) {
-      return res.status(404).json({
-        success: false,
-        message: 'Crop not found'
-      })
-    }
-
-    res.status(200).json({
-      success: true,
-      message: 'Crop updated successfully',
-      data: crop
-    })
-  } catch (error) {
-    console.error('Error updating crop:', error)
-    
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(err => err.message)
-      return res.status(400).json({
-        success: false,
-        message: 'Validation error',
-        errors: messages
-      })
-    }
-
-    res.status(500).json({
-      success: false,
-      message: 'Server error while updating crop'
-    })
-  }
-}
-
-// @desc    Delete crop
-// @route   DELETE /api/crops/:id
-// @access  Public
-const deleteCrop = async (req, res) => {
+// DELETE crop
+exports.deleteCrop = async (req, res) => {
   try {
     const crop = await Crop.findByIdAndDelete(req.params.id)
-
-    if (!crop) {
-      return res.status(404).json({
-        success: false,
-        message: 'Crop not found'
-      })
-    }
-
-    res.status(200).json({
-      success: true,
-      message: 'Crop deleted successfully',
-      data: crop
-    })
+    if (!crop) return res.status(404).json({ message: 'Crop not found' })
+    res.status(200).json({ message: 'Crop deleted' })
   } catch (error) {
-    console.error('Error deleting crop:', error)
-    res.status(500).json({
-      success: false,
-      message: 'Server error while deleting crop'
-    })
+    res.status(500).json({ message: 'Server error', error: error.message })
   }
-}
-
-module.exports = {
-  createCrop,
-  getAllCrops,
-  getCropsByFarmerAadhar,
-  getCropById,
-  updateCrop,
-  deleteCrop
 }
