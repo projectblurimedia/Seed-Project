@@ -42,7 +42,7 @@
   }
 
   // WhatsApp-style Floating Action Button
-  .floatingUpdateBtn {
+  .floatingCreateBtn {
     position: fixed;
     bottom: 24px;
     right: 24px;
@@ -149,7 +149,7 @@
       padding: 0.75rem;
     }
 
-    .floatingUpdateBtn {
+    .floatingCreateBtn {
       width: 56px;
       height: 56px;
       bottom: 20px;
@@ -166,7 +166,7 @@
       padding: 0.5rem;
     }
 
-    .floatingUpdateBtn {
+    .floatingCreateBtn {
       width: 52px;
       height: 52px;
       bottom: 16px;
@@ -180,7 +180,7 @@
 
   // Reduced motion support
   @media (prefers-reduced-motion: reduce) {
-    .floatingUpdateBtn {
+    .floatingCreateBtn {
       transition: none;
       animation: none;
 

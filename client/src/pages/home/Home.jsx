@@ -1,14 +1,14 @@
-import React from 'react'
 import './home.scss'
 import { HomeHeader } from '../../components/homeHeader/HomeHeader'
 import { DailyUpdates } from '../../components/dailyUpdates/DailyUpdates'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from 'react-router-dom'
 
 export const Home = () => {
-  const handleUpdateClick = () => {
-    // Add your update functionality here
-    console.log('Update button clicked')
+  const navigate = useNavigate()
+  const handleCreate = () => {
+    navigate('/select-farmer')
   }
 
   return (
@@ -21,8 +21,8 @@ export const Home = () => {
         <DailyUpdates />
       </div>
 
-      <button className='floatingUpdateBtn' onClick={handleUpdateClick}>
-        <FontAwesomeIcon icon={faPenToSquare} className='icon' />
+      <button className='floatingCreateBtn' onClick={handleCreate}>
+        <FontAwesomeIcon icon={faPlus} className='icon' />
       </button>
     </div>
   )

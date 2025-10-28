@@ -6,7 +6,6 @@ import {
   faUsers, 
   faWheatAlt,
   faUserCircle,
-  faPlus
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 
@@ -32,15 +31,6 @@ export const HomeHeader = () => {
       
       <div className='right'>
         <div className='navIcons'>  
-          <button 
-            className='navIcon'
-            onClick={() => handleNavigation('/select-farmer')}
-            aria-label="Create"
-          >
-            <FontAwesomeIcon icon={faPlus} />
-            <span className='tooltip'>Create</span>
-          </button>
-
           <button 
             className='navIcon'
             onClick={() => handleNavigation('/farmers')}
