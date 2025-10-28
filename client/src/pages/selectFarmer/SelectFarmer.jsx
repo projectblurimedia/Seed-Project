@@ -1,31 +1,25 @@
 import React, { useState, useEffect } from 'react'
-import './farmers.scss'
+import './SelectFarmer.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faUserGroup,
-  faSeedling,
-  faMapMarkerAlt,
-  faFilter,
-  faCalendarDays,
-  faSpinner,
-  faCheckCircle,
   faSearch,
-  faPlus,
-  faRupeeSign,
-  faIdCard,
+  faMapMarkerAlt,
   faMobileAlt,
-  faBank,
-  faChevronRight,
+  faChevronLeft,
+  faSeedling,
+  faUsers,
+  faIdCard,
   faXmark,
   faSlidersH,
   faRefresh,
   faExclamationTriangle,
-  faEdit
+  faPlus
 } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
-export const Farmers = () => {
+export const SelectFarmer = () => {
   const [farmers, setFarmers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -43,7 +37,6 @@ export const Farmers = () => {
       setError(null)
       const response = await axios.get('/farmers')
       const farmersData = response.data
-      console.log(farmersData)
       
       setFarmers(farmersData)
       
@@ -78,12 +71,6 @@ export const Farmers = () => {
     return `XXXX XXXX ${aadhar.slice(-4)}`
   }
 
-  // Format bank account number (show only last 4 digits)
-  const formatBankAccount = (account) => {
-    if (!account) return 'N/A'
-    return `XXXX${account.slice(-4)}`
-  }
-
   // Filter farmers
   const filteredFarmers = farmers.filter(farmer => {
     // Search filter
@@ -100,10 +87,14 @@ export const Farmers = () => {
     return matchesSearch && matchesLocation
   })
 
-  // Handle edit farmer
-  const handleEditFarmer = (farmer, e) => {
-    e.stopPropagation() // Prevent navigation to farmer details
-    navigate(`/update-farmer/${farmer.aadhar}`)
+  // Handle farmer selection
+  const handleSelectFarmer = (farmer) => {
+    navigate(`/create-crop/${farmer.aadhar}`)
+  }
+
+  // Handle create farmer
+  const handleCreateFarmer = () => {
+    navigate('/create-farmer')
   }
 
   // Clear all filters
@@ -118,7 +109,7 @@ export const Farmers = () => {
 
   if (loading) {
     return (
-      <div className="farmersPage">
+      <div className="selectFarmerPage">
         <div className="loadingState">
           <div className="spinner"></div>
           <p>Loading farmers data...</p>
@@ -129,7 +120,7 @@ export const Farmers = () => {
 
   if (error) {
     return (
-      <div className="farmersPage">
+      <div className="selectFarmerPage">
         <div className="errorState">
           <div className="errorIcon">
             <FontAwesomeIcon icon={faExclamationTriangle} />
@@ -141,6 +132,10 @@ export const Farmers = () => {
               <FontAwesomeIcon icon={faRefresh} />
               Try Again
             </button>
+            <button className="backBtn" onClick={() => navigate('/crops')}>
+              <FontAwesomeIcon icon={faChevronLeft} />
+              Back to Crops
+            </button>
           </div>
         </div>
       </div>
@@ -148,30 +143,37 @@ export const Farmers = () => {
   }
 
   return (
-    <div className="farmersPage">
+    <div className="selectFarmerPage">
       {/* Advanced Header */}
       <div className="advancedHeader">
         <div className="headerContent">
           <div className="headerMain">
             <div className="titleSection">
+              <button className="backBtn" onClick={() => navigate('/crops')}>
+                <FontAwesomeIcon icon={faChevronLeft} />
+              </button>
               <div className="titleIcon">
                 <FontAwesomeIcon icon={faUserGroup} />
               </div>
               <div className="titleText">
-                <h1>Farmers Management</h1>
-                <p>Manage and monitor all your farmers in one place</p>
+                <h1>Select Farmer</h1>
+                <p>Choose a farmer to create a new crop</p>
               </div>
             </div>
             <div className="headerActions">
-              <div className="totalFarmers">
-                Total Farmers: <strong>{farmers.length}</strong>
+              <div className="statItem">
+                <FontAwesomeIcon icon={faUsers} className="statIcon" />
+                <div className="statContent">
+                  <span className="statNumber">{farmers.length}</span>
+                  <span className="statLabel">Total Farmers</span>
+                </div>
               </div>
               <button 
-                className="addFarmerBtn"
-                onClick={() => navigate('/create-farmer')}
+                className="createFarmerBtn"
+                onClick={handleCreateFarmer}
               >
                 <FontAwesomeIcon icon={faPlus} />
-                Add Farmer
+                Create Farmer
               </button>
             </div>
           </div>
@@ -182,7 +184,7 @@ export const Farmers = () => {
               <FontAwesomeIcon icon={faSearch} className="searchIcon" />
               <input
                 type="text"
-                placeholder="Search farmers..."
+                placeholder="Search farmers by name, village, or mobile..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
@@ -219,13 +221,13 @@ export const Farmers = () => {
                     </div>
                     
                     <div className="filterGroup">
-                      <label>Location</label>
+                      <label>Village</label>
                       <select 
                         value={selectedLocation}
                         onChange={(e) => setSelectedLocation(e.target.value)}
                         className="filterSelect"
                       >
-                        <option value="ALL">All Locations</option>
+                        <option value="ALL">All Villages</option>
                         {availableLocations.filter(location => location !== 'ALL').map(location => (
                           <option key={location} value={location}>{location}</option>
                         ))}
@@ -258,7 +260,7 @@ export const Farmers = () => {
               )}
               {selectedLocation !== 'ALL' && (
                 <span className="filterTag">
-                  Location: {selectedLocation}
+                  Village: {selectedLocation}
                   <button onClick={() => setSelectedLocation('ALL')}>×</button>
                 </span>
               )}
@@ -270,85 +272,65 @@ export const Farmers = () => {
         </div>
       </div>
 
-      {/* Farmers Table */}
-      <div className="farmersTableContainer">
-        <div className="tableHeader">
-          <h3>All Farmers ({filteredFarmers.length})</h3>
+      {/* Farmers Grid */}
+      <div className="farmersGridContainer">
+        <div className="gridHeader">
+          <h3>Select a Farmer ({filteredFarmers.length})</h3>
+          <p>Click on a farmer to create a new crop for them</p>
         </div>
 
         {filteredFarmers.length === 0 ? (
           <div className="emptyState">
             <FontAwesomeIcon icon={faUserGroup} className="emptyIcon" />
             <h3>No Farmers Found</h3>
-            <p>No farmers match your search criteria. Try adjusting your filters.</p>
-            {hasActiveFilters && (
-              <button className="clearFiltersBtn" onClick={clearAllFilters}>
-                Clear All Filters
+            <p>No farmers match your search criteria. Try adjusting your filters or create a new farmer.</p>
+            <div className="emptyStateActions">
+              {hasActiveFilters && (
+                <button className="clearFiltersBtn" onClick={clearAllFilters}>
+                  Clear All Filters
+                </button>
+              )}
+              <button className="createFarmerBtn" onClick={handleCreateFarmer}>
+                <FontAwesomeIcon icon={faPlus} />
+                Create New Farmer
               </button>
-            )}
+            </div>
           </div>
         ) : (
-          <div className="farmersGrid">
+          <div className="farmersSelectionGrid">
             {filteredFarmers.map((farmer) => (
               <div 
                 key={farmer._id} 
-                className="farmerCard"
-                onClick={() => navigate(`/farmers/${farmer.aadhar}`)}
+                className="farmerSelectionCard"
+                onClick={() => handleSelectFarmer(farmer)}
               >
-                <div className="cardHeader">
-                  <div className="farmerBasicInfo">
-                    <div className="farmerAvatar">
-                      {getInitials(farmer)}
-                    </div>
+                <div className="cardMain">
+                  <div className="farmerAvatar">
+                    {getInitials(farmer)}
+                  </div>
+                  <div className="farmerDetails">
+                    <h3>{farmer.firstName} {farmer.lastName}</h3>
                     <div className="farmerInfo">
-                      <h3>{farmer.firstName} {farmer.lastName}</h3>
-                      <div className="farmerMeta">
-                        <span className="location">
-                          <FontAwesomeIcon icon={faMapMarkerAlt} />
-                          {farmer.village || 'Unknown Village'}
-                        </span>
-                        <span className="mobile">
-                          <FontAwesomeIcon icon={faMobileAlt} />
-                          {farmer.mobile || 'N/A'}
-                        </span>
+                      <div className="infoItem">
+                        <FontAwesomeIcon icon={faMapMarkerAlt} />
+                        <span>{farmer.village || 'Unknown Village'}</span>
+                      </div>
+                      <div className="infoItem">
+                        <FontAwesomeIcon icon={faMobileAlt} />
+                        <span>{farmer.mobile || 'N/A'}</span>
+                      </div>
+                      <div className="infoItem">
+                        <FontAwesomeIcon icon={faIdCard} />
+                        <span>{formatAadhar(farmer.aadhar)}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="headerActions">
-                    <button 
-                      className="editBtn"
-                      onClick={(e) => handleEditFarmer(farmer, e)}
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <FontAwesomeIcon icon={faChevronRight} className="arrowIcon" />
-                  </div>
                 </div>
-
-                <div className="identitySection">
-                  <div className="identityItem">
-                    <FontAwesomeIcon icon={faIdCard} className="identityIcon" />
-                    <div className="identityInfo">
-                      <span className="label">Aadhar</span>
-                      <span className="value">{formatAadhar(farmer.aadhar)}</span>
-                    </div>
-                  </div>
-                  <div className="identityItem">
-                    <FontAwesomeIcon icon={faBank} className="identityIcon" />
-                    <div className="identityInfo">
-                      <span className="label">Bank Account</span>
-                      <span className="value">{formatBankAccount(farmer.bankAccountNumber)}</span>
-                    </div>
-                  </div>
-                </div>
-
+                
                 <div className="cardFooter">
-                  <div className="lastUpdated">
-                    <FontAwesomeIcon icon={faCalendarDays} />
-                    Registered: {new Date(farmer.createdAt).toLocaleDateString('en-IN')}
-                  </div>
-                  <div className="viewDetails">
-                    View Details
+                  <div className="selectAction">
+                    Select Farmer
+                    <FontAwesomeIcon icon={faChevronLeft} className="arrowIcon" />
                   </div>
                 </div>
               </div>

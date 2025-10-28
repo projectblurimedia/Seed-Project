@@ -12,13 +12,15 @@ import {
   faUsers,
   faTractor,
   faClipboardCheck,
-  faWater,
-  faSprayCan,
   faMale,
   faFemale,
-  faSort,
+  faXmark,
+  faSlidersH,
+  faRefresh,
+  faExclamationTriangle,
   faSortUp,
-  faSortDown
+  faSortDown,
+  faEdit
 } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -27,6 +29,7 @@ import { useNavigate } from 'react-router-dom'
 export const Crops = () => {
   const [crops, setCrops] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedRegion, setSelectedRegion] = useState('ALL')
   const [selectedStatus, setSelectedStatus] = useState('ALL')
@@ -34,30 +37,33 @@ export const Crops = () => {
   const [sortOrder, setSortOrder] = useState('desc')
   const [availableRegions, setAvailableRegions] = useState([])
   const [showFilters, setShowFilters] = useState(false)
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
   const navigate = useNavigate()
 
   // Fetch crops data from API
-  useEffect(() => {
-    const fetchCropsData = async () => {
-      try {
-        setLoading(true)
-        const response = await axios.get('/crops')
-        const cropsData = response.data
-        
-        setCrops(cropsData)
-        
-        // Extract unique regions for filter
-        const regions = [...new Set(cropsData.map(crop => crop.region).filter(Boolean))]
-        setAvailableRegions(['ALL', ...regions])
-        
-      } catch (error) {
-        console.error('Error fetching crops data:', error)
-        setCrops([])
-      } finally {
-        setLoading(false)
-      }
+  const fetchCropsData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await axios.get('/crops')
+      const cropsData = response.data
+      
+      setCrops(cropsData)
+      
+      // Extract unique regions for filter
+      const regions = [...new Set(cropsData.map(crop => crop.region).filter(Boolean))]
+      setAvailableRegions(['ALL', ...regions])
+      
+    } catch (error) {
+      console.error('Error fetching crops data:', error)
+      setError('Failed to load crops data. Please try again.')
+      setCrops([])
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchCropsData()
   }, [])
 
@@ -65,7 +71,6 @@ export const Crops = () => {
   const getCropStatus = (crop) => {
     const today = new Date()
     const harvestingDate = crop.harvestingDate ? new Date(crop.harvestingDate) : null
-    
     if (harvestingDate && harvestingDate <= today) return { status: 'Harvested', progress: 100 }
     if (crop.secondDetachingDate) return { status: 'Second Detaching', progress: 80 }
     if (crop.firstDetachingDate) return { status: 'First Detaching', progress: 60 }
@@ -208,9 +213,28 @@ export const Crops = () => {
 
   // Get sort icon
   const getSortIcon = (field) => {
-    if (sortBy !== field) return faSort
+    if (sortBy !== field) return null
     return sortOrder === 'asc' ? faSortUp : faSortDown
   }
+
+  const handleEditCrop = (crop, e) => {
+    e.stopPropagation() 
+    navigate(`/update-crop/${crop._id}`)
+  }
+
+  const handleCreateCrop = () => {
+    navigate('/select-farmer')
+  }
+
+  const clearAllFilters = () => {
+    setSearchTerm('')
+    setSelectedRegion('ALL')
+    setSelectedStatus('ALL')
+    setShowFilters(false)
+  }
+
+  // Check if any filter is active
+  const hasActiveFilters = searchTerm || selectedRegion !== 'ALL' || selectedStatus !== 'ALL'
 
   if (loading) {
     return (
@@ -223,70 +247,164 @@ export const Crops = () => {
     )
   }
 
+  if (error) {
+    return (
+      <div className="cropsPage">
+        <div className="errorState">
+          <div className="errorIcon">
+            <FontAwesomeIcon icon={faExclamationTriangle} />
+          </div>
+          <h3>Unable to Load Crops</h3>
+          <p>{error}</p>
+          <div className="errorActions">
+            <button className="retryBtn" onClick={fetchCropsData}>
+              <FontAwesomeIcon icon={faRefresh} />
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="cropsPage">
-      {/* Header */}
-      <div className="pageHeader">
-        <div className="headerLeft">
-          <h1>Crop Management</h1>
-          <p>Manage and monitor all your crops in one place</p>
-        </div>
-        <button 
-          className="addCropBtn"
-          onClick={() => navigate('/create-crop')}
-        >
-          <FontAwesomeIcon icon={faPlus} />
-          Add New Crop
-        </button>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="controlsSection">
-        <div className="searchBox">
-          <FontAwesomeIcon icon={faSearch} className="searchIcon" />
-          <input
-            type="text"
-            placeholder="Search crops by seed type, region, or farmer name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        <div className="filterControls">
-          <button 
-            className="filterToggle"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <FontAwesomeIcon icon={faFilter} />
-            Filters
-          </button>
-
-          {showFilters && (
-            <div className="filterDropdowns">
-              <select 
-                value={selectedRegion}
-                onChange={(e) => setSelectedRegion(e.target.value)}
-                className="filterSelect"
+      {/* Advanced Header */}
+      <div className="advancedHeader">
+        <div className="headerContent">
+          <div className="headerMain">
+            <div className="titleSection">
+              <div className="titleIcon">
+                <FontAwesomeIcon icon={faSeedling} />
+              </div>
+              <div className="titleText">
+                <h1>Crop Management</h1>
+                <p>Monitor and manage your agricultural operations</p>
+              </div>
+            </div>
+            <div className="headerActions">
+              <button 
+                className="addCropBtn"
+                onClick={handleCreateCrop}
               >
-                <option value="ALL">All Regions</option>
-                {availableRegions.filter(region => region !== 'ALL').map(region => (
-                  <option key={region} value={region}>{region}</option>
-                ))}
-              </select>
+                <FontAwesomeIcon icon={faPlus} />
+                Add Crop
+              </button>
+            </div>
+          </div>
 
-              <select 
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="filterSelect"
-              >
-                <option value="ALL">All Status</option>
-                <option value="Field Created">Field Created</option>
-                <option value="Male Sowing">Male Sowing</option>
-                <option value="Female Sowing">Female Sowing</option>
-                <option value="First Detaching">First Detaching</option>
-                <option value="Second Detaching">Second Detaching</option>
-                <option value="Harvested">Harvested</option>
-              </select>
+          {/* Advanced Search and Controls */}
+          <div className="advancedControls">
+            <div className={`searchContainer ${isSearchFocused ? 'focused' : ''}`}>
+              <FontAwesomeIcon icon={faSearch} className="searchIcon" />
+              <input
+                type="text"
+                placeholder="Search crops..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+              />
+              {searchTerm && (
+                <button 
+                  className="clearSearch"
+                  onClick={() => setSearchTerm('')}
+                >
+                  <FontAwesomeIcon icon={faXmark} />
+                </button>
+              )}
+            </div>
+
+            <div className="controlActions">
+              <div className="filterSection">
+                <button 
+                  className={`filterBtn ${showFilters ? 'active' : ''} ${hasActiveFilters ? 'hasFilters' : ''}`}
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  <FontAwesomeIcon icon={faSlidersH} />
+                  Filters
+                  {hasActiveFilters && <span className="filterIndicator"></span>}
+                </button>
+
+                {showFilters && (
+                  <div className="filtersPanel">
+                    <div className="filtersHeader">
+                      <h4>Filter Options</h4>
+                      <button className="closeFilters" onClick={() => setShowFilters(false)}>
+                        <FontAwesomeIcon icon={faXmark} />
+                      </button>
+                    </div>
+                    
+                    <div className="filterGroup">
+                      <label>Region</label>
+                      <select 
+                        value={selectedRegion}
+                        onChange={(e) => setSelectedRegion(e.target.value)}
+                        className="filterSelect"
+                      >
+                        <option value="ALL">All Regions</option>
+                        {availableRegions.filter(region => region !== 'ALL').map(region => (
+                          <option key={region} value={region}>{region}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="filterGroup">
+                      <label>Status</label>
+                      <select 
+                        value={selectedStatus}
+                        onChange={(e) => setSelectedStatus(e.target.value)}
+                        className="filterSelect"
+                      >
+                        <option value="ALL">All Status</option>
+                        <option value="Field Created">Field Created</option>
+                        <option value="Male Sowing">Male Sowing</option>
+                        <option value="Female Sowing">Female Sowing</option>
+                        <option value="First Detaching">First Detaching</option>
+                        <option value="Second Detaching">Second Detaching</option>
+                        <option value="Harvested">Harvested</option>
+                      </select>
+                    </div>
+
+                    <div className="filterActions">
+                      <button className="clearAllBtn" onClick={clearAllFilters}>
+                        Clear All
+                      </button>
+                      <button className="applyBtn" onClick={() => setShowFilters(false)}>
+                        Apply Filters
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Active Filters Bar */}
+          {hasActiveFilters && (
+            <div className="activeFilters">
+              <span className="filtersLabel">Active Filters:</span>
+              {searchTerm && (
+                <span className="filterTag">
+                  Search: "{searchTerm}"
+                  <button onClick={() => setSearchTerm('')}>×</button>
+                </span>
+              )}
+              {selectedRegion !== 'ALL' && (
+                <span className="filterTag">
+                  Region: {selectedRegion}
+                  <button onClick={() => setSelectedRegion('ALL')}>×</button>
+                </span>
+              )}
+              {selectedStatus !== 'ALL' && (
+                <span className="filterTag">
+                  Status: {selectedStatus}
+                  <button onClick={() => setSelectedStatus('ALL')}>×</button>
+                </span>
+              )}
+              <button className="clearAllFilters" onClick={clearAllFilters}>
+                Clear All
+              </button>
             </div>
           )}
         </div>
@@ -326,7 +444,7 @@ export const Crops = () => {
             <FontAwesomeIcon icon={faUsers} />
           </div>
           <div className="statContent">
-            <h3>{new Set(crops.map(crop => crop.farmerId)).size}</h3>
+            <h3>{new Set(crops.map(crop => crop.farmerDetails?._id)).size}</h3>
             <p>Active Farmers</p>
           </div>
         </div>
@@ -342,19 +460,22 @@ export const Crops = () => {
               className={`sortBtn ${sortBy === 'updatedAt' ? 'active' : ''}`}
               onClick={() => handleSort('updatedAt')}
             >
-              Last Updated <FontAwesomeIcon icon={getSortIcon('updatedAt')} />
+              Last Updated 
+              {getSortIcon('updatedAt') && <FontAwesomeIcon icon={getSortIcon('updatedAt')} />}
             </button>
             <button 
               className={`sortBtn ${sortBy === 'acres' ? 'active' : ''}`}
               onClick={() => handleSort('acres')}
             >
-              Land Area <FontAwesomeIcon icon={getSortIcon('acres')} />
+              Land Area
+              {getSortIcon('acres') && <FontAwesomeIcon icon={getSortIcon('acres')} />}
             </button>
             <button 
               className={`sortBtn ${sortBy === 'income' ? 'active' : ''}`}
               onClick={() => handleSort('income')}
             >
-              Income <FontAwesomeIcon icon={getSortIcon('income')} />
+              Income
+              {getSortIcon('income') && <FontAwesomeIcon icon={getSortIcon('income')} />}
             </button>
           </div>
         </div>
@@ -364,6 +485,11 @@ export const Crops = () => {
             <FontAwesomeIcon icon={faSeedling} className="emptyIcon" />
             <h3>No Crops Found</h3>
             <p>No crops match your search criteria. Try adjusting your filters.</p>
+            {hasActiveFilters && (
+              <button className="clearFiltersBtn" onClick={clearAllFilters}>
+                Clear All Filters
+              </button>
+            )}
           </div>
         ) : (
           <div className="cropsGrid">
@@ -396,7 +522,15 @@ export const Crops = () => {
                         {status.status}
                       </div>
                     </div>
-                    <FontAwesomeIcon icon={faChevronRight} className="arrowIcon" />
+                    <div className="headerActions">
+                      <button 
+                        className="editBtn"
+                        onClick={(e) => handleEditCrop(crop, e)}
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <FontAwesomeIcon icon={faChevronRight} className="arrowIcon" />
+                    </div>
                   </div>
 
                   <div className="farmerSection">

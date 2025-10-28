@@ -12,6 +12,7 @@ import { Farmer } from './pages/farmer/Farmer'
 import { Crop } from './pages/crop/Crop'
 import { Transactions } from './pages/transactions/Transactions'
 import { Crops } from './pages/crops/Crops'
+import { SelectFarmer } from './pages/selectFarmer/SelectFarmer'
 
 function App() {
   const [isAuth, setIsAuth] = useState(false)
@@ -147,6 +148,11 @@ function App() {
           <Route
             path="/farmers"
             element={!isAuth ? <Farmers /> : <Navigate to="/login" replace />}
+          />
+
+          <Route
+            path="/select-farmer"
+            element={!isAuth ? <SelectFarmer /> : <Navigate to="/login" replace />}
           />
 
           <Route

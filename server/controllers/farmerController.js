@@ -57,11 +57,7 @@ const getAllFarmers = async (req, res) => {
   try {
     const farmers = await Farmer.find().sort({ createdAt: -1 })
     
-    res.status(200).json({
-      success: true,
-      count: farmers.length,
-      data: farmers
-    })
+    res.status(200).json(farmers)
   } catch (error) {
     console.error('Error fetching farmers:', error)
     res.status(500).json({
