@@ -34,7 +34,7 @@ export const HomeHeader = () => {
         <div className='navIcons'>  
           <button 
             className='navIcon'
-            onClick={() => handleNavigation('/create-farmer')}
+            onClick={() => handleNavigation('/select-farmer')}
             aria-label="Create"
           >
             <FontAwesomeIcon icon={faPlus} />

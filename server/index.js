@@ -5,6 +5,7 @@ const cors = require('cors')
 const authRoute = require('./routes/authRoute')
 const farmerRoute = require('./routes/farmerRoute')
 const cropRoute = require('./routes/cropRoute')
+const transactionRoute = require('./routes/transactionRoute')
 
 const app = express()
 dotenv.config({ quiet: true })
@@ -27,6 +28,7 @@ app.use(cors({
 app.use('/server/auth', authRoute)
 app.use('/server/farmers', farmerRoute)
 app.use('/server/crops', cropRoute)
+app.use('/server/transactions', transactionRoute)
 
 
 app.use((error, req, res, next) => {
