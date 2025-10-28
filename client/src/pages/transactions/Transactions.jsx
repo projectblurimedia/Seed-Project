@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './transactions.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -11,12 +12,14 @@ import {
   faFilter,
   faMoneyBillWave,
   faExchangeAlt,
-  faDatabase
+  faDatabase,
+  faChevronLeft
 } from '@fortawesome/free-solid-svg-icons'
 import { AddTransaction } from '../../components/addTransaction/AddTransaction'
 import axios from 'axios'
 
 export const Transactions = () => {
+  const navigate = useNavigate()
   const [showAddModal, setShowAddModal] = useState(false)
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
@@ -24,7 +27,7 @@ export const Transactions = () => {
   const [refreshing, setRefreshing] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredTransactions, setFilteredTransactions] = useState([])
-  const [isAdding, setIsAdding] = useState(false) // Add this state
+  const [isAdding, setIsAdding] = useState(false)
 
   useEffect(() => {
     fetchTransactions()
@@ -70,11 +73,15 @@ export const Transactions = () => {
     fetchTransactions()
   }
 
+  const handleBack = () => {
+    navigate('/') 
+  }
+
   // FIXED: Prevent duplicate transactions
   const handleAddTransaction = async (newTransaction) => {
-    if (isAdding) return; // Prevent multiple submissions
+    if (isAdding) return // Prevent multiple submissions
     
-    setIsAdding(true); // Set adding state
+    setIsAdding(true) // Set adding state
     try {
       const response = await axios.post('/transactions', newTransaction)
       
@@ -85,7 +92,7 @@ export const Transactions = () => {
       console.error('Error adding transaction:', err)
       setError('Failed to add transaction. Please try again.')
     } finally {
-      setIsAdding(false); // Reset adding state
+      setIsAdding(false) // Reset adding state
     }
   }
 
@@ -152,6 +159,10 @@ export const Transactions = () => {
               <FontAwesomeIcon icon={faSyncAlt} />
               Try Again
             </button>
+            <button className="backBtn" onClick={handleBack}>
+              <FontAwesomeIcon icon={faChevronLeft} />
+              Go Back
+            </button>
           </div>
         </div>
       </div>
@@ -165,9 +176,12 @@ export const Transactions = () => {
       {/* Header */}
       <div className="transactionsHeader">
         <div className="headerLeft">
+          <button className="backButton" onClick={handleBack}>
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </button>
           <h1>
-            <FontAwesomeIcon icon={faExchangeAlt} className="headerIcon" />
             Transactions
+            <FontAwesomeIcon icon={faExchangeAlt} className="headerIcon" />
           </h1>
           {refreshing && (
             <div className="refreshingIndicator">
@@ -189,7 +203,7 @@ export const Transactions = () => {
           <button 
             className="addTransactionBtn"
             onClick={() => setShowAddModal(true)}
-            disabled={refreshing || isAdding} // Disable when adding
+            disabled={refreshing || isAdding}
           >
             <FontAwesomeIcon icon={faPlus} />
             New Transaction
@@ -298,7 +312,7 @@ export const Transactions = () => {
               <button 
                 className="addFirstTransactionBtn"
                 onClick={() => setShowAddModal(true)}
-                disabled={isAdding} // Disable when adding
+                disabled={isAdding}
               >
                 <FontAwesomeIcon icon={faPlus} />
                 Create First Transaction
@@ -358,7 +372,7 @@ export const Transactions = () => {
         <AddTransaction
           onClose={() => setShowAddModal(false)}
           onAddTransaction={handleAddTransaction}
-          loading={isAdding} // Pass loading state to modal
+          loading={isAdding}
         />
       )}
     </div>

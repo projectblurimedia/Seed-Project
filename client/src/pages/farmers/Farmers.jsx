@@ -20,7 +20,8 @@ import {
   faSlidersH,
   faRefresh,
   faExclamationTriangle,
-  faEdit
+  faEdit,
+  faChevronLeft
 } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
@@ -106,6 +107,11 @@ export const Farmers = () => {
     navigate(`/update-farmer/${farmer.aadhar}`)
   }
 
+  // Handle back navigation
+  const handleBack = () => {
+    navigate('/') 
+  }
+
   // Clear all filters
   const clearAllFilters = () => {
     setSearchTerm('')
@@ -141,6 +147,10 @@ export const Farmers = () => {
               <FontAwesomeIcon icon={faRefresh} />
               Try Again
             </button>
+            <button className="backBtn" onClick={handleBack}>
+              <FontAwesomeIcon icon={faChevronLeft} />
+              Go Back
+            </button>
           </div>
         </div>
       </div>
@@ -154,6 +164,9 @@ export const Farmers = () => {
         <div className="headerContent">
           <div className="headerMain">
             <div className="titleSection">
+              <button className="backButton" onClick={handleBack}>
+                <FontAwesomeIcon icon={faChevronLeft} />
+              </button>
               <div className="titleIcon">
                 <FontAwesomeIcon icon={faUserGroup} />
               </div>

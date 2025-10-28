@@ -105,22 +105,23 @@
       }
 
       .backBtn {
-        background: #6b7280;
-        color: white;
-        border: none;
+        padding: 0.8rem 1.5rem;
+        border: 2px solid #e2e8f0;
         border-radius: 10px;
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
+        font-size: 0.9rem;
         font-weight: 600;
         cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        color: #374151;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        transition: all 0.3s ease;
 
         &:hover {
-          background: #4b5563;
-          transform: translateY(-1px);
+          background: #f8fafc;
+          border-color: #cbd5e1;
+          transform: translateY(-2px);
         }
       }
     }
@@ -150,20 +151,23 @@
           gap: 1rem;
 
           .backBtn {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.75rem;
-            color: #475569;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            background: white;
+            color: #374151;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 0.5rem;
 
             &:hover {
-              background: #f1f5f9;
+              background: #f8fafc;
               border-color: #cbd5e1;
+              transform: translateY(-2px);
             }
           }
 

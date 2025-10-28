@@ -72,13 +72,18 @@
 
     p {
       color: #64748b;
-      margin: 0 0 2rem 0;
       font-size: 1rem;
+      margin: 0 0 2rem 0;
       max-width: 400px;
       line-height: 1.5;
     }
 
     .errorActions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+
       .retryBtn {
         background: #1d9bf0;
         color: white;
@@ -98,6 +103,52 @@
           transform: translateY(-1px);
         }
       }
+
+      .backBtn {
+        padding: 0.75rem 1.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &:hover {
+          background: #f8fafc;
+          border-color: #cbd5e1;
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+
+  // Back Button
+  .backButton {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #64748b;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      color: #0274d1;
     }
   }
 
@@ -123,6 +174,10 @@
           display: flex;
           align-items: center;
           gap: 1rem;
+
+          .backButton {
+            margin-right: 0.5rem;
+          }
 
           .titleIcon {
             width: 60px;
@@ -1141,7 +1196,8 @@
     .addCropBtn,
     .sortBtn,
     .filterBtn,
-    .editBtn {
+    .editBtn,
+    .backButton {
       transition: none;
       
       &:hover {

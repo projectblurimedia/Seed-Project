@@ -168,8 +168,7 @@ export const AddTransaction = ({ onClose, onAddTransaction }) => {
         date: newTransaction.date
       }
 
-      const response = await axios.post('/transactions', transactionData)
-      onAddTransaction(response.data.data)
+      onAddTransaction(transactionData)
       onClose()
     } catch (error) {
       console.error('Error adding transaction:', error)

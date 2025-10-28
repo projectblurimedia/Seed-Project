@@ -20,7 +20,8 @@ import {
   faExclamationTriangle,
   faSortUp,
   faSortDown,
-  faEdit
+  faEdit,
+  faChevronLeft
 } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -226,6 +227,10 @@ export const Crops = () => {
     navigate('/select-farmer')
   }
 
+  const handleBack = () => {
+    navigate('/') 
+  }
+
   const clearAllFilters = () => {
     setSearchTerm('')
     setSelectedRegion('ALL')
@@ -261,6 +266,10 @@ export const Crops = () => {
               <FontAwesomeIcon icon={faRefresh} />
               Try Again
             </button>
+            <button className="backBtn" onClick={handleBack}>
+              <FontAwesomeIcon icon={faChevronLeft} />
+              Go Back
+            </button>
           </div>
         </div>
       </div>
@@ -274,6 +283,9 @@ export const Crops = () => {
         <div className="headerContent">
           <div className="headerMain">
             <div className="titleSection">
+              <button className="backButton" onClick={handleBack}>
+                <FontAwesomeIcon icon={faChevronLeft} />
+              </button>
               <div className="titleIcon">
                 <FontAwesomeIcon icon={faSeedling} />
               </div>
