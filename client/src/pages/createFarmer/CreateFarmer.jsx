@@ -15,26 +15,53 @@ export const CreateFarmer = () => {
     bankAccountNumber: '',
     village: '',
   })
+  const [errorMessage, setErrorMessage] = useState('')
 
   const handleChange = (e) => {
     const { name, value } = e.target
 
     if (name === 'aadhar' && !/^\d{0,12}$/.test(value)) return
     if (name === 'mobile' && !/^\d{0,10}$/.test(value)) return
+    // Optional: Add validation for bankAccountNumber if needed, e.g., numeric only
+    if (name === 'bankAccountNumber' && !/^\d*$/.test(value)) return
 
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleUndo = () => {
-    setForm({ firstName: '', lastName: '', aadhar: '', mobile: '', village: '' })
+    setForm({
+      firstName: '',
+      lastName: '',
+      aadhar: '',
+      mobile: '',
+      bankAccountNumber: '',
+      village: '',
+    })
+    setErrorMessage('')
     navigate('/')
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const res = await axios.post('/farmers', form)
-    console.log(res.data)
-    // navigate(`/create-crop/${form.aadhar}`)
+    setErrorMessage('')
+    try {
+      const res = await axios.post('/farmers', form)
+      console.log(res.data)
+      navigate(`/create-crop/${form.aadhar}`)
+    } catch (error) {
+      if (error.response && error.response.data) {
+        const { message, errors } = error.response.data
+        if (errors && Array.isArray(errors)) {
+          setErrorMessage(errors.join(', '))
+        } else if (message) {
+          setErrorMessage(message)
+        } else {
+          setErrorMessage('An unexpected error occurred')
+        }
+      } else {
+        setErrorMessage('Server error: Unable to create farmer')
+      }
+    }
   }
 
   return (
@@ -46,6 +73,8 @@ export const CreateFarmer = () => {
           </button>
           <h2>Create Farmer</h2>
         </div>
+
+        {errorMessage && <div className="errorMessage">{errorMessage}</div>}
 
         <form onSubmit={handleSubmit}>
           {/* First Name & Last Name Row */}

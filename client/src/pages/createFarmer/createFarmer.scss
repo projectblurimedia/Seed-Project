@@ -63,6 +63,19 @@
       }
     }
 
+    .errorMessage {
+      background: #ffebee;
+      color: #ef5350;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-align: center;
+      border: 1px solid #ef5350;
+      box-shadow: 0 2px 4px rgba(239, 83, 80, 0.1);
+      transition: all 0.3s ease;
+    }
+
     form {
       display: flex;
       flex-direction: column;
@@ -201,6 +214,11 @@
             transform: scale(1.1);
           }
         }
+      }
+
+      .errorMessage {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.8rem;
       }
 
       form {

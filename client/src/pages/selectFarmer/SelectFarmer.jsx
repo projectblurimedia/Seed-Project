@@ -132,7 +132,7 @@ export const SelectFarmer = () => {
               <FontAwesomeIcon icon={faRefresh} />
               Try Again
             </button>
-            <button className="backBtn" onClick={() => navigate('/crops')}>
+            <button className="backBtn" onClick={() => navigate(-1)}>
               <FontAwesomeIcon icon={faChevronLeft} />
               Back to Crops
             </button>
@@ -149,7 +149,7 @@ export const SelectFarmer = () => {
         <div className="headerContent">
           <div className="headerMain">
             <div className="titleSection">
-              <button className="backBtn" onClick={() => navigate('/crops')}>
+              <button className="backBtn" onClick={() => navigate(-1)}>
                 <FontAwesomeIcon icon={faChevronLeft} />
               </button>
               <div className="titleIcon">

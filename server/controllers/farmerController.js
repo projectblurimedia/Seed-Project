@@ -27,9 +27,7 @@ const createFarmer = async (req, res) => {
       message: 'Farmer created successfully',
       data: farmer
     })
-  } catch (error) {
-    console.error('Error creating farmer:', error)
-    
+  } catch (error) {    
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map(err => err.message)
       return res.status(400).json({
@@ -40,9 +38,16 @@ const createFarmer = async (req, res) => {
     }
 
     if (error.code === 11000) {
+      const duplicateField = Object.keys(error.keyPattern)[0]
+      let message = 'Duplicate entry detected'
+      if (duplicateField === 'aadhar') {
+        message = 'Farmer with this Aadhar number already exists'
+      } else if (duplicateField === 'bankAccountNumber') {
+        message = 'Farmer with this Bank Account Number already exists'
+      }
       return res.status(400).json({
         success: false,
-        message: 'Farmer with this Aadhar number already exists'
+        message
       })
     }
 
