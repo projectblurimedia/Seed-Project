@@ -223,7 +223,7 @@ export const Transactions = () => {
       XLSX.utils.book_append_sheet(wb, ws, 'Transactions Data')
 
       // Generate Excel file and download
-      const fileName = `transactions_${new Date().toISOString().split('T')[0]}.xlsx`
+      const fileName = `transactions_${new Date().toISOString()}.xlsx`
       XLSX.writeFile(wb, fileName)
       
       showToast(`Exported ${transactionsToExport.length} transactions to Excel`, 'success')

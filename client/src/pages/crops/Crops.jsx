@@ -237,7 +237,7 @@ export const Crops = () => {
       XLSX.utils.book_append_sheet(wb, ws, 'Crops Data')
 
       // Generate Excel file and download
-      const fileName = `crops_data_${new Date().toISOString().split('T')[0]}.xlsx`
+      const fileName = `crops_data_${new Date().toISOString()}.xlsx`
       XLSX.writeFile(wb, fileName)
       
       showToast(`Exported ${cropsToExport.length} crops to Excel`, 'success')

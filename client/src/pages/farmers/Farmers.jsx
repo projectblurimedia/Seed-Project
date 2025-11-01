@@ -199,7 +199,7 @@ export const Farmers = () => {
       XLSX.utils.book_append_sheet(wb, ws, 'Farmers Data')
 
       // Generate Excel file and download
-      const fileName = `farmers_data_${new Date().toISOString().split('T')[0]}.xlsx`
+      const fileName = `farmers_data_${new Date().toISOString()}.xlsx`
       XLSX.writeFile(wb, fileName)
       
       showToast(`Exported ${farmersToExport.length} farmers to Excel`, 'success')
