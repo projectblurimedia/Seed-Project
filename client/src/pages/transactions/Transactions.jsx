@@ -352,7 +352,7 @@ export const Transactions = () => {
             <FontAwesomeIcon icon={faSearch} className="searchIcon" />
             <input
               type="text"
-              placeholder="Search by account number, amount, or date..."
+              placeholder="Search by account number, amount..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
