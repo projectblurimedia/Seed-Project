@@ -17,7 +17,7 @@
       0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
-  .dailyUpdatesSection {
+  .recentUpdatesSection {
     flex: 1;
     padding: 1rem;
     overflow-y: auto;
@@ -145,7 +145,7 @@
 
   // Responsive Design
   @media (max-width: 768px) {
-    .dailyUpdatesSection {
+    .recentUpdatesSection {
       padding: 0.75rem;
     }
 
@@ -162,7 +162,7 @@
   }
 
   @media (max-width: 480px) {
-    .dailyUpdatesSection {
+    .recentUpdatesSection {
       padding: 0.5rem;
     }
 

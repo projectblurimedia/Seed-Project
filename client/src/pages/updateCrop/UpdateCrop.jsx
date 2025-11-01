@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import './updateCrop.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faPlus, faXmark, faChevronDown, faCalendar, faTrash, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faPlus, faXmark, faChevronDown, faCalendar, faTrash, faChevronUp, faUser } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
+import { Toast } from '../../components/toast/Toast'
 
 export const UpdateCrop = () => {
   const { id } = useParams()
@@ -11,6 +12,7 @@ export const UpdateCrop = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [updating, setUpdating] = useState(false)
+  const [toasts, setToasts] = useState([])
 
   const [seedTypes, setSeedTypes] = useState(['Babycorn Seed', 'Popcorn', 'Maize 161', 'Sweet Corn', 'Field Corn'])
   const [regions, setRegions] = useState(['Jangareddygudem', 'Vijayanagaram'])
@@ -31,6 +33,12 @@ export const UpdateCrop = () => {
     harvestingDate: '',
     totalIncome: '',
     yield: ''
+  })
+
+  const [formErrors, setFormErrors] = useState({
+    seedType: '',
+    region: '',
+    acres: ''
   })
 
   const [pesticideEntries, setPesticideEntries] = useState([])
@@ -83,6 +91,37 @@ export const UpdateCrop = () => {
   const secondDetachingDateRef = useRef(null)
   const harvestingDateRef = useRef(null)
 
+  // Helper function to convert date string to ISO string with current time
+  const formatDateToISOWithTime = (dateString) => {
+    if (!dateString) return '';
+    
+    // Create date object from input (sets to start of day in local time)
+    const date = new Date(dateString);
+    
+    // Add current time to the date
+    const now = new Date();
+    date.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+    
+    // Return ISO string with time (this will include timezone info)
+    return date.toISOString();
+  }
+
+  // Helper to format date for input value (YYYY-MM-DD for date input)
+  const formatDateForInput = (isoString) => {
+    if (!isoString) return '';
+    return isoString.split('T')[0]; // Returns YYYY-MM-DD
+  }
+
+  // Add toast function
+  const addToast = (message, type = 'error') => {
+    const id = Date.now() + Math.random()
+    setToasts(prev => [...prev, { id, message, type }])
+  }
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id))
+  }
+
   // Fetch crop details on component mount
   useEffect(() => {
     const fetchCropDetails = async () => {
@@ -94,13 +133,6 @@ export const UpdateCrop = () => {
         const response = await axios.get(`/crops/${id}`)
         const cropData = response.data
 
-        const formatDateForInput = (dateString) => {
-          if (!dateString) return ''
-          const date = new Date(dateString)
-          return date.toISOString().split('T')[0]
-        }
-
-        
         // Set main form data
         setForm({
           seedType: cropData.seedType || '',
@@ -108,26 +140,20 @@ export const UpdateCrop = () => {
           acres: cropData.acres || '',
           malePackets: cropData.malePackets || '',
           femalePackets: cropData.femalePackets || '',
-          sowingDateMale: formatDateForInput(cropData.sowingDateMale),
-          sowingDateFemale: formatDateForInput(cropData.sowingDateFemale),
-          firstDetachingDate: formatDateForInput(cropData.firstDetachingDate),
-          secondDetachingDate: formatDateForInput(cropData.secondDetachingDate),
-          harvestingDate: formatDateForInput(cropData.harvestingDate),
+          sowingDateMale: cropData.sowingDateMale || '',
+          sowingDateFemale: cropData.sowingDateFemale || '',
+          firstDetachingDate: cropData.firstDetachingDate || '',
+          secondDetachingDate: cropData.secondDetachingDate || '',
+          harvestingDate: cropData.harvestingDate || '',
           totalIncome: cropData.totalIncome || '',
-          yield: cropData.yield || ''
+          yield: cropData.yield || '',
+          farmerDetails: cropData.farmerDetails || null
         })
 
-        const formatArrayDates = (entries) => {
-          return (entries || []).map(entry => ({
-            ...entry,
-            date: formatDateForInput(entry.date)
-          }))
-        }
-
-        // Set array entries with formatted dates
-        setPesticideEntries(formatArrayDates(cropData.pesticideEntries))
-        setCoolieEntries(formatArrayDates(cropData.coolieEntries))
-        setPaymentEntries(formatArrayDates(cropData.paymentEntries))
+        // Set array entries
+        setPesticideEntries(cropData.pesticideEntries || [])
+        setCoolieEntries(cropData.coolieEntries || [])
+        setPaymentEntries(cropData.paymentEntries || [])
 
         // Initialize visibility states
         setEntryVisibility({
@@ -139,6 +165,7 @@ export const UpdateCrop = () => {
       } catch (err) {
         console.error('Error fetching crop details:', err)
         setError('Failed to load crop details. Please try again.')
+        addToast('Failed to load crop details. Please try again.', 'error')
       } finally {
         setLoading(false)
       }
@@ -149,37 +176,108 @@ export const UpdateCrop = () => {
     }
   }, [id])
 
+  // Form validation
+  const validateForm = () => {
+    const errors = {
+      seedType: '',
+      region: '',
+      acres: ''
+    }
+
+    let isValid = true
+
+    if (!form.seedType.trim()) {
+      errors.seedType = 'Seed type is required'
+      isValid = false
+    }
+
+    if (!form.region.trim()) {
+      errors.region = 'Region is required'
+      isValid = false
+    }
+
+    if (!form.acres || parseFloat(form.acres) <= 0) {
+      errors.acres = 'Valid acres value is required'
+      isValid = false
+    }
+
+    setFormErrors(errors)
+    return isValid
+  }
+
   // Handle form changes
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type } = e.target
+    
+    if (type === 'date') {
+      // Convert date input to ISO string with current time
+      const isoDateTime = value ? formatDateToISOWithTime(value) : '';
+      setForm((prev) => ({ ...prev, [name]: isoDateTime }))
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }))
+    }
+    
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({ ...prev, [name]: '' }))
+    }
   }
 
   // Handle array entry changes
   const handlePesticideChange = (index, field, value) => {
     const updatedEntries = [...pesticideEntries]
-    updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    
+    if (field === 'date' && value) {
+      // Convert date to ISO string with current time
+      const isoDateTime = formatDateToISOWithTime(value);
+      updatedEntries[index] = { ...updatedEntries[index], [field]: isoDateTime }
+    } else {
+      updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    }
+    
     setPesticideEntries(updatedEntries)
   }
 
   const handleCoolieChange = (index, field, value) => {
     const updatedEntries = [...coolieEntries]
-    updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    
+    if (field === 'date' && value) {
+      // Convert date to ISO string with current time
+      const isoDateTime = formatDateToISOWithTime(value);
+      updatedEntries[index] = { ...updatedEntries[index], [field]: isoDateTime }
+    } else {
+      updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    }
+    
     setCoolieEntries(updatedEntries)
   }
 
   const handlePaymentChange = (index, field, value) => {
     const updatedEntries = [...paymentEntries]
-    updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    
+    if (field === 'date' && value) {
+      // Convert date to ISO string with current time
+      const isoDateTime = formatDateToISOWithTime(value);
+      updatedEntries[index] = { ...updatedEntries[index], [field]: isoDateTime }
+    } else {
+      updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    }
+    
     setPaymentEntries(updatedEntries)
   }
 
   // Custom item handlers
   const handleAddSeed = () => {
     const trimmed = customSeed.trim()
+    if (!trimmed) {
+      addToast('Please enter a seed type', 'error')
+      return
+    }
+    
     if (trimmed && !seedTypes.includes(trimmed)) {
       setSeedTypes((prev) => [...prev, trimmed])
       setForm((prev) => ({ ...prev, seedType: trimmed }))
+      addToast(`"${trimmed}" added to seed types`, 'success')
     }
     setCustomSeed('')
     setIsCustomSeed(false)
@@ -187,9 +285,15 @@ export const UpdateCrop = () => {
 
   const handleAddRegion = () => {
     const trimmed = customRegion.trim()
+    if (!trimmed) {
+      addToast('Please enter a region', 'error')
+      return
+    }
+    
     if (trimmed && !regions.includes(trimmed)) {
       setRegions((prev) => [...prev, trimmed])
       setForm((prev) => ({ ...prev, region: trimmed }))
+      addToast(`"${trimmed}" added to regions`, 'success')
     }
     setCustomRegion('')
     setIsCustomRegion(false)
@@ -197,9 +301,15 @@ export const UpdateCrop = () => {
 
   const handleAddPesticide = () => {
     const trimmed = customPesticide.trim()
+    if (!trimmed) {
+      addToast('Please enter a pesticide name', 'error')
+      return
+    }
+    
     if (trimmed && !pesticides.includes(trimmed) && isCustomPesticide !== null) {
       setPesticides((prev) => [...prev, trimmed])
       handlePesticideChange(isCustomPesticide, 'pesticide', trimmed)
+      addToast(`"${trimmed}" added to pesticides`, 'success')
     }
     setCustomPesticide('')
     setIsCustomPesticide(null)
@@ -207,9 +317,15 @@ export const UpdateCrop = () => {
 
   const handleAddWork = () => {
     const trimmed = customWork.trim()
+    if (!trimmed) {
+      addToast('Please enter a work type', 'error')
+      return
+    }
+    
     if (trimmed && !workTypes.includes(trimmed) && isCustomWork !== null) {
       setWorkTypes((prev) => [...prev, trimmed])
       handleCoolieChange(isCustomWork, 'work', trimmed)
+      addToast(`"${trimmed}" added to work types`, 'success')
     }
     setCustomWork('')
     setIsCustomWork(null)
@@ -282,6 +398,11 @@ export const UpdateCrop = () => {
   const handleSelect = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
     setOpenDropdowns(prev => ({ ...prev, [field === 'seedType' ? 'seed' : 'region']: false }))
+    
+    // Clear error when user selects a value
+    if (formErrors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: '' }))
+    }
   }
 
   const handlePesticideSelect = (index, value) => {
@@ -321,23 +442,71 @@ export const UpdateCrop = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
+    // Validate required fields
+    if (!validateForm()) {
+      addToast('Please fill all required fields correctly', 'error')
+      return
+    }
+
     try {
       setUpdating(true)
       
-      const formData = {
+      const cropData = {
         ...form,
         pesticideEntries,
         coolieEntries,
-        paymentEntries
+        paymentEntries,
+        acres: parseFloat(form.acres),
+        malePackets: parseInt(form.malePackets) || 0,
+        femalePackets: parseInt(form.femalePackets) || 0,
+        totalIncome: parseFloat(form.totalIncome) || 0,
+        yield: parseFloat(form.yield) || 0,
+        updatedAt: new Date().toISOString()
       }
 
-      const res = await axios.put(`/crops/${id}`, formData)
-      // console.log(res.data)
-      navigate(`/crops/${id}`)
+      // Calculate totals
+      const totalPesticideCost = pesticideEntries.reduce((sum, entry) => sum + (parseFloat(entry.amount) || 0), 0)
+      const totalCoolieCost = coolieEntries.reduce((sum, entry) => sum + (parseFloat(entry.amount) || 0), 0)
+      const totalPaymentAmount = paymentEntries.reduce((sum, entry) => sum + (parseFloat(entry.amount) || 0), 0)
+      const netProfit = (parseFloat(form.totalIncome) || 0) - (totalPesticideCost + totalCoolieCost + totalPaymentAmount)
+
+      const finalData = {
+        ...cropData,
+        totalPesticideCost,
+        totalCoolieCost,
+        totalPaymentAmount,
+        netProfit
+      }
+
+      const res = await axios.put(`/crops/${id}`, finalData)
+      addToast('Crop updated successfully!', 'success')
+      
+      // Navigate back after a short delay
+      setTimeout(() => {
+        navigate(`/crops/${id}`)
+      }, 500)
       
     } catch (err) {
       console.error('Error updating crop:', err)
-      alert('Error updating crop details. Please try again.')
+      
+      // Handle specific validation errors from backend
+      if (err.response?.data?.message) {
+        const errorMessage = err.response.data.message
+        
+        if (errorMessage.includes('seedType') || errorMessage.includes('Seed type')) {
+          addToast('Seed type is required', 'error')
+        } else if (errorMessage.includes('region') || errorMessage.includes('Region')) {
+          addToast('Region is required', 'error')
+        } else if (errorMessage.includes('acres') || errorMessage.includes('Acres')) {
+          addToast('Valid acres value is required', 'error')
+        } else if (errorMessage.includes('Aadhar')) {
+          addToast('Invalid Aadhar number in farmer details', 'error')
+        } else {
+          addToast(errorMessage, 'error')
+        }
+      } else {
+        addToast('Error updating crop details. Please try again.', 'error')
+      }
     } finally {
       setUpdating(false)
     }
@@ -411,6 +580,16 @@ export const UpdateCrop = () => {
 
   return (
     <div className="updateCropContainer">
+      {/* Toast Notifications */}
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          onClose={() => removeToast(toast.id)}
+        />
+      ))}
+
       <div className="formCard">
         <div className="formHeader">
           <button className="undoBtn" onClick={handleUndo}>
@@ -419,15 +598,49 @@ export const UpdateCrop = () => {
           <h2>Update Crop</h2>
         </div>
 
+        {/* Farmer Details Card */}
+        {form.farmerDetails && (
+          <div className="farmerDetailsCard">
+            <div className="farmerCardHeader">
+              <FontAwesomeIcon icon={faUser} className="userIcon" />
+              <h3>Farmer Information</h3>
+            </div>
+            <div className="farmerDetailsGrid">
+              <div className="farmerDetailItem">
+                <span className="detailLabel">Name:</span>
+                <span className="detailValue highlight">
+                  {form.farmerDetails.firstName} {form.farmerDetails.lastName}
+                </span>
+              </div>
+              <div className="farmerDetailItem">
+                <span className="detailLabel">Aadhar:</span>
+                <span className="detailValue highlight">{form.farmerDetails.aadhar}</span>
+              </div>
+              {form.farmerDetails.mobile && (
+                <div className="farmerDetailItem">
+                  <span className="detailLabel">Mobile:</span>
+                  <span className="detailValue highlight">{form.farmerDetails.mobile}</span>
+                </div>
+              )}
+              {form.farmerDetails.village && (
+                <div className="farmerDetailItem">
+                  <span className="detailLabel">Village:</span>
+                  <span className="detailValue highlight">{form.farmerDetails.village}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           {/* Seed & Region */}
           <div className="inputRow">
             {/* Seed */}
             <div className="inputGroup">
-              <label>Seed Type</label>
+              <label>Seed Type <span className="required">*</span></label>
               {!isCustomSeed ? (
                 <div className="dropdownContainer" ref={seedDropdownRef}>
-                  <div className="customSelect" onClick={() => toggleDropdown('seed')}>
+                  <div className={`customSelect ${formErrors.seedType ? 'error' : ''}`} onClick={() => toggleDropdown('seed')}>
                     <span className={`selectedValue ${!form.seedType ? 'placeholder' : ''}`}>
                       {form.seedType || 'Select seed type'}
                     </span>
@@ -436,6 +649,7 @@ export const UpdateCrop = () => {
                       className={`dropdownIcon ${openDropdowns.seed ? 'open' : ''}`} 
                     />
                   </div>
+                  {formErrors.seedType && <span className="fieldError">{formErrors.seedType}</span>}
                   {openDropdowns.seed && (
                     <div className="dropdownMenu">
                       {seedTypes.map((seed, i) => (
@@ -460,6 +674,7 @@ export const UpdateCrop = () => {
                     placeholder="Enter new seed type" 
                     value={customSeed} 
                     onChange={(e) => setCustomSeed(e.target.value)} 
+                    className={!customSeed.trim() ? 'error' : ''}
                   />
                   <div className="customButtons">
                     <button type="button" className="addBtn" onClick={handleAddSeed}>
@@ -475,10 +690,10 @@ export const UpdateCrop = () => {
 
             {/* Region */}
             <div className="inputGroup">
-              <label>Region</label>
+              <label>Region <span className="required">*</span></label>
               {!isCustomRegion ? (
                 <div className="dropdownContainer" ref={regionDropdownRef}>
-                  <div className="customSelect" onClick={() => toggleDropdown('region')}>
+                  <div className={`customSelect ${formErrors.region ? 'error' : ''}`} onClick={() => toggleDropdown('region')}>
                     <span className={`selectedValue ${!form.region ? 'placeholder' : ''}`}>
                       {form.region || 'Select region'}
                     </span>
@@ -487,6 +702,7 @@ export const UpdateCrop = () => {
                       className={`dropdownIcon ${openDropdowns.region ? 'open' : ''}`} 
                     />
                   </div>
+                  {formErrors.region && <span className="fieldError">{formErrors.region}</span>}
                   {openDropdowns.region && (
                     <div className="dropdownMenu">
                       {regions.map((region, i) => (
@@ -511,6 +727,7 @@ export const UpdateCrop = () => {
                     placeholder="Enter new region" 
                     value={customRegion} 
                     onChange={(e) => setCustomRegion(e.target.value)} 
+                    className={!customRegion.trim() ? 'error' : ''}
                   />
                   <div className="customButtons">
                     <button type="button" className="addBtn" onClick={handleAddRegion}>
@@ -562,9 +779,8 @@ export const UpdateCrop = () => {
                   ref={sowingDateMaleRef} 
                   type="date" 
                   name="sowingDateMale" 
-                  value={form.sowingDateMale} 
+                  value={formatDateForInput(form.sowingDateMale)} 
                   onChange={handleChange} 
- 
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -576,9 +792,8 @@ export const UpdateCrop = () => {
                   ref={sowingDateFemaleRef} 
                   type="date" 
                   name="sowingDateFemale" 
-                  value={form.sowingDateFemale} 
+                  value={formatDateForInput(form.sowingDateFemale)} 
                   onChange={handleChange} 
- 
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -594,9 +809,8 @@ export const UpdateCrop = () => {
                   ref={firstDetachingDateRef} 
                   type="date" 
                   name="firstDetachingDate" 
-                  value={form.firstDetachingDate} 
+                  value={formatDateForInput(form.firstDetachingDate)} 
                   onChange={handleChange} 
- 
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -608,9 +822,8 @@ export const UpdateCrop = () => {
                   ref={secondDetachingDateRef} 
                   type="date" 
                   name="secondDetachingDate" 
-                  value={form.secondDetachingDate} 
+                  value={formatDateForInput(form.secondDetachingDate)} 
                   onChange={handleChange} 
- 
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -620,7 +833,7 @@ export const UpdateCrop = () => {
           {/* Acres + Harvesting */}
           <div className="inputRow">
             <div className="inputGroup">
-              <label>Acres</label>
+              <label>Acres <span className="required">*</span></label>
               <input 
                 type="number" 
                 name="acres" 
@@ -628,9 +841,10 @@ export const UpdateCrop = () => {
                 onChange={handleChange} 
                 placeholder="Enter acres" 
                 min="0" 
-                step="0.01"  
-                className="number-input"
+                step="0.01" 
+                className={`number-input ${formErrors.acres ? 'error' : ''}`}
               />
+              {formErrors.acres && <span className="fieldError">{formErrors.acres}</span>}
             </div>
             <div className="inputGroup">
               <label>Date of Harvesting</label>
@@ -639,9 +853,8 @@ export const UpdateCrop = () => {
                   ref={harvestingDateRef} 
                   type="date" 
                   name="harvestingDate" 
-                  value={form.harvestingDate} 
+                  value={formatDateForInput(form.harvestingDate)} 
                   onChange={handleChange} 
- 
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -795,9 +1008,8 @@ export const UpdateCrop = () => {
                             <div className="dateInputContainer">
                               <input 
                                 type="date" 
-                                value={entry.date} 
+                                value={formatDateForInput(entry.date)} 
                                 onChange={(e) => handlePesticideChange(index, 'date', e.target.value)} 
-               
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
                             </div>
@@ -951,9 +1163,8 @@ export const UpdateCrop = () => {
                             <div className="dateInputContainer">
                               <input 
                                 type="date" 
-                                value={entry.date} 
+                                value={formatDateForInput(entry.date)} 
                                 onChange={(e) => handleCoolieChange(index, 'date', e.target.value)} 
-               
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
                             </div>
@@ -1036,7 +1247,6 @@ export const UpdateCrop = () => {
                               onChange={(e) => handlePaymentChange(index, 'amount', e.target.value)} 
                               placeholder="Enter amount" 
                               min="0" 
-             
                               className="number-input"
                             />
                           </div>
@@ -1047,9 +1257,8 @@ export const UpdateCrop = () => {
                             <div className="dateInputContainer">
                               <input 
                                 type="date" 
-                                value={entry.date} 
+                                value={formatDateForInput(entry.date)} 
                                 onChange={(e) => handlePaymentChange(index, 'date', e.target.value)} 
-               
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
                             </div>
@@ -1065,7 +1274,6 @@ export const UpdateCrop = () => {
                               value={entry.purpose} 
                               onChange={(e) => handlePaymentChange(index, 'purpose', e.target.value)} 
                               placeholder="e.g., Advance, Progress, Final" 
-             
                             />
                           </div>
 

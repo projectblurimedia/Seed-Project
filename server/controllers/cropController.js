@@ -25,6 +25,30 @@ exports.getCropById = async (req, res) => {
   }
 }
 
+exports.getLatestUpdatedCrops = async (req, res) => {
+  try {
+    const latestCrops = await Crop
+      .find({ 'latestUpdate.date': { $exists: true } }) 
+      .sort({ 'latestUpdate.date': -1 })               
+      .limit(15)                                      
+      .select({                                       
+        farmerDetails: { firstName: 1, lastName: 1, aadhar: 1, village: 1 },
+        seedType: 1,
+        region: 1,
+        acres: 1,
+        status: 1,
+        latestUpdate: 1,
+        createdAt: 1
+      })
+      .lean()                                          
+      .exec()
+
+    res.status(200).json(latestCrops)
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message })
+  }
+}
+
 // GET crops by farmer Aadhar
 exports.getCropsByFarmer = async (req, res) => {
   try {

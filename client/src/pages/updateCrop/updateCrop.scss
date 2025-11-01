@@ -106,7 +106,7 @@
   .formCard {
     background: ghostwhite;
     width: 100%;
-    max-width: 800px;
+    max-width: 700px;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
@@ -155,11 +155,82 @@
       }
     }
 
+    // Farmer Details Card
+    .farmerDetailsCard {
+      background: linear-gradient(135deg, #3a98f1 0%, #9c52e6 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: .5rem;
+
+      .farmerCardHeader {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        padding-bottom: 0.8rem;
+
+        .userIcon {
+          font-size: 1.1rem;
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 600;
+        }
+      }
+
+      .farmerDetailsGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.8rem;
+
+        .farmerDetailItem {
+          display: flex;
+          flex-direction: column;
+          gap: 0.3rem;
+
+          .detailLabel {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            font-weight: 500;
+          }
+
+          .detailValue {
+            font-size: 0.95rem;
+            font-weight: 600;
+            
+            &.highlight {
+              background: rgba(255, 255, 255, 0.065);
+              padding: 0.3rem 0.6rem;
+              border-radius: 6px;
+              display: inline-block;
+            }
+          }
+        }
+      }
+    }
+
     form {
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
       width: 100%;
+
+      .required {
+        color: #dc3545;
+        font-weight: bold;
+      }
+
+      .fieldError {
+        color: #dc3545;
+        font-size: 0.8rem;
+        margin-top: 0.3rem;
+        font-weight: 500;
+      }
 
       .section {
         display: flex;
@@ -428,6 +499,22 @@
 
                     &[type="date"] {
                       padding-right: 2.5rem;
+                      color: #334155;
+                      
+                      &::-webkit-datetime-edit-fields-wrapper {
+                        color: #334155;
+                      }
+                      
+                      &::-webkit-datetime-edit-text,
+                      &::-webkit-datetime-edit-month-field,
+                      &::-webkit-datetime-edit-day-field,
+                      &::-webkit-datetime-edit-year-field {
+                        color: #334155;
+                      }
+                      
+                      &:invalid::-webkit-datetime-edit {
+                        color: #94a3b8;
+                      }
                     }
 
                     &.number-input {
@@ -439,6 +526,15 @@
                       
                       -moz-appearance: textfield;
                       appearance: textfield;
+                    }
+
+                    &.error {
+                      border-color: #dc3545;
+                      
+                      &:focus {
+                        border-color: #dc3545;
+                        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+                      }
                     }
                   }
 
@@ -481,6 +577,10 @@
 
                       &:hover {
                         border-color: #cbd5e1;
+                      }
+
+                      &.error {
+                        border-color: #dc3545;
                       }
 
                       .selectedValue {
@@ -590,6 +690,10 @@
 
                     input {
                       width: 100%;
+
+                      &.error {
+                        border-color: #dc3545;
+                      }
                     }
 
                     .customButtons {
@@ -689,6 +793,22 @@
 
             &[type="date"] {
               padding-right: 2.5rem;
+              color: #334155;
+              
+              &::-webkit-datetime-edit-fields-wrapper {
+                color: #334155;
+              }
+              
+              &::-webkit-datetime-edit-text,
+              &::-webkit-datetime-edit-month-field,
+              &::-webkit-datetime-edit-day-field,
+              &::-webkit-datetime-edit-year-field {
+                color: #334155;
+              }
+              
+              &:invalid::-webkit-datetime-edit {
+                color: #94a3b8;
+              }
             }
 
             &.number-input {
@@ -700,6 +820,15 @@
               
               -moz-appearance: textfield;
               appearance: textfield;
+            }
+
+            &.error {
+              border-color: #dc3545;
+              
+              &:focus {
+                border-color: #dc3545;
+                box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+              }
             }
           }
 
@@ -742,6 +871,10 @@
 
               &:hover {
                 border-color: #cbd5e1;
+              }
+
+              &.error {
+                border-color: #dc3545;
               }
 
               .selectedValue {
@@ -851,6 +984,10 @@
 
             input {
               width: 100%;
+
+              &.error {
+                border-color: #dc3545;
+              }
             }
 
             .customButtons {
@@ -939,6 +1076,29 @@
       .formHeader {
         h2 {
           font-size: 1.2rem;
+        }
+      }
+
+      .farmerDetailsCard {
+        padding: 1rem;
+
+        .farmerDetailsGrid {
+          grid-template-columns: 1fr;
+          gap: 0.6rem;
+
+          .farmerDetailItem {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            .detailLabel{
+              min-width: 55px;
+            }
+
+            .detailValue{
+              flex: 1;
+              font-size: .85rem;
+            }
+          }
         }
       }
 

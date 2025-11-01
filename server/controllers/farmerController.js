@@ -96,9 +96,6 @@ const getFarmerByAadhar = async (req, res) => {
 const updateFarmer = async (req, res) => {
   try {
     const aadhar = req.params.aadhar.trim() 
-    console.log("🟡 Update request received")
-    console.log("Params aadhar:", aadhar)
-    console.log("Update body:", req.body)
 
     const farmer = await Farmer.findOneAndUpdate(
       { aadhar },                         
@@ -112,8 +109,6 @@ const updateFarmer = async (req, res) => {
         message: 'Farmer not found'
       })
     }
-
-    console.log("✅ Updated farmer:", farmer)
 
     res.status(200).json({
       success: true,

@@ -4,12 +4,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
+import { Toast } from '../../components/toast/Toast'
 
 export const UpdateFarmer = () => {
   const navigate = useNavigate()
   const { aadhar } = useParams()
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [toasts, setToasts] = useState([])
 
   const [form, setForm] = useState({
     firstName: '',
@@ -20,15 +22,35 @@ export const UpdateFarmer = () => {
     village: '',
   })
 
+  // Efficient toast management
+  const showToast = (message, type = 'error') => {
+    const id = Date.now() + Math.random()
+    setToasts(prev => [...prev, { id, message, type }])
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      removeToast(id)
+    }, 5000)
+  }
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id))
+  }
+
   // Fetch farmer details on component mount
   useEffect(() => {
     const fetchFarmerDetails = async () => {
       try {
         setLoading(true)
-        setError(null)
+        setToasts([])
         
-        // Fetch farmer details by Aadhar
-        const response = await axios.get(`/farmers/${aadhar}`)
+        const response = await axios.get(`/farmers/${aadhar}`, {
+          timeout: 10000,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        
         const farmerData = response.data
         
         setForm({
@@ -40,9 +62,27 @@ export const UpdateFarmer = () => {
           village: farmerData.village || '',
         })
         
-      } catch (err) {
-        console.error('Error fetching farmer details:', err)
-        setError('Failed to load farmer details. Please try again.')
+      } catch (error) {
+        console.error('Error fetching farmer details:', error)
+        
+        let errorMessage = 'Failed to load farmer details'
+        
+        if (error.code === 'ECONNABORTED') {
+          errorMessage = 'Request timeout. Please try again.'
+        } else if (error.response) {
+          const { status } = error.response
+          if (status === 404) {
+            errorMessage = 'Farmer not found'
+          } else if (status === 500) {
+            errorMessage = 'Server error. Please try again later.'
+          } else {
+            errorMessage = 'Unable to load farmer details'
+          }
+        } else if (error.request) {
+          errorMessage = 'No response from server. Please check your connection.'
+        }
+        
+        showToast(errorMessage, 'error')
       } finally {
         setLoading(false)
       }
@@ -56,32 +96,104 @@ export const UpdateFarmer = () => {
   const handleChange = (e) => {
     const { name, value } = e.target
 
-    if (name === 'aadhar' && !/^\d{0,12}$/.test(value)) return
-    if (name === 'mobile' && !/^\d{0,10}$/.test(value)) return
+    // Input validation patterns
+    const patterns = {
+      aadhar: /^\d{0,12}$/,
+      mobile: /^\d{0,10}$/,
+      bankAccountNumber: /^[\d]*$/
+    }
+
+    if (patterns[name] && !patterns[name].test(value)) return
 
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleUndo = () => {
+  const handleBack = () => {
     navigate(-1)
+  }
+
+  const validateForm = () => {
+    const errors = []
+
+    if (!form.firstName.trim()) errors.push('First name is required')
+    if (!form.lastName.trim()) errors.push('Last name is required')
+    
+    if (!form.aadhar || form.aadhar.length !== 12) {
+      errors.push('Valid 12-digit Aadhar number is required')
+    }
+    
+    if (!form.mobile || form.mobile.length !== 10) {
+      errors.push('Valid 10-digit mobile number is required')
+    }
+    
+    if (!form.bankAccountNumber.trim()) errors.push('Bank account number is required')
+    if (!form.village.trim()) errors.push('Village name is required')
+
+    return errors
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     
+    // Clear previous toasts
+    setToasts([])
+
+    // Validate form and show only first error
+    const errors = validateForm()
+    if (errors.length > 0) {
+      showToast(errors[0], 'error')
+      return
+    }
+
+    setSubmitting(true)
+
     try {
-      setLoading(true)
+      const response = await axios.put(`/farmers/${aadhar}`, form, {
+        timeout: 10000,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.status === 200) {
+        showToast('Farmer details updated successfully!', 'success')
+        
+        // Navigate back after showing success message
+        setTimeout(() => {
+          navigate(`/farmers/${aadhar}`)
+        }, 500)
+      }
       
-      await axios.put(`/farmers/${aadhar}`, form)
+    } catch (error) {
+      console.error('Error updating farmer:', error)
       
-      alert('Farmer details updated successfully!')
-      navigate(`/farmers/${aadhar}`)
-      
-    } catch (err) {
-      console.error('Error updating farmer:', err)
-      alert('Error updating farmer details. Please try again.')
+      let errorMessage = 'Failed to update farmer details'
+
+      if (error.code === 'ECONNABORTED') {
+        errorMessage = 'Request timeout. Please try again.'
+      } else if (error.response) {
+        const { data, status } = error.response
+        
+        if (status === 404) {
+          errorMessage = 'Farmer not found'
+        } else if (status === 409) {
+          errorMessage = 'Farmer with this Aadhar number already exists'
+        } else if (status === 400) {
+          errorMessage = data.message || 'Invalid data provided'
+        } else if (status === 500) {
+          errorMessage = 'Server error. Please try again later.'
+        } else if (data.errors && Array.isArray(data.errors)) {
+          errorMessage = data.errors[0]
+        } else if (data.message) {
+          errorMessage = data.message
+        }
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.'
+      }
+
+      showToast(errorMessage, 'error')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -90,27 +202,13 @@ export const UpdateFarmer = () => {
     return (
       <div className="updateFarmerContainer">
         <div className="loadingState">
-          <div className="spinner"></div>
-          <p>Loading farmer details...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Error State
-  if (error) {
-    return (
-      <div className="updateFarmerContainer">
-        <div className="errorState">
-          <div className="errorIcon">⚠️</div>
-          <h3>Unable to Load Farmer Details</h3>
-          <p>{error}</p>
-          <button className="retryBtn" onClick={() => window.location.reload()}>
-            Try Again
-          </button>
-          <button className="backBtn" onClick={handleUndo}>
-            Go Back
-          </button>
+          <div className="loadingContent">
+            <div className="loadingSpinner">
+              <div className="spinnerRing"></div>
+            </div>
+            <h3>Loading Farmer Details</h3>
+            <p>Please wait while we fetch the farmer information...</p>
+          </div>
         </div>
       </div>
     )
@@ -118,94 +216,117 @@ export const UpdateFarmer = () => {
 
   return (
     <div className="updateFarmerContainer">
+      {/* Toast Notifications */}
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          onClose={() => removeToast(toast.id)}
+          position="top-right"
+        />
+      ))}
+
       <div className="formCard">
         <div className="formHeader">
-          <button className="undoBtn" onClick={handleUndo}>
+          <button className="backButton" onClick={handleBack}>
             <FontAwesomeIcon icon={faChevronLeft} />
           </button>
           <h2>Update Farmer</h2>
+          {/* Empty div for proper centering */}
+          <div className="placeholder"></div>
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* First Name & Last Name */}
+          {/* First Name & Last Name Row */}
           <div className="inputRow">
             <div className="inputGroup">
-              <label>First Name</label>
+              <label>First Name <span className="required">*</span></label>
               <input
                 type="text"
                 name="firstName"
                 value={form.firstName}
                 onChange={handleChange}
-                required
+                placeholder="Enter first name"
+                disabled={submitting}
               />
             </div>
 
             <div className="inputGroup">
-              <label>Last Name</label>
+              <label>Last Name <span className="required">*</span></label>
               <input
                 type="text"
                 name="lastName"
                 value={form.lastName}
                 onChange={handleChange}
-                required
+                placeholder="Enter last name"
+                disabled={submitting}
               />
             </div>
           </div>
 
-          {/* Aadhar & Mobile */}
+          {/* Aadhar & Mobile Row */}
           <div className="inputRow">
             <div className="inputGroup">
-              <label>Aadhar Number</label>
+              <label>Aadhar Number <span className="required">*</span></label>
               <input
                 type="text"
                 name="aadhar"
                 value={form.aadhar}
                 onChange={handleChange}
+                placeholder="Enter 12-digit Aadhar"
                 maxLength="12"
-                required
+                disabled={submitting}
               />
             </div>
 
             <div className="inputGroup">
-              <label>Mobile Number</label>
+              <label>Mobile Number <span className="required">*</span></label>
               <input
                 type="text"
                 name="mobile"
                 value={form.mobile}
                 onChange={handleChange}
+                placeholder="Enter 10-digit mobile"
                 maxLength="10"
-                required
+                disabled={submitting}
               />
             </div>
           </div>
 
-          {/* Account & Village */}
+          {/* Bank Account & Village Row */}
           <div className="inputRow">
             <div className="inputGroup">
-              <label>Account Number</label>
+              <label>Account Number <span className="required">*</span></label>
               <input
                 type="text"
                 name="bankAccountNumber"
                 value={form.bankAccountNumber}
                 onChange={handleChange}
-                required
+                placeholder="Enter Account Number"
+                disabled={submitting}
               />
             </div>
 
             <div className="inputGroup">
-              <label>Village Name</label>
+              <label>Village Name <span className="required">*</span></label>
               <input
                 type="text"
                 name="village"
                 value={form.village}
                 onChange={handleChange}
-                required
+                placeholder="Enter Village Name"
+                disabled={submitting}
               />
             </div>
           </div>
 
-          <button type="submit" className="updateBtn" disabled={loading}>
-            {loading ? 'Updating...' : 'Update Farmer'}
+          <button 
+            type="submit" 
+            className={`updateBtn ${submitting ? 'loading' : ''}`}
+            disabled={submitting}
+          >
+            {submitting ? 'Updating...' : 'Update Farmer'}
           </button>
         </form>
       </div>

@@ -2,968 +2,1075 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100vw;
-  padding: 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  position: relative;
+  width: 100%;
+  background: ghostwhite;
+  overflow-x: hidden;
+  font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
-  font-family: 'Poppins', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+  position: relative;
 
-  // Loading State - Centered
-  .loadingState {
+  // Header Styles (similar to HomeHeader)
+  .farmersHeader {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    width: 100%;
-    text-align: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: rgba(255, 255, 255, 0.95);
-    z-index: 1000;
-
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid #f1f5f9;
-      border-top: 4px solid #1d9bf0;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 1rem;
-    }
-    
-    p {
-      color: #64748b;
-      font-size: 1rem;
-      margin: 0;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  }
-
-  // Error State
-  .errorState {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    width: 100%;
-    text-align: center;
-    padding: 2rem;
-    background: white;
-
-    .errorIcon {
-      font-size: 3rem;
-      color: #ef4444;
-      margin-bottom: 1rem;
-    }
-
-    h3 {
-      color: #dc2626;
-      margin: 0 0 1rem 0;
-      font-size: 1.5rem;
-    }
-
-    p {
-      color: #64748b;
-      margin: 0 0 2rem 0;
-      font-size: 1rem;
-      max-width: 400px;
-      line-height: 1.5;
-    }
-
-    .errorActions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-
-      .retryBtn {
-        background: #1d9bf0;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.3s ease;
-
-        &:hover {
-          background: #058ce7;
-          transform: translateY(-1px);
-        }
-      }
-
-      .backBtn {
-        padding: 0.75rem 1.5rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 10px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: white;
-        color: #374151;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-
-        &:hover {
-          background: #f8fafc;
-          border-color: #cbd5e1;
-          transform: translateY(-1px);
-        }
-      }
-    }
-  }
-
-  // Back Button
-  .backButton {
-    background: white;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: #64748b;
-    font-size: 1.1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-
-    &:hover {
-      background: #f8fafc;
-      border-color: #cbd5e1;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      color: #0274d1;
-    }
-  }
-
-  // Advanced Header
-  .advancedHeader {
-    background: white;
-    border-bottom: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
+    gap: 2rem;
+    color: #fff;
+    padding: .7rem 1.5rem;
+    background: linear-gradient(90deg, #0274d1, #1a9afb);
+    box-shadow: 0 4px 20px rgba(5, 87, 150, 0.3);
+    position: relative;
     z-index: 100;
 
-    .headerContent {
-      padding: 1.5rem 2rem;
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
 
-      .headerMain {
+      .backButton {
+        background: rgba(255, 255, 255, 0.15);
+        border: none;
+        color: white;
+        padding: 0.7rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
         display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1.5rem;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
 
-        .titleSection {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-
-          .backButton {
-            margin-right: 0.5rem;
-          }
-
-          .titleIcon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(90deg, #0274d1, #1a9afb);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-          }
-
-          .titleText {
-            h1 {
-              font-size: 1.5rem;
-              font-weight: 700;
-              color: #1e293b;
-              margin: 0 0 0.25rem 0;
-            }
-
-            p {
-              color: #64748b;
-              font-size: 0.8rem;
-              margin: 0;
-            }
-          }
+        &:hover {
+          background: rgba(255, 255, 255, 0.25);
+          transform: scale(1.05);
         }
+      }
 
-        .headerActions {
+      .icon {
+        font-size: 1.75rem;
+        color: #d1eefa;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      }
+
+      .title {
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.025em;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+
+      .navIcons {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .iconBtn {
+          background: rgba(255, 255, 255, 0.1);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          color: #fff;
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
           display: flex;
           align-items: center;
-          gap: 1.5rem;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          position: relative;
+          font-size: 1.1rem;
 
-          .totalFarmers {
-            background: #f8fafc;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            font-size: 0.9rem;
-            color: #475569;
-            
-            strong {
-              color: #1e293b;
-              font-weight: 600;
+          &:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+          }
+
+          &.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+          }
+
+          &.hasFilters {
+            .filterIndicator {
+              position: absolute;
+              top: -4px;
+              right: -4px;
+              width: 8px;
+              height: 8px;
+              background: #f59e0b;
+              border-radius: 50%;
+              border: 2px solid #1a9afb;
             }
           }
 
-          .addFarmerBtn {
-            background: linear-gradient(90deg, #0274d1, #1a9afb);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 0.75rem 1.5rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(2, 116, 209, 0.3);
+          &.addFarmerBtn {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
 
             &:hover {
-              transform: translateY(-2px);
-              box-shadow: 0 6px 20px rgba(2, 116, 209, 0.4);
+              background: rgba(255, 255, 255, 0.3);
+            }
+          }
+
+          &.exportBtn {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.2);
+              border-color: rgba(255, 255, 255, 0.3);
             }
           }
         }
       }
+    }
 
-      .advancedControls {
-        display: flex;
-        gap: 1.5rem;
-        align-items: center;
+    @media (max-width: 768px) {
+      padding: 0.875rem 1.25rem;
+      gap: 1rem;
 
-        .searchContainer {
-          flex: 1;
-          max-width: 500px;
-          border: 2px solid #e2e8f0;
-          position: relative;
-          background: #f8fafc;
+      .left {
+        .backButton {
+          width: 34px;
+          height: 34px;
+          padding: 0.6rem;
           border-radius: 12px;
-          transition: all 0.3s ease;
-          overflow: hidden;
-          padding-right: 2rem;
+          font-size: .75rem;
+        }
 
-          &.focused {
-            border-color: #1d9bf0;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.1);
-          }
+        .icon {
+          font-size: 1.1rem;
+        }
 
-          .searchIcon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
+        .title {
+          font-size: 1.1rem;
+        }
+      }
+
+      .right {
+        gap: 1rem;
+
+        .navIcons {
+          gap: 0.5rem;
+
+          .iconBtn {
+            width: 40px;
+            height: 40px;
             font-size: 1rem;
           }
+        }
+      }
+    }
 
-          input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border: none;
-            background: transparent;
-            font-size: 0.95rem;
-            color: #1e293b;
+    @media (max-width: 480px) {
+      padding: 0.75rem 1rem;
 
-            &:focus {
-              outline: none;
-              border: none;
-            }
+      .right {
+        gap: 0.75rem;
 
-            &::placeholder {
-              color: #94a3b8;
-            }
-          }
+        .navIcons {
+          gap: 0.375rem;
 
-          .clearSearch {
-            position: absolute;
-            right: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-
-            &:hover {
-              color: #64748b;
-              background: #e2e8f0;
-            }
+          .iconBtn {
+            width: 40px;
+            height: 40px;
+            font-size: 0.9rem;
+            border-radius: 10px;
           }
         }
+      }
+    }
+  }
 
-        .controlActions {
-          .filterSection {
-            position: relative;
+  // Search Section
+  .searchSection {
+    padding: 1rem 1.5rem;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    animation: slideDown 0.3s ease-out;
 
-            .filterBtn {
-              background: white;
-              border: 2px solid #e2e8f0;
-              border-radius: 10px;
-              padding: 0.75rem 1rem;
-              font-size: 0.9rem;
-              font-weight: 500;
-              color: #475569;
-              cursor: pointer;
-              display: flex;
-              align-items: center;
-              gap: 0.5rem;
-              transition: all 0.3s ease;
-              position: relative;
+    .searchContainer {
+      border: 2px solid #e2e8f0;
+      position: relative;
+      background: #f8fafc;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      max-width: 800px;
 
-              &:hover {
-                border-color: #cbd5e1;
-                background: #f8fafc;
-              }
+      &.focused {
+        border-color: #1d9bf0;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.1);
+      }
 
-              &.active {
-                border-color: #1d9bf0;
-                background: #1d9bf0;
-                color: white;
-              }
+      .searchIcon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        font-size: 1rem;
+      }
 
-              &.hasFilters {
-                border-color: #f59e0b;
+      input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: none;
+        background: transparent;
+        font-size: 0.95rem;
+        color: #1e293b;
 
-                .filterIndicator {
-                  position: absolute;
-                  top: -4px;
-                  right: -4px;
-                  width: 8px;
-                  height: 8px;
-                  background: #f59e0b;
-                  border-radius: 50%;
-                  border: 2px solid white;
-                }
-              }
-            }
+        &:focus {
+          outline: none;
+        }
 
-            .filtersPanel {
-              position: absolute;
-              top: 100%;
-              right: 0;
-              margin-top: 0.5rem;
-              background: white;
-              border: 1px solid #e2e8f0;
-              border-radius: 12px;
-              padding: 1.5rem;
-              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-              min-width: 280px;
-              z-index: 1000;
+        &::placeholder {
+          color: #94a3b8;
+        }
+      }
 
-              .filtersHeader {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1.5rem;
+      .clearSearch {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 4px;
+        transition: all 0.2s ease;
 
-                h4 {
-                  margin: 0;
-                  font-size: 1rem;
-                  font-weight: 600;
-                  color: #1e293b;
-                }
+        &:hover {
+          color: #64748b;
+          background: #e2e8f0;
+        }
+      }
+    }
 
-                .closeFilters {
-                  background: none;
-                  border: none;
-                  color: #64748b;
-                  cursor: pointer;
-                  padding: 0.25rem;
-                  border-radius: 4px;
-                  transition: all 0.2s ease;
+    @media (max-width: 768px) {
+      padding: 1rem;
 
-                  &:hover {
-                    color: #475569;
-                    background: #f1f5f9;
-                  }
-                }
-              }
+      .searchContainer {
+        max-width: none;
+        
+        input {
+          padding: 0.6rem 1rem 0.6rem 2.5rem;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
 
-              .filterGroup {
-                margin-bottom: 1.25rem;
+  // Filters Section - Absolute Positioned
+  .filtersSection {
+    position: absolute;
+    top: 60px;
+    right: 1.5rem;
+    margin-top: 0.5rem;
+    z-index: 1000;
+    animation: slideDown 0.3s ease-out;
 
-                label {
-                  display: block;
-                  font-size: 0.85rem;
-                  font-weight: 500;
-                  color: #475569;
-                  margin-bottom: 0.5rem;
-                }
+    .filtersPanel {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      width: 320px;
+      min-width: 300px;
 
-                .filterSelect {
-                  width: 100%;
-                  padding: 0.6rem 0.75rem;
-                  border: 1px solid #e2e8f0;
-                  border-radius: 8px;
-                  font-size: 0.9rem;
-                  background: white;
-                  color: #475569;
-                  cursor: pointer;
-                  transition: all 0.3s ease;
+      .filtersHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
 
-                  &:focus {
-                    outline: none;
-                    border-color: #1d9bf0;
-                    box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.1);
-                  }
-                }
-              }
+        h4 {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 600;
+          color: #1e293b;
+        }
 
-              .filterActions {
-                display: flex;
-                gap: 0.75rem;
-                margin-top: 1.5rem;
+        .closeFilters {
+          background: none;
+          border: none;
+          color: #64748b;
+          cursor: pointer;
+          padding: 0.25rem;
+          border-radius: 4px;
+          transition: all 0.2s ease;
+          font-size: 1.1rem;
 
-                .clearAllBtn {
-                  flex: 1;
-                  background: #f8fafc;
-                  border: 1px solid #e2e8f0;
-                  border-radius: 8px;
-                  padding: 0.6rem;
-                  font-size: 0.85rem;
-                  font-weight: 500;
-                  color: #64748b;
-                  cursor: pointer;
-                  transition: all 0.3s ease;
-
-                  &:hover {
-                    background: #f1f5f9;
-                    color: #475569;
-                  }
-                }
-
-                .applyBtn {
-                  flex: 1;
-                  background: #1d9bf0;
-                  border: none;
-                  border-radius: 8px;
-                  padding: 0.6rem;
-                  font-size: 0.85rem;
-                  font-weight: 500;
-                  color: white;
-                  cursor: pointer;
-                  transition: all 0.3s ease;
-
-                  &:hover {
-                    background: #058ce7;
-                  }
-                }
-              }
-            }
+          &:hover {
+            color: #475569;
+            background: #f1f5f9;
           }
         }
       }
 
-      .activeFilters {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 1rem;
-        padding: 1rem;
-        background: #f0f9ff;
-        border: 1px solid #bae6fd;
-        border-radius: 10px;
-        flex-wrap: wrap;
+      .filterGroup {
+        margin-bottom: 1.25rem;
 
-        .filtersLabel {
+        label {
+          display: block;
           font-size: 0.85rem;
           font-weight: 500;
-          color: #0369a1;
+          color: #475569;
+          margin-bottom: 0.5rem;
         }
 
-        .filterTag {
+        .filterSelect {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          background: white;
+          color: #475569;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:focus {
+            outline: none;
+            border-color: #1d9bf0;
+            box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.1);
+          }
+        }
+      }
+
+      .filterActions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+
+        .clearAllBtn {
+          flex: 1;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 0.75rem;
+          font-size: 0.85rem;
+          font-weight: 500;
+          color: #64748b;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #f1f5f9;
+            color: #475569;
+            border-color: #cbd5e1;
+          }
+        }
+
+        .applyBtn {
+          flex: 1;
+          background: #1d9bf0;
+          border: none;
+          border-radius: 8px;
+          padding: 0.75rem;
+          font-size: 0.85rem;
+          font-weight: 500;
+          color: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #058ce7;
+            transform: translateY(-1px);
+          }
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      right: 1rem;
+      left: 1rem;
+      
+      .filtersPanel {
+        width: auto;
+        min-width: auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      right: 0.5rem;
+      left: 0.5rem;
+      
+      .filtersPanel {
+        padding: 1.25rem;
+      }
+    }
+  }
+
+  // Active Filters
+  .activeFilters {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: #f0f9ff;
+    border-bottom: 1px solid #bae6fd;
+    flex-wrap: wrap;
+
+    .filtersLabel {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #0369a1;
+    }
+
+    .filterTag {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      border: 1px solid #bae6fd;
+      border-radius: 16px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
+      color: #0369a1;
+
+      button {
+        background: none;
+        border: none;
+        color: #64748b;
+        cursor: pointer;
+        padding: 0;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #f1f5f9;
+          color: #475569;
+        }
+      }
+    }
+
+    .clearAllFilters {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #fef2f2;
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 1rem;
+      gap: 0.5rem;
+    }
+  }
+
+  // Page Content
+  .pageContent {
+    flex: 1;
+    padding: 1rem .5rem;
+
+    .farmersContainer {
+      background: white;
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid #f1f5f9;
+
+      .containerHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        h2 {
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: #1e293b;
+          margin: 0;
+        }
+
+        .filteredCount {
+          font-size: 0.9rem;
+          color: #64748b;
+          background: #f8fafc;
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+        }
+      }
+
+      .emptyState {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        text-align: center;
+
+        .emptyIllustration {
+          margin-bottom: 1.5rem;
+
+          .emptyIcon {
+            font-size: 4rem;
+            color: #cbd5e1;
+          }
+        }
+
+        h3 {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #475569;
+          margin: 0 0 1rem 0;
+        }
+
+        p {
+          color: #64748b;
+          font-size: 1rem;
+          margin: 0 0 2rem 0;
+          max-width: 400px;
+          line-height: 1.5;
+        }
+
+        .clearFiltersBtn {
+          background: #1d9bf0;
+          color: white;
+          border: none;
+          border-radius: 10px;
+          padding: 0.75rem 1.5rem;
+          font-size: 0.9rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #058ce7;
+            transform: translateY(-2px);
+          }
+        }
+
+        .addFirstFarmerBtn {
+          background: linear-gradient(135deg, #1d9bf0, #058ce7);
+          color: white;
+          border: none;
+          border-radius: 10px;
+          padding: 0.75rem 1.5rem;
+          font-size: 0.9rem;
+          font-weight: 600;
+          cursor: pointer;
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          background: white;
-          border: 1px solid #bae6fd;
-          border-radius: 16px;
-          padding: 0.4rem 0.75rem;
-          font-size: 0.8rem;
-          color: #0369a1;
-
-          button {
-            background: none;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            padding: 0;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            transition: all 0.2s ease;
-
-            &:hover {
-              background: #f1f5f9;
-              color: #475569;
-            }
-          }
-        }
-
-        .clearAllFilters {
-          margin-left: auto;
-          background: none;
-          border: none;
-          color: #ef4444;
-          font-size: 0.8rem;
-          font-weight: 500;
-          cursor: pointer;
-          padding: 0.4rem 0.75rem;
-          border-radius: 6px;
-          transition: all 0.2s ease;
+          transition: all 0.3s ease;
 
           &:hover {
-            background: #fef2f2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(29, 155, 240, 0.3);
+          }
+        }
+      }
+
+      .farmersGrid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+          gap: .8rem;
+        }
+
+        .farmerCard {
+          background: white;
+          border: 1px solid #f1f5f9;
+          border-radius: 16px;
+          padding: 1.5rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            border-color: #e2e8f0;
+
+            .arrowIcon {
+              transform: translateX(3px);
+            }
+
+            .viewDetails {
+              color: #1d9bf0;
+
+              svg {
+                transform: translateX(2px);
+              }
+            }
+          }
+
+          .cardHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+
+            .farmerBasicInfo {
+              display: flex;
+              align-items: center;
+              gap: .7rem;
+
+              .farmerAvatar {
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, #1d9bf0, #058ce7);
+                color: white;
+                font-size: 1.2rem;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(29, 155, 240, 0.3);
+
+                @media (max-width: 480px) {
+                  width: 45px;
+                  height: 45px;
+                  font-size: 1rem;
+                  border-radius: 10px;
+                }
+              }
+
+              .farmerInfo {
+                h3 {
+                  font-size: 1.1rem;
+                  font-weight: 600;
+                  color: #1e293b;
+                  margin: 0 0 0.5rem 0;
+
+                  @media (max-width: 480px) {
+                    font-size: .95rem;
+                    margin: 0 0 0.25rem 0;
+                  }
+                }
+
+                .farmerMeta {
+                  display: flex;
+                  gap: 0.5rem;
+
+                  span {
+                    font-size: 0.8rem;
+                    color: #64748b;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.2rem;
+
+                    @media (max-width: 480px) {
+                      font-size: 0.75rem;
+                    }
+
+                    svg {
+                      font-size: 0.8rem;
+
+                      @media (max-width: 480px) {
+                        font-size: 0.7rem;
+                      }
+                    }
+
+                    &.location svg {
+                      color: #1d9bf0;
+                    }
+
+                    &.mobile svg {
+                      color: #10b981;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          .identitySection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+
+            @media (max-width: 480px) {
+              grid-template-columns: 1fr;
+              gap: 1.2rem;
+              padding: 0.75rem;
+            }
+
+            .identityItem {
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+
+              .identityIcon {
+                width: 40px;
+                height: 40px;
+                background: linear-gradient(135deg, #33a6f2, #1675b4);
+                color: white;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: .7rem;
+                box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+
+                @media (max-width: 480px) {
+                  width: 35px;
+                  height: 35px;
+                  font-size: 0.65rem;
+                }
+              }
+
+              .identityInfo {
+                display: flex;
+                flex-direction: column;
+
+                .label {
+                  font-size: 0.75rem;
+                  color: #64748b;
+                  font-weight: 500;
+                  margin-bottom: 0.25rem;
+
+                  @media (max-width: 480px) {
+                    font-size: 0.7rem;
+                  }
+                }
+
+                .value {
+                  font-size: 0.9rem;
+                  font-weight: 600;
+                  color: #1e293b;
+
+                  @media (max-width: 480px) {
+                    font-size: 0.85rem;
+                  }
+                }
+              }
+            }
+          }
+
+          .cardFooter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+
+            .lastUpdated {
+              font-size: 0.8rem;
+              color: #94a3b8;
+              display: flex;
+              align-items: center;
+              gap: 0.25rem;
+
+              @media (max-width: 480px) {
+                font-size: 0.75rem;
+              }
+
+              svg {
+                font-size: 0.7rem;
+
+                @media (max-width: 480px) {
+                  font-size: 0.65rem;
+                }
+              }
+            }
+
+            .viewDetails {
+              font-size: 0.85rem;
+              font-weight: 600;
+              color: #64748b;
+              transition: color 0.3s ease;
+              display: flex;
+              align-items: center;
+              gap: 0.25rem;
+
+              @media (max-width: 480px) {
+                font-size: 0.8rem;
+              }
+
+              svg {
+                font-size: 0.7rem;
+                transition: transform 0.3s ease;
+
+                @media (max-width: 480px) {
+                  font-size: 0.65rem;
+                }
+              }
+            }
+          }
+
+          @media (max-width: 480px) {
+            padding: 1rem;
+            border-radius: 12px;
+            border-width: 2px;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 1rem;
+
+      .farmersContainer {
+        padding: 1.5rem;
+        border-radius: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      padding: 0.75rem;
+
+      .farmersContainer {
+        padding: 1rem;
+        
+        .containerHeader {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: flex-start;
+          
+          h2 {
+            font-size: 1.2rem;
           }
         }
       }
     }
   }
 
-  // Farmers Table Container
-  .farmersTableContainer {
-    background: white;
-    border-radius: 16px;
-    margin: 1.5rem 2rem 2rem 2rem;
-    padding: 1.5rem;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
+  // Loading and Error States - Only loading font sizes changed for mobile
+  .loadingState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 2rem;
 
-    .tableHeader {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
+    .loadingContent {
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+
+      .loadingSpinner {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+
+        @media (max-width: 480px) {
+          width: 60px;
+          height: 60px;
+          margin: 0 auto 1rem;
+        }
+
+        .spinnerIcon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 2rem;
+          color: #1d9bf0;
+          z-index: 2;
+
+          @media (max-width: 480px) {
+            font-size: 1.5rem;
+          }
+        }
+
+        .spinnerRing {
+          width: 100%;
+          height: 100%;
+          border: 3px solid #f1f5f9;
+          border-top: 3px solid #1d9bf0;
+          border-radius: 50%;
+          animation: spin 1.5s linear infinite;
+        }
+      }
 
       h3 {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         font-weight: 600;
         color: #1e293b;
-        margin: 0;
-      }
-    }
+        margin: 0 0 0.75rem 0;
 
-    .emptyState {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 1rem;
-      text-align: center;
-
-      .emptyIcon {
-        font-size: 3rem;
-        color: #cbd5e1;
-        margin-bottom: 1rem;
-      }
-
-      h3 {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #475569;
-        margin: 0 0 0.5rem 0;
+        @media (max-width: 480px) {
+          font-size: 1.25rem;
+          margin: 0 0 0.5rem 0;
+        }
       }
 
       p {
         color: #64748b;
-        font-size: 0.9rem;
+        font-size: 1rem;
         margin: 0 0 1.5rem 0;
-      }
+        line-height: 1.5;
 
-      .clearFiltersBtn {
-        background: #1d9bf0;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.75rem 1.5rem;
-        font-size: 0.9rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-
-        &:hover {
-          background: #058ce7;
-          transform: translateY(-1px);
+        @media (max-width: 480px) {
+          font-size: 0.9rem;
+          margin: 0 0 1rem 0;
         }
       }
-    }
 
-    .farmersGrid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-      gap: 1.5rem;
-
-      .farmerCard {
-        background: white;
-        border: 1px solid #f1f5f9;
-        border-radius: 16px;
-        padding: 1.5rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
+      .loadingProgress {
+        width: 100%;
+        height: 4px;
+        background: #e2e8f0;
+        border-radius: 2px;
         overflow: hidden;
 
-        &:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-          border-color: #e2e8f0;
-
-          .arrowIcon {
-            transform: translateX(3px);
-          }
-
-          .viewDetails {
-            color: #1d9bf0;
-          }
-
-          .editBtn {
-            opacity: 1;
-            transform: scale(1);
-          }
+        .progressBar {
+          height: 100%;
+          background: linear-gradient(90deg, #1d9bf0, #058ce7);
+          border-radius: 2px;
+          animation: progress 2s ease-in-out infinite;
         }
+      }
+    }
+  }
 
-        .cardHeader {
+  .errorState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 2rem;
+
+    .errorContent {
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      background: white;
+      padding: 3rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border: 1px solid #f1f5f9;
+
+      .errorIcon {
+        font-size: 4rem;
+        color: #ef4444;
+        margin-bottom: 1.5rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #dc2626;
+        margin: 0 0 1rem 0;
+      }
+
+      p {
+        color: #64748b;
+        font-size: 1rem;
+        margin: 0 0 2rem 0;
+        line-height: 1.5;
+      }
+
+      .errorActions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        .retryBtn {
+          background: linear-gradient(135deg, #1d9bf0, #058ce7);
+          color: white;
+          border: none;
+          border-radius: 10px;
+          padding: 0.75rem 1.5rem;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
           display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 1.5rem;
-
-          .farmerBasicInfo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-
-            .farmerAvatar {
-              width: 60px;
-              height: 60px;
-              background: linear-gradient(135deg, #1d9bf0, #058ce7);
-              color: white;
-              font-size: 1.2rem;
-              font-weight: 700;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              border-radius: 12px;
-            }
-
-            .farmerInfo {
-              h3 {
-                font-size: 1.1rem;
-                font-weight: 600;
-                color: #1e293b;
-                margin: 0 0 0.5rem 0;
-              }
-
-              .farmerMeta {
-                display: flex;
-                gap: 1rem;
-                flex-wrap: wrap;
-
-                span {
-                  font-size: 0.8rem;
-                  color: #64748b;
-                  display: flex;
-                  align-items: center;
-                  gap: 0.25rem;
-
-                  svg {
-                    font-size: 0.7rem;
-                  }
-
-                  &.location svg {
-                    color: #ef4444;
-                  }
-
-                  &.mobile svg {
-                    color: #10b981;
-                  }
-                }
-              }
-            }
-          }
-
-          .headerActions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-
-            .editBtn {
-              background: #3e4b5e;
-              color: white;
-              border: none;
-              border-radius: 8px;
-              cursor: pointer;
-              transition: all 0.3s ease;
-              opacity: 0.8;
-              transform: scale(0.95);
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              width: 50px;
-              height: 50px;
-
-              &:hover {
-                background: #1e293b;
-                transform: scale(1.05);
-              }
-            }
-
-            .arrowIcon {
-              color: #cbd5e1;
-              font-size: 1rem;
-              transition: transform 0.3s ease;
-            }
-          }
-        }
-
-        .identitySection {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-          padding: 1rem;
-          background: #f8fafc;
-          border-radius: 12px;
-
-          .identityItem {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-
-            .identityIcon {
-              width: 40px;
-              height: 40px;
-              background: linear-gradient(135deg, #10b981, #059669);
-              color: white;
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 1rem;
-            }
-
-            .identityInfo {
-              display: flex;
-              flex-direction: column;
-
-              .label {
-                font-size: 0.75rem;
-                color: #64748b;
-                font-weight: 500;
-                margin-bottom: 0.25rem;
-              }
-
-              .value {
-                font-size: 0.9rem;
-                font-weight: 600;
-                color: #1e293b;
-              }
-            }
-          }
-        }
-
-        .cardFooter {
-          display: flex;
-          justify-content: space-between;
           align-items: center;
-          padding-top: 1rem;
-          border-top: 1px solid #f1f5f9;
+          gap: 0.5rem;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(29, 155, 240, 0.3);
 
-          .lastUpdated {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-
-            svg {
-              font-size: 0.7rem;
-            }
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 155, 240, 0.4);
           }
+        }
 
-          .viewDetails {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #64748b;
-            transition: color 0.3s ease;
+        .backBtn {
+          background: white;
+          color: #374151;
+          border: 2px solid #e2e8f0;
+          border-radius: 10px;
+          padding: 0.75rem 1.5rem;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
           }
         }
       }
     }
   }
 
-  // Responsive Design
-  @media (max-width: 768px) {
-    .advancedHeader {
-      .headerContent {
-        padding: 1rem;
-
-        .headerMain {
-          flex-direction: column;
-          gap: 1rem;
-          align-items: stretch;
-
-          .titleSection {
-            .titleText {
-              h1 {
-                font-size: 1.5rem;
-              }
-              
-              p {
-                font-size: 0.8rem;
-              }
-            }
-          }
-
-          .headerActions {
-            justify-content: space-between;
-            gap: 1rem;
-
-            .totalFarmers {
-              font-size: 0.8rem;
-              padding: 0.4rem 0.8rem;
-            }
-          }
-        }
-
-        .advancedControls {
-          flex-direction: column;
-          gap: 1rem;
-
-          .searchContainer {
-            max-width: none;
-            
-            input {
-              &::placeholder {
-                font-size: 0.85rem;
-              }
-            }
-          }
-
-          .controlActions {
-            width: 100%;
-            justify-content: flex-end;
-
-            .filterSection {
-              .filtersPanel {
-                right: auto;
-                left: 0;
-                width: 100%;
-              }
-            }
-          }
-        }
-
-        .activeFilters {
-          .filterTag {
-            font-size: 0.75rem;
-          }
-        }
-      }
-    }
-
-    .farmersTableContainer {
-      margin: 1rem;
-      padding: 1rem;
-      
-      .farmersGrid {
-        grid-template-columns: 1fr;
-      }
-    }
+  // Animations
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
-  @media (max-width: 480px) {
-    .advancedHeader {
-      .headerContent {
-        .headerMain {
-          .headerActions {
-            flex-direction: column;
-            gap: 1rem;
+  @keyframes progress {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(0%); }
+    100% { transform: translateX(100%); }
+  }
 
-            .totalFarmers {
-              text-align: center;
-            }
-
-            .addFarmerBtn {
-              width: 100%;
-              justify-content: center;
-            }
-          }
-        }
-
-        .advancedControls {
-          .controlActions {
-            .filterSection {
-              width: 100%;
-              
-              .filterBtn {
-                width: 100%;
-                justify-content: center;
-              }
-            }
-          }
-        }
-      }
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
     }
-
-    .farmersTableContainer {
-      .farmersGrid {
-        .farmerCard {
-          padding: 1rem;
-
-          .identitySection {
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-          }
-
-          .cardFooter {
-            flex-direction: column;
-            gap: 0.75rem;
-            align-items: stretch;
-            text-align: center;
-          }
-        }
-      }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
   // Reduced motion support
   @media (prefers-reduced-motion: reduce) {
     .farmerCard,
-    .addFarmerBtn,
-    .filterBtn,
-    .editBtn,
+    .iconBtn,
     .backButton {
       transition: none;
       
@@ -972,8 +1079,9 @@
       }
     }
 
-    .spinner {
-      animation-duration: 2s;
+    .loadingSpinner .spinnerRing,
+    .loadingProgress .progressBar {
+      animation: none;
     }
   }
 }

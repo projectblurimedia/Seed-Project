@@ -1,11 +1,11 @@
 import './home.scss'
 import { HomeHeader } from '../../components/homeHeader/HomeHeader'
-import { DailyUpdates } from '../../components/dailyUpdates/DailyUpdates'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
+import { RecentUpdates } from '../../components/recentUpdates/RecentUpdates'
 
-export const Home = () => {
+export const Home = ({ setIsAuth, isAdmin, username, setIsAdmin, setUsername }) => {
   const navigate = useNavigate()
   const handleCreate = () => {
     navigate('/select-farmer')
@@ -14,11 +14,11 @@ export const Home = () => {
   return (
     <div className='homeContainer'>
       <div className='headerSection'>
-        <HomeHeader />
+        <HomeHeader setIsAuth={setIsAuth} isAdmin={isAdmin} username={username} setIsAdmin={setIsAdmin} setUsername={setUsername} />
       </div>
 
-      <div className='dailyUpdatesSection'>
-        <DailyUpdates />
+      <div className='recentUpdatesSection'>
+        <RecentUpdates />
       </div>
 
       <button className='floatingCreateBtn' onClick={handleCreate}>

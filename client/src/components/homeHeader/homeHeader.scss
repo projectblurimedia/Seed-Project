@@ -163,7 +163,7 @@
           display: flex;
           align-items: flex-start;
           gap: 0.75rem;
-          padding: 1.25rem;
+          padding: 1rem;
           background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
           border-bottom: 1px solid #e2e8f0;
 
@@ -176,13 +176,13 @@
           .profileDetails {
             .profileName {
               font-weight: 600;
-              color: #1e293b;
+              color: #2e3f5a;
               font-size: 1rem;
-              margin-bottom: 0.25rem;
+              text-transform: capitalize;
             }
 
             .profileRole {
-              font-size: 0.875rem;
+              font-size: 0.75rem;
               color: #64748b;
             }
           }
@@ -270,10 +270,6 @@
   }
 
   @media (max-width: 640px) {
-    .left .title {
-      display: none;
-    }
-
     .right {
       .navIcons {
         border-right: none;
@@ -292,8 +288,8 @@
         gap: 0.375rem;
 
         .navIcon {
-          width: 36px;
-          height: 36px;
+          width: 40px;
+          height: 40px;
           font-size: 0.9rem;
           border-radius: 10px;
         }
@@ -301,14 +297,14 @@
 
       .profile {
         .initials {
-          width: 36px;
-          height: 36px;
+          width: 40px;
+          height: 40px;
           font-size: 0.85rem;
         }
 
         .profileDropdown {
           min-width: 300px;
-          right: -15px;
+          right: -10px;
         }
       }
     }

@@ -5,7 +5,7 @@ import './login.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 
-export const Login = ({ setIsAuth }) => {
+export const Login = ({ setIsAuth, onLoginSuccess }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -25,13 +25,14 @@ export const Login = ({ setIsAuth }) => {
       })
       
       const token = response.data.token
-      console.log('Received token:', token)
       
       if (!token || typeof token !== 'string' || token.split('.').length !== 3) {
         throw new Error('Invalid token received from server')
       }
       
       localStorage.setItem('token', token)
+      window.dispatchEvent(new Event('tokenChanged'))
+      if (onLoginSuccess) onLoginSuccess()
       
       const storedToken = localStorage.getItem('token')
       if (storedToken !== token) {

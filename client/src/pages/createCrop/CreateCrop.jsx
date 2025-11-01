@@ -86,12 +86,26 @@ export const CreateCrop = () => {
   const coolieWorkDropdownRefs = useRef([])
   const paymentMethodDropdownRefs = useRef([])
 
-  // Date refs
-  const sowingDateMaleRef = useRef(null)
-  const sowingDateFemaleRef = useRef(null)
-  const firstDetachingDateRef = useRef(null)
-  const secondDetachingDateRef = useRef(null)
-  const harvestingDateRef = useRef(null)
+  // Helper function to convert date string to ISO string with current time
+  const formatDateToISOWithTime = (dateString) => {
+    if (!dateString) return '';
+    
+    // Create date object from input (sets to start of day in local time)
+    const date = new Date(dateString);
+    
+    // Add current time to the date
+    const now = new Date();
+    date.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+    
+    // Return ISO string with time (this will include timezone info)
+    return date.toISOString();
+  }
+
+  // Helper to format date for input value (YYYY-MM-DD for date input)
+  const formatDateForInput = (isoString) => {
+    if (!isoString) return '';
+    return isoString.split('T')[0]; // Returns YYYY-MM-DD
+  }
 
   // Add toast function
   const addToast = (message, type = 'error') => {
@@ -156,8 +170,15 @@ export const CreateCrop = () => {
   }
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type } = e.target
+    
+    if (type === 'date') {
+      // Convert date input to ISO string with current time
+      const isoDateTime = value ? formatDateToISOWithTime(value) : '';
+      setForm((prev) => ({ ...prev, [name]: isoDateTime }))
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }))
+    }
     
     // Clear error when user starts typing
     if (formErrors[name]) {
@@ -167,19 +188,43 @@ export const CreateCrop = () => {
 
   const handlePesticideChange = (index, field, value) => {
     const updatedEntries = [...pesticideEntries]
-    updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    
+    if (field === 'date' && value) {
+      // Convert date to ISO string with current time
+      const isoDateTime = formatDateToISOWithTime(value);
+      updatedEntries[index] = { ...updatedEntries[index], [field]: isoDateTime }
+    } else {
+      updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    }
+    
     setPesticideEntries(updatedEntries)
   }
 
   const handleCoolieChange = (index, field, value) => {
     const updatedEntries = [...coolieEntries]
-    updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    
+    if (field === 'date' && value) {
+      // Convert date to ISO string with current time
+      const isoDateTime = formatDateToISOWithTime(value);
+      updatedEntries[index] = { ...updatedEntries[index], [field]: isoDateTime }
+    } else {
+      updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    }
+    
     setCoolieEntries(updatedEntries)
   }
 
   const handlePaymentChange = (index, field, value) => {
     const updatedEntries = [...paymentEntries]
-    updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    
+    if (field === 'date' && value) {
+      // Convert date to ISO string with current time
+      const isoDateTime = formatDateToISOWithTime(value);
+      updatedEntries[index] = { ...updatedEntries[index], [field]: isoDateTime }
+    } else {
+      updatedEntries[index] = { ...updatedEntries[index], [field]: value }
+    }
+    
     setPaymentEntries(updatedEntries)
   }
 
@@ -352,6 +397,13 @@ export const CreateCrop = () => {
     }))
   }
 
+  // Date refs for showing picker
+  const sowingDateMaleRef = useRef(null)
+  const sowingDateFemaleRef = useRef(null)
+  const firstDetachingDateRef = useRef(null)
+  const secondDetachingDateRef = useRef(null)
+  const harvestingDateRef = useRef(null)
+
   const handleDateContainerClick = (dateRef) => dateRef.current?.showPicker()
 
   const handleUndo = () => navigate(-1)
@@ -396,7 +448,9 @@ export const CreateCrop = () => {
         totalCoolieCost,
         totalPaymentAmount,
         netProfit,
-        status: 'active'
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       }
 
       const res = await axios.post('/crops', finalData)
@@ -678,9 +732,8 @@ export const CreateCrop = () => {
                   ref={sowingDateMaleRef} 
                   type="date" 
                   name="sowingDateMale" 
-                  value={form.sowingDateMale} 
+                  value={formatDateForInput(form.sowingDateMale)} 
                   onChange={handleChange} 
-                  placeholder="dd-mm-yyyy"
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -692,9 +745,8 @@ export const CreateCrop = () => {
                   ref={sowingDateFemaleRef} 
                   type="date" 
                   name="sowingDateFemale" 
-                  value={form.sowingDateFemale} 
+                  value={formatDateForInput(form.sowingDateFemale)} 
                   onChange={handleChange} 
-                  placeholder="dd-mm-yyyy"
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -710,9 +762,8 @@ export const CreateCrop = () => {
                   ref={firstDetachingDateRef} 
                   type="date" 
                   name="firstDetachingDate" 
-                  value={form.firstDetachingDate} 
+                  value={formatDateForInput(form.firstDetachingDate)} 
                   onChange={handleChange} 
-                  placeholder="dd-mm-yyyy"
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -724,9 +775,8 @@ export const CreateCrop = () => {
                   ref={secondDetachingDateRef} 
                   type="date" 
                   name="secondDetachingDate" 
-                  value={form.secondDetachingDate} 
+                  value={formatDateForInput(form.secondDetachingDate)} 
                   onChange={handleChange} 
-                  placeholder="dd-mm-yyyy"
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -756,9 +806,8 @@ export const CreateCrop = () => {
                   ref={harvestingDateRef} 
                   type="date" 
                   name="harvestingDate" 
-                  value={form.harvestingDate} 
+                  value={formatDateForInput(form.harvestingDate)} 
                   onChange={handleChange} 
-                  placeholder="dd-mm-yyyy"
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
               </div>
@@ -912,9 +961,8 @@ export const CreateCrop = () => {
                             <div className="dateInputContainer">
                               <input 
                                 type="date" 
-                                value={entry.date} 
+                                value={formatDateForInput(entry.date)} 
                                 onChange={(e) => handlePesticideChange(index, 'date', e.target.value)} 
-                                placeholder="dd-mm-yyyy"
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
                             </div>
@@ -1068,9 +1116,8 @@ export const CreateCrop = () => {
                             <div className="dateInputContainer">
                               <input 
                                 type="date" 
-                                value={entry.date} 
+                                value={formatDateForInput(entry.date)} 
                                 onChange={(e) => handleCoolieChange(index, 'date', e.target.value)} 
-                                placeholder="dd-mm-yyyy"
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
                             </div>
@@ -1163,9 +1210,8 @@ export const CreateCrop = () => {
                             <div className="dateInputContainer">
                               <input 
                                 type="date" 
-                                value={entry.date} 
+                                value={formatDateForInput(entry.date)} 
                                 onChange={(e) => handlePaymentChange(index, 'date', e.target.value)} 
-                                placeholder="dd-mm-yyyy"
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
                             </div>

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-// Sub-schema for farmer details (embedded)
+// Sub-schema for farmer details
 const farmerDetailsSchema = new Schema({
   firstName: { type: String, trim: true, maxlength: 50 },
   lastName: { type: String, trim: true, maxlength: 50 },
@@ -41,13 +41,13 @@ const paymentEntrySchema = new Schema({
 
 // Main Crop Schema
 const cropSchema = new Schema({
-  farmerDetails: { type: farmerDetailsSchema, required: [true, 'Farmer details are required'] },
+  farmerDetails: { type: farmerDetailsSchema, required: true },
   seedType: { type: String, trim: true, maxlength: 100 },
   region: { type: String, trim: true, maxlength: 100 },
   acres: { 
     type: Number, 
-    min: 0, 
-    set: val => parseFloat(val).toFixed(2) 
+    min: 0,
+    set: (v) => Math.round(parseFloat(v) * 100) / 100  // Proper 2 decimal rounding
   },
   malePackets: {
     type: Number,
@@ -73,7 +73,14 @@ const cropSchema = new Schema({
   totalCoolieCost: { type: Number, default: 0, min: 0 },
   totalPaymentAmount: { type: Number, default: 0, min: 0 },
   netProfit: { type: Number, default: 0 },
-  status: { type: String, enum: ['active', 'completed', 'archived'], default: 'active' }
+  status: { type: String, enum: ['active', 'completed', 'archived'], default: 'active' },
+
+  // Latest Update Field
+  latestUpdate: {
+    date: { type: Date },
+    type: { type: String },
+    description: { type: String }
+  }
 }, {
   timestamps: true
 })
@@ -81,17 +88,131 @@ const cropSchema = new Schema({
 // Indexes
 cropSchema.index({ 'farmerDetails.aadhar': 1, createdAt: -1 })
 cropSchema.index({ region: 1 })
+cropSchema.index({ 'latestUpdate.date': -1 })
 
-// Pre-save middleware for calculations
+// Helper: Check if date is valid and in the past
+const isPastDate = (date) => date && date instanceof Date && date <= new Date()
+
+// Pre-save middleware
 cropSchema.pre('save', function(next) {
-  this.totalPesticideCost = this.pesticideEntries.reduce((total, entry) => total + (entry.amount || 0), 0)
-  this.totalCoolieCost = this.coolieEntries.reduce((total, entry) => total + (entry.amount || 0), 0)
-  this.totalPaymentAmount = this.paymentEntries.reduce((total, entry) => total + (entry.amount || 0), 0)
+  const now = new Date()
+
+  // === Calculate Totals ===
+  this.totalPesticideCost = this.pesticideEntries.reduce((sum, e) => sum + (e.amount || 0), 0)
+  this.totalCoolieCost = this.coolieEntries.reduce((sum, e) => sum + (e.amount || 0), 0)
+  this.totalPaymentAmount = this.paymentEntries.reduce((sum, e) => sum + (e.amount || 0), 0)
   this.netProfit = (this.totalIncome || 0) - (this.totalPesticideCost + this.totalCoolieCost + this.totalPaymentAmount)
+
+  // === Collect All Past Events ===
+  const events = []
+
+  // 1. Crop Created (always included)
+  events.push({
+    date: this.createdAt,
+    type: 'created',
+    desc: 'Crop record created'
+  })
+
+  // 2. Male Sown
+  if (isPastDate(this.sowingDateMale)) {
+    events.push({
+      date: this.sowingDateMale,
+      type: 'maleSown',
+      desc: 'Male seeds sown'
+    })
+  }
+
+  // 3. Female Sown
+  if (isPastDate(this.sowingDateFemale)) {
+    events.push({
+      date: this.sowingDateFemale,
+      type: 'femaleSown',
+      desc: 'Female seeds sown'
+    })
+  }
+
+  // 4. First Detaching
+  if (isPastDate(this.firstDetachingDate)) {
+    events.push({
+      date: this.firstDetachingDate,
+      type: 'detaching',
+      desc: 'First detaching done'
+    })
+  }
+
+  // 5. Second Detaching
+  if (isPastDate(this.secondDetachingDate)) {
+    events.push({
+      date: this.secondDetachingDate,
+      type: 'detaching',
+      desc: 'Second detaching done'
+    })
+  }
+
+  // 6. Harvested
+  if (isPastDate(this.harvestingDate)) {
+    events.push({
+      date: this.harvestingDate,
+      type: 'harvested',
+      desc: 'Crop harvested'
+    })
+  }
+
+  // 7. Pesticides
+  this.pesticideEntries.forEach(entry => {
+    if (isPastDate(entry.date)) {
+      const qty = entry.quantity != null ? ` - ${entry.quantity}kg` : ''
+      events.push({
+        date: entry.date,
+        type: 'pesticide',
+        desc: `Pesticide: ${entry.pesticide}${qty} (₹${entry.amount})`
+      })
+    }
+  })
+
+  // 8. Coolie
+  this.coolieEntries.forEach(entry => {
+    if (isPastDate(entry.date)) {
+      const days = entry.days > 1 ? ` (${entry.days} days)` : ''
+      events.push({
+        date: entry.date,
+        type: 'coolie',
+        desc: `Coolie: ${entry.work}${days} (₹${entry.amount})`
+      })
+    }
+  })
+
+  // 9. Payments
+  this.paymentEntries.forEach(entry => {
+    if (isPastDate(entry.date)) {
+      events.push({
+        date: entry.date,
+        type: 'payment',
+        desc: `Payment: ${entry.purpose} - ₹${entry.amount} (${entry.method})`
+      })
+    }
+  })
+
+  // === Find Latest Event ===
+  const latest = events
+    .filter(e => e.date <= now)
+    .sort((a, b) => b.date - a.date)[0]
+
+  // Set latestUpdate
+  this.latestUpdate = latest ? {
+    date: latest.date,
+    type: latest.type,
+    description: latest.desc
+  } : {
+    date: this.createdAt,
+    type: 'created',
+    description: 'Crop record created'
+  }
+
   next()
 })
 
-// Instance method: Summary
+// Instance method: getSummary
 cropSchema.methods.getSummary = function() {
   return {
     id: this._id,
@@ -100,25 +221,27 @@ cropSchema.methods.getSummary = function() {
     region: this.region,
     acres: this.acres,
     totalIncome: this.totalIncome,
-    totalExpenses: (this.totalPesticideCost || 0) + (this.totalCoolieCost || 0) + (this.totalPaymentAmount || 0),
+    totalExpenses: this.totalPesticideCost + this.totalCoolieCost + this.totalPaymentAmount,
     netProfit: this.netProfit,
     yield: this.yield,
-    duration: this.sowingDateMale && this.harvestingDate 
-      ? Math.ceil((this.harvestingDate - this.sowingDateMale) / (1000 * 60 * 60 * 24)) + ' days' 
+    status: this.status,
+    latestUpdate: this.latestUpdate,
+    duration: this.sowingDateMale && this.harvestingDate
+      ? Math.ceil((this.harvestingDate - this.sowingDateMale) / (1000 * 60 * 60 * 24)) + ' days'
       : null
   }
 }
 
-// Static method: Find by farmer Aadhar
+// Static: Find by Aadhar
 cropSchema.statics.findByFarmerAadhar = function(aadhar) {
   return this.find({ 'farmerDetails.aadhar': aadhar }).lean()
 }
 
-// Static method: Crop stats
+// Static: Crop Stats
 cropSchema.statics.getCropStats = function(aadhar = null) {
-  const matchStage = aadhar ? { $match: { 'farmerDetails.aadhar': aadhar } } : { $match: {} }
+  const match = aadhar ? { 'farmerDetails.aadhar': aadhar } : {}
   return this.aggregate([
-    matchStage,
+    { $match: match },
     {
       $group: {
         _id: null,
@@ -133,12 +256,15 @@ cropSchema.statics.getCropStats = function(aadhar = null) {
   ])
 }
 
-// Serialization
-cropSchema.set('toJSON', { virtuals: true, transform: (doc, ret) => {
-  ret.id = ret._id
-  delete ret._id
-  delete ret.__v
-  return ret
-}})
+// toJSON transformation
+cropSchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    ret.id = ret._id
+    delete ret._id
+    delete ret.__v
+    return ret
+  }
+})
 
 module.exports = mongoose.model('Crop', cropSchema)

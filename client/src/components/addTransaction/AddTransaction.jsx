@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import './addTransaction.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -11,9 +11,9 @@ import {
   faSpinner,
   faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons'
-import axios from 'axios'
+import { Toast } from '../../components/toast/Toast'
 
-export const AddTransaction = ({ onClose, onAddTransaction }) => {
+export const AddTransaction = ({ onClose, onAddTransaction, loading }) => {
   const [newTransaction, setNewTransaction] = useState({
     debitedFrom: '',
     creditedTo: '',
@@ -24,15 +24,22 @@ export const AddTransaction = ({ onClose, onAddTransaction }) => {
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [toast, setToast] = useState(null)
+
+  // Show toast message
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 5000)
+  }
 
   // Auto-close on escape key
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape' && !isSubmitting) onClose()
     }
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
-  }, [onClose])
+  }, [onClose, isSubmitting])
 
   const validateForm = () => {
     const newErrors = {}
@@ -154,7 +161,10 @@ export const AddTransaction = ({ onClose, onAddTransaction }) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
-    if (!validateForm()) return
+    if (!validateForm()) {
+      showToast('Please fix the form errors before submitting', 'error')
+      return
+    }
 
     setIsSubmitting(true)
     setSubmitError('')
@@ -168,19 +178,25 @@ export const AddTransaction = ({ onClose, onAddTransaction }) => {
         date: newTransaction.date
       }
 
-      onAddTransaction(transactionData)
+      await onAddTransaction(transactionData)
+      showToast('Transaction added successfully!', 'success')
       onClose()
     } catch (error) {
       console.error('Error adding transaction:', error)
       
+      let errorMessage = 'Failed to add transaction. Please try again.'
+      
       if (error.response) {
         const serverError = error.response.data
-        setSubmitError(serverError.message || serverError.error || 'Failed to add transaction. Please try again.')
+        errorMessage = serverError.message || serverError.error || errorMessage
       } else if (error.request) {
-        setSubmitError('Network error. Please check your connection and try again.')
+        errorMessage = 'Network error. Please check your connection and try again.'
       } else {
-        setSubmitError('An unexpected error occurred. Please try again.')
+        errorMessage = error.message || errorMessage
       }
+      
+      setSubmitError(errorMessage)
+      showToast(errorMessage, 'error')
     } finally {
       setIsSubmitting(false)
     }
@@ -194,6 +210,16 @@ export const AddTransaction = ({ onClose, onAddTransaction }) => {
 
   return (
     <div className="modalOverlay" onClick={handleOverlayClick}>
+      {/* Toast Component */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+          position="top-center"
+        />
+      )}
+
       <div className="modalContent">
         <div className="modalHeader">
           <div className="titleSection">
@@ -332,9 +358,9 @@ export const AddTransaction = ({ onClose, onAddTransaction }) => {
             <button 
               type="submit" 
               className="submitBtn"
-              disabled={isSubmitting}
+              disabled={isSubmitting || loading}
             >
-              {isSubmitting ? (
+              {(isSubmitting || loading) ? (
                 <>
                   <FontAwesomeIcon icon={faSpinner} spin />
                   Processing...
