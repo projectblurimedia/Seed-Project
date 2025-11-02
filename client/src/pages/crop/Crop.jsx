@@ -1,9 +1,26 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faSeedling, faMapMarkerAlt, faRupeeSign, faWeight, faEdit, faUsers, faSprayCanSparkles, faCalendar, faUser, faMobileAlt, faCreditCard, faHandHoldingUsd, faIndianRupeeSign } from '@fortawesome/free-solid-svg-icons'
+import { 
+  faChevronLeft, 
+  faSeedling, 
+  faMapMarkerAlt, 
+  faRupeeSign, 
+  faEdit, 
+  faUsers, 
+  faSprayCanSparkles, 
+  faCalendar, 
+  faMobileAlt, 
+  faCreditCard, 
+  faHandHoldingUsd, 
+  faIndianRupeeSign,
+  faExclamationTriangle,
+  faRefresh,
+  faMobile,
+} from '@fortawesome/free-solid-svg-icons'
 import './crop.scss'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { Toast } from '../../components/toast/Toast'
 
 export const Crop = () => {
   const navigate = useNavigate()
@@ -11,6 +28,13 @@ export const Crop = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [cropData, setCropData] = useState(null)
+  const [toast, setToast] = useState(null)
+
+  // Show toast message
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 5000)
+  }
 
   // Fetch crop details by ID
   useEffect(() => {
@@ -25,7 +49,9 @@ export const Crop = () => {
         
       } catch (err) {
         console.error('Error fetching crop details:', err)
-        setError('Failed to load crop details. Please try again.')
+        const errorMessage = err.response?.data?.message || 'Failed to load crop details. Please try again.'
+        setError(errorMessage)
+        showToast(errorMessage, 'error')
       } finally {
         setLoading(false)
       }
@@ -36,8 +62,9 @@ export const Crop = () => {
     }
   }, [id])
 
-  const handleBack = () => navigate('/')
+  const handleBack = () => navigate(-1)
   const handleEdit = () => navigate(`/update-crop/${id}`)
+  const handleNavigateToFarmer = () => navigate(`/farmers/${cropData.farmerDetails.aadhar}`)
 
   const getInitials = (fullName) => {
     if (!fullName) return 'NA'
@@ -64,6 +91,12 @@ export const Crop = () => {
     return calculateTotalPesticides() + calculateTotalCoolies() + calculateTotalPayments()
   }
 
+  const calculateNetProfit = () => {
+    const totalIncome = cropData?.totalIncome || 0
+    const totalExpenses = calculateTotalExpenses()
+    return totalIncome - totalExpenses
+  }
+
   const getPaymentMethodIcon = (method) => {
     switch (method) {
       case 'Cash': return faIndianRupeeSign
@@ -87,33 +120,58 @@ export const Crop = () => {
     return new Date(dateString).toLocaleDateString('en-IN')
   }
 
-  // Loading State
+  // Enhanced Loading State
   if (loading) {
     return (
       <div className="cropDetailContainer">
         <div className="loadingState">
-          <div className="spinner"></div>
-          <p>Loading crop details...</p>
+          <div className="loadingContent">
+            <div className="loadingSpinner">
+              <FontAwesomeIcon icon={faSeedling} className="spinnerIcon" />
+              <div className="spinnerRing"></div>
+            </div>
+            <h3>Loading Crop Details</h3>
+            <p>Please wait while we fetch the information...</p>
+            <div className="loadingProgress">
+              <div className="progressBar"></div>
+            </div>
+          </div>
         </div>
       </div>
     )
   }
 
-  // Error State
+  // Enhanced Error State
   if (error) {
     return (
       <div className="cropDetailContainer">
         <div className="errorState">
-          <div className="errorIcon">⚠️</div>
-          <h3>Unable to Load Crop Details</h3>
-          <p>{error}</p>
-          <button className="retryBtn" onClick={() => window.location.reload()}>
-            Try Again
-          </button>
-          <button className="backBtn" onClick={handleBack}>
-            Go Back
-          </button>
+          <div className="errorContent">
+            <div className="errorIcon">
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+            </div>
+            <h3>Unable to Load Crop Details</h3>
+            <p>{error}</p>
+            <div className="errorActions">
+              <button className="retryBtn" onClick={() => window.location.reload()}>
+                <FontAwesomeIcon icon={faRefresh} />
+                Try Again
+              </button>
+              <button className="backBtn" onClick={handleBack}>
+                <FontAwesomeIcon icon={faChevronLeft} />
+                Go Back
+              </button>
+            </div>
+          </div>
         </div>
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+            position="top-right"
+          />
+        )}
       </div>
     )
   }
@@ -123,12 +181,19 @@ export const Crop = () => {
     return (
       <div className="cropDetailContainer">
         <div className="errorState">
-          <div className="errorIcon">❌</div>
-          <h3>Crop Not Found</h3>
-          <p>The requested crop details could not be found.</p>
-          <button className="backBtn" onClick={handleBack}>
-            Go Back
-          </button>
+          <div className="errorContent">
+            <div className="errorIcon">
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+            </div>
+            <h3>Crop Not Found</h3>
+            <p>The requested crop details could not be found.</p>
+            <div className="errorActions">
+              <button className="backBtn" onClick={handleBack}>
+                <FontAwesomeIcon icon={faChevronLeft} />
+                Go Back
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -136,40 +201,57 @@ export const Crop = () => {
 
   return (
     <div className="cropDetailContainer">
+      {/* Toast Component */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+          position="top-right"
+        />
+      )}
+
       <div className="detailCard">
-        {/* Header */}
+        {/* Header with Crop Icon and Status */}
         <div className="detailHeader">
-          <button className="backBtn" onClick={handleBack}>
-            <FontAwesomeIcon icon={faChevronLeft} />
-          </button>
-          <h1>Crop Details</h1>
-          <button className="editBtn" onClick={handleEdit}>
-            <FontAwesomeIcon icon={faEdit} />
-            Edit
-          </button>
+          <div className="left">
+            <button className="backButton" onClick={handleBack}>
+              <FontAwesomeIcon icon={faChevronLeft} />
+            </button>
+            <div className="cropHeaderInfo">
+              <div className="avatarWithStatus">
+                <div className="cropAvatar">
+                  <FontAwesomeIcon icon={faSeedling} />
+                </div>
+                {cropData.status?.toLowerCase() === 'active' && 
+                !cropData.harvestingDate && (
+                  <div className="statusDot active"></div>
+                )}
+              </div>
+              <div className="cropTextInfo">
+                <h2>{cropData.seedType || 'Unknown Seed'}</h2>
+                <p className="cropRegion">
+                  <FontAwesomeIcon icon={faMapMarkerAlt} />
+                  {cropData.region || 'Unknown Region'}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="right">
+            <button 
+              className="iconBtn editBtn"
+              onClick={handleEdit}
+              aria-label="Edit Crop"
+            >
+              <FontAwesomeIcon icon={faEdit} />
+            </button>
+          </div>
         </div>
 
         {/* Crop Overview & Farmer Profile */}
         <div className="overviewSection">
-          <div className="cropOverview">
-            <div className="cropIcon">
-              <FontAwesomeIcon icon={faSeedling} />
-            </div>
-            <div className="cropInfo">
-              <h2>{cropData.seedType || 'N/A'}</h2>
-              <div className="cropMeta">
-                <span className={`statusBadge ${cropData.status?.toLowerCase() || 'active'}`}>
-                  {cropData.status || 'Active'}
-                </span>
-                <span className="region">
-                  <FontAwesomeIcon icon={faMapMarkerAlt} />
-                  {cropData.region || 'N/A'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="farmerProfile">
+          <div className="farmerProfile" onClick={handleNavigateToFarmer}>
             <div className="profileMain">
               <div className="avatar">
                 {getInitials(cropData.farmerDetails?.firstName + ' ' + cropData.farmerDetails?.lastName)}
@@ -178,7 +260,7 @@ export const Crop = () => {
                 <h3>{cropData.farmerDetails?.firstName} {cropData.farmerDetails?.lastName}</h3>
                 <div className="profileMeta">
                   <span className="mobile">
-                    <FontAwesomeIcon icon={faUser} />
+                    <FontAwesomeIcon icon={faMobile} />
                     {cropData.farmerDetails?.mobile || 'N/A'}
                   </span>
                 </div>
@@ -198,24 +280,7 @@ export const Crop = () => {
               <p>Land Area</p>
             </div>
           </div>
-          <div className="metricCard">
-            <div className="metricIcon yield">
-              <FontAwesomeIcon icon={faWeight} />
-            </div>
-            <div className="metricContent">
-              <h3>{cropData.yield || 0}</h3>
-              <p>Total Yield</p>
-            </div>
-          </div>
-          <div className="metricCard">
-            <div className="metricIcon payment">
-              <FontAwesomeIcon icon={faRupeeSign} />
-            </div>
-            <div className="metricContent">
-              <h3>₹{((cropData.totalIncome || 0)/1000).toFixed(0)}K</h3>
-              <p>Total Income</p>
-            </div>
-          </div>
+
           <div className="metricCard">
             <div className="metricIcon expenses">
               <FontAwesomeIcon icon={faRupeeSign} />
@@ -225,6 +290,27 @@ export const Crop = () => {
               <p>Total Expenses</p>
             </div>
           </div>
+          
+          <div className="metricCard">
+            <div className="metricIcon payment">
+              <FontAwesomeIcon icon={faRupeeSign} />
+            </div>
+            <div className="metricContent">
+              <h3>₹{((cropData.totalIncome || 0)/1000).toFixed(0)}K</h3>
+              <p>Total Income</p>
+            </div>
+          </div>
+
+          <div className="metricCard">
+            <div className="metricIcon profit">
+              <FontAwesomeIcon icon={faRupeeSign} />
+            </div>
+            <div className="metricContent">
+              <h3>₹{(calculateNetProfit()/1000).toFixed(0)}K</h3>
+              <p>Net Profit</p>
+            </div>
+          </div>
+        
         </div>
 
         {/* Seed Packets */}
@@ -422,12 +508,12 @@ export const Crop = () => {
                 <h4>Total Expenses</h4>
               </div>
               <div className="cardContent">
-                <div className="amount negative">₹{calculateTotalExpenses().toLocaleString()}</div>
                 <div className="breakdown">
                   <span>Fertilizers: ₹{calculateTotalPesticides().toLocaleString()}</span>
                   <span>Labor: ₹{calculateTotalCoolies().toLocaleString()}</span>
                   <span>Farmer Payments: ₹{calculateTotalPayments().toLocaleString()}</span>
                 </div>
+                <div className="amount negative">₹{calculateTotalExpenses().toLocaleString()}</div>
               </div>
             </div>
 
@@ -437,6 +523,20 @@ export const Crop = () => {
               </div>
               <div className="cardContent">
                 <div className="amount positive">₹{(cropData.totalIncome || 0).toLocaleString()}</div>
+              </div>
+            </div>
+
+            <div className="financialCard">
+              <div className="cardHeader profit">
+                <h4>Net Profit</h4>
+              </div>
+              <div className="cardContent">
+                <div className={`amount ${calculateNetProfit() === 0 ? 'balance' : calculateNetProfit() > 0 ? 'positive' : 'negative'}`}>
+                  ₹{calculateNetProfit().toLocaleString()}
+                </div>
+                <div className="profitStatus">
+                  {calculateNetProfit() === 0 ? 'Break-Even' : calculateNetProfit() > 0 ? 'Profitable' : 'Loss'}
+                </div>
               </div>
             </div>
           </div>

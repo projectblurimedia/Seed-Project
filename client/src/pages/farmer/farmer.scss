@@ -3,152 +3,32 @@
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  justify-content: flex-start; 
-  align-items: center;
   background: ghostwhite;
   overflow-x: hidden;
   font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
+  position: relative;
 
-  // Loading State
-  .loadingState {
+  // Header Styles with Farmer Info
+  .farmerHeader {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    height: 95vh;
-    gap: 1.5rem;
+    gap: 2rem;
+    color: #fff;
+    padding: .7rem 1.5rem;
+    background: linear-gradient(90deg, #0274d1, #1a9afb);
+    box-shadow: 0 4px 20px rgba(5, 87, 150, 0.3);
+    position: sticky; 
+    top: 0; 
+    z-index: 1000;
 
-    .spinner {
-      width: 30px;
-      height: 30px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #0274d1;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    p {
-      color: #1d9bf0;
-      font-weight: 500;
-      font-size: .8rem;
-      margin: 0;
-    }
-  }
-
-  // Error State
-  .errorState {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 60vh;
-    gap: 1rem;
-    text-align: center;
-    padding: 2rem;
-
-    .errorIcon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
-
-    h3 {
-      color: #dc3545;
-      margin: 0 0 0.5rem 0;
-      font-size: 1.3rem;
-    }
-
-    p {
-      color: #666;
-      margin: 0 0 1.5rem 0;
-      font-size: 1rem;
-      line-height: 1.5;
-    }
-
-    .retryBtn, .backBtn {
-      padding: 0.8rem 1.5rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin: 0.3rem;
-    }
-
-    .retryBtn {
-      background: #0274d1;
-      color: white;
-
-      &:hover {
-        background: #005fa3;
-        transform: translateY(-1px);
-      }
-    }
-
-    .backBtn {
-      background: #6c757d;
-      color: white;
-
-      &:hover {
-        background: #545b62;
-        transform: translateY(-1px);
-      }
-    }
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  // No crops message
-  .noCropsMessage {
-    text-align: center;
-    padding: 3rem 2rem;
-    color: #64748b;
-    font-size: 1rem;
-    
-    p {
-      margin: 0;
-      font-weight: 500;
-    }
-  }
-
-  .detailCard {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    margin: 0 auto;
-    width: 100%;
-
-    .detailHeader {
+    .left {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 1rem 2rem;
-      background: linear-gradient(135deg, #0274d1, #1a9afb);
-      color: white;
-      position: relative;
+      gap: 1rem;
 
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 1px;
-        background: rgba(255, 255, 255, 0.2);
-      }
-
-      h1 {
-        margin: 0;
-        font-size: 1.3rem;
-        font-weight: 600;
-        letter-spacing: -0.2px;
-      }
-
-      .backBtn {
+      .backButton {
         background: rgba(255, 255, 255, 0.15);
         border: none;
         color: white;
@@ -168,136 +48,241 @@
         }
       }
 
-      .editBtn {
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        padding: 0.6rem 1.2rem;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.2s ease;
+      .farmerHeaderInfo {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        font-size: 0.85rem;
-        font-weight: 500;
+        gap: 1rem;
 
-        &:hover {
-          background: rgba(255, 255, 255, 0.25);
-          transform: translateY(-1px);
+        .avatarWithStatus {
+          position: relative;
+          
+          .farmerAvatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #ffffff, #f0f0f0);
+            color: #0274d1;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+          }
+
+          .statusDot {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid aliceblue;
+
+            &.active {
+              background: #10b981;
+            }
+          }
+        }
+
+        .farmerTextInfo {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+
+          h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+            letter-spacing: -0.2px;
+          }
+
+          .joinDate {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            font-weight: 500;
+
+            svg {
+              font-size: 0.7rem;
+            }
+          }
         }
       }
     }
 
-    .profileSection {
+    .right {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 2rem;
-      background: white;
-      border-bottom: 1px solid #f1f5f9;
-      gap: 2rem;
+      gap: 1.5rem;
 
-      .profileMain {
+      .navIcons {
         display: flex;
         align-items: center;
-        gap: 1.2rem;
-        flex: 1;
+        gap: 0.75rem;
 
-        .avatar {
-          width: 80px;
-          height: 80px;
-          background: linear-gradient(135deg, #0274d1, #1a9afb);
-          border-radius: 50%;
+        .iconBtn {
+          background: rgba(255, 255, 255, 0.1);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          color: #fff;
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
-          font-size: 1.4rem;
-          font-weight: 600;
-          box-shadow: 0 6px 15px rgba(2, 116, 209, 0.25);
-          flex-shrink: 0;
-        }
+          cursor: pointer;
+          transition: all 0.3s ease;
+          position: relative;
+          font-size: 1.1rem;
 
-        .profileInfo {
-          h2 {
-            margin: 0 0 0.8rem 0;
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #1e293b;
-            letter-spacing: -0.2px;
+          &:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
           }
 
-          .profileMeta {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
+          &.addCropBtn {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
 
-            .statusBadge {
-              padding: 0.4rem 1rem;
-              border-radius: 12px;
-              font-size: 0.75rem;
-              font-weight: 600;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
+            &:hover {
+              background: rgba(255, 255, 255, 0.3);
+            }
+          }
 
-              &.active {
-                background: #dcfce7;
-                color: #166534;
-                border: 1px solid #bbf7d0;
-              }
+          &.editBtn {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
 
-              &.inactive {
-                background: #fecaca;
-                color: #dc2626;
-                border: 1px solid #fca5a5;
-              }
+            &:hover {
+              background: rgba(255, 255, 255, 0.2);
+              border-color: rgba(255, 255, 255, 0.3);
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      padding: 0.875rem;
+      gap: 1rem;
+
+      .left {
+        .backButton {
+          width: 34px;
+          height: 34px;
+          padding: 0.6rem;
+          border-radius: 12px;
+          font-size: .75rem;
+        }
+
+        .farmerHeaderInfo {
+          gap: .5rem;
+          .avatarWithStatus {
+            .farmerAvatar {
+              width: 40px;
+              height: 40px;
+              font-size: .9rem;
+            }
+          }
+
+          .farmerTextInfo {
+            h2 {
+              font-size: .85rem;
             }
 
             .joinDate {
-              display: flex;
-              align-items: center;
-              gap: 0.4rem;
-              color: #64748b;
-              font-size: 0.8rem;
-              font-weight: 500;
-
-              svg {
-                font-size: 0.7rem;
-                opacity: 0.7;
-              }
+              font-size: 0.7rem;
             }
           }
         }
       }
 
-      .profileStats {
-        display: flex;
-        gap: 3rem;
-        align-items: center;
+      .right {
+        gap: 1rem;
 
-        .statCircle {
+        .navIcons {
+          gap: 0.5rem;
+
+          .iconBtn {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Page Content
+  .pageContent {
+    flex: 1;
+    padding: 1rem .5rem;
+    overflow-y: auto;
+
+    .farmerContainer {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid #f1f5f9;
+      max-width: 1200px;
+      margin: 0 auto;
+
+      // Enhanced Stats Overview - Neat & Compact Design
+      .statsOverview {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+
+        .statCard {
+          background: white;
+          border-radius: 16px;
+          padding: 1.5rem;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+          border: 1px solid #f1f5f9;
           display: flex;
           align-items: center;
-          gap: 0.8rem;
+          gap: 1.2rem;
+          position: relative;
+          overflow: hidden;
 
-          .circleIcon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+          }
+
+          &.crops-card::before {
+            background: linear-gradient(180deg, #10b981, #059669);
+          }
+
+          &.land-card::before {
+            background: linear-gradient(180deg, #f59e0b, #d97706);
+          }
+
+          .statIcon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             color: white;
+            flex-shrink: 0;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-
-            &:hover {
-              transform: scale(1.1);
-              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            }
 
             &.crops {
               background: linear-gradient(135deg, #10b981, #059669);
@@ -308,165 +293,55 @@
             }
           }
 
-          .circleInfo {
+          .statContent {
+            flex: 1;
+
             h3 {
-              margin: 0;
-              font-size: 1.2rem;
+              font-size: 1.5rem;
               font-weight: 700;
-              color: #27364e;
+              color: #1e293b;
+              margin: 0 0 0.25rem 0;
               line-height: 1;
+              background: linear-gradient(135deg, #1e293b, #374151);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
             }
 
             p {
-              margin: 0.3rem 0 0 0;
               color: #64748b;
               font-size: 0.8rem;
-              font-weight: 500;
-            }
-          }
-        }
-      }
-    }
-
-    .infoSection {
-      padding: 2rem;
-
-      h3 {
-        margin: 0 0 1.5rem 0;
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #1e293b;
-        position: relative;
-        padding-bottom: 0.6rem;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 80px;
-          height: 3px;
-          background: linear-gradient(135deg, #0274d1, #1a9afb);
-          border-radius: 2px;
-        }
-      }
-
-      .infoCardsGrid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.2rem;
-
-        .infoCard {
-          background: white;
-          border-radius: 16px;
-          overflow: hidden;
-          transition: all 0.25s ease;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-          border: 1px solid #f1f5f9;
-
-          &:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-          }
-
-          .cardHeader {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            color: white;
-            position: relative;
-
-            &::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-            }
-
-            .cardIcon {
-              width: 45px;
-              height: 45px;
-              border-radius: 12px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 1.1rem;
-              color: white;
-              background: rgba(255, 255, 255, 0.2);
-              backdrop-filter: blur(10px);
-              position: relative;
-              z-index: 1;
-            }
-
-            h4 {
               margin: 0;
-              font-size: 1.1rem;
               font-weight: 600;
-              position: relative;
-              z-index: 1;
-            }
-
-            &.identity {
-              background: linear-gradient(135deg, #8b5cf6, #a855f7);
-            }
-
-            &.contact {
-              background: linear-gradient(135deg, #06b6d4, #0ea5e9);
-            }
-
-            &.financial {
-              background: linear-gradient(135deg, #10b981, #059669);
-            }
-
-            &.village {
-              background: linear-gradient(135deg, #f59e0b, #d97706);
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
             }
           }
 
-          .cardContent {
-            padding: 1.2rem;
+          // Different subtle background accents
+          &.crops-card {
+            background: linear-gradient(135deg, #f0fdf4, #ffffff);
+            border-left: 4px solid #10b981;
+          }
 
-            .infoField {
-              label {
-                display: block;
-                font-size: 0.7rem;
-                color: #64748b;
-                font-weight: 600;
-                margin-bottom: 0.5rem;
-                text-transform: uppercase;
-                letter-spacing: 0.8px;
-              }
-
-              p {
-                margin: 0;
-                font-size: 1rem;
-                font-weight: 600;
-                color: #1e293b;
-                word-break: break-word;
-              }
-            }
+          &.land-card {
+            background: linear-gradient(135deg, #fffbeb, #ffffff);
+            border-left: 4px solid #f59e0b;
           }
         }
       }
-    }
 
-    .cropsSection {
-      padding: 0 2rem 2rem 2rem;
-
+      // Section Headers
       .sectionHeader {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.2rem;
 
         h3 {
-          margin: 0;
           font-size: 1.2rem;
           font-weight: 600;
           color: #1e293b;
+          margin: 0;
           position: relative;
-          padding-bottom: 0.6rem;
+          padding-bottom: 0.75rem;
 
           &::after {
             content: '';
@@ -475,196 +350,561 @@
             left: 0;
             width: 60px;
             height: 3px;
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: linear-gradient(135deg, #0274d1, #1a9afb);
             border-radius: 2px;
           }
         }
       }
 
-      .cropsGrid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.2rem;
+      // Info Section
+      .infoSection {
+        margin-bottom: 1.5rem;
 
-        .cropCard {
-          background: white;
-          border: 1px solid #f1f5f9;
-          border-radius: 14px;
-          padding: 1.5rem;
-          transition: all 0.25s ease;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
-          position: relative;
-          overflow: hidden;
+        .infoCardsGrid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1.5rem;
 
-          &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-            border-color: #dcfce7;
-          }
+          .infoCard {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
-          .cropHeader {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-
-            .cropIcon {
-              font-size: 2rem;
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
             }
 
-            .cropStatus {
-              padding: 0.3rem 0.8rem;
-              border-radius: 10px;
-              font-size: 0.7rem;
-              font-weight: 600;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-
-              &.active {
-                background: #dcfce7;
-                color: #166534;
-                border: 1px solid #bbf7d0;
-              }
-
-              &.completed {
-                background: #f1f5f9;
-                color: #64748b;
-                border: 1px solid #e2e8f0;
-              }
-            }
-          }
-
-          .cropInfo {
-            margin-bottom: 1.2rem;
-
-            h4 {
-              margin: 0 0 0.3rem 0;
-              font-size: 1rem;
-              font-weight: 600;
-              color: #1e293b;
-            }
-
-            p {
-              margin: 0;
-              color: #64748b;
-              font-size: 0.8rem;
-              font-weight: 500;
-            }
-          }
-
-          .cropStats {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.2rem;
-
-            .cropStat {
+            .cardHeader {
               display: flex;
-              flex-direction: column;
               align-items: center;
-              flex: 1;
+              gap: 1rem;
+              padding: 1.25rem;
+              color: white;
 
-              .statLabel {
-                font-size: 0.7rem;
-                color: #64748b;
-                font-weight: 500;
-                margin-bottom: 0.2rem;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
+              .cardIcon {
+                width: 45px;
+                height: 45px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+                background: rgba(255, 255, 255, 0.2);
               }
 
-              .statValue {
+              h4 {
+                margin: 0;
+                font-size: 1.1rem;
+                font-weight: 600;
+              }
+
+              &.identity {
+                background: linear-gradient(135deg, #8b5cf6, #a855f7);
+              }
+
+              &.contact {
+                background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+              }
+
+              &.financial {
+                background: linear-gradient(135deg, #10b981, #059669);
+              }
+
+              &.village {
+                background: linear-gradient(135deg, #f59e0b, #d97706);
+              }
+            }
+
+            .cardContent {
+              padding: 1.25rem;
+
+              .infoField {
+                label {
+                  display: block;
+                  font-size: 0.75rem;
+                  color: #64748b;
+                  font-weight: 600;
+                  margin-bottom: 0.5rem;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                }
+
+                p {
+                  margin: 0;
+                  font-size: 1rem;
+                  font-weight: 600;
+                  color: #1e293b;
+                  word-break: break-word;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Crops Section
+      .cropsSection {
+        .emptyState {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 3rem 2rem;
+          text-align: center;
+
+          .emptyIllustration {
+            margin-bottom: 1.5rem;
+
+            .emptyIcon {
+              font-size: 4rem;
+              color: #cbd5e1;
+            }
+          }
+
+          h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #475569;
+            margin: 0 0 1rem 0;
+          }
+
+          p {
+            color: #64748b;
+            font-size: 1rem;
+            margin: 0 0 2rem 0;
+            max-width: 400px;
+            line-height: 1.5;
+          }
+
+          .addFirstCropBtn {
+            background: linear-gradient(135deg, #1d9bf0, #058ce7);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 15px rgba(29, 155, 240, 0.3);
+            }
+          }
+        }
+
+        .cropsGrid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
+
+          .cropCard {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+            &:hover {
+              transform: translateY(-4px);
+              box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+              border-color: #e2e8f0;
+
+              .viewDetails {
+                color: #1d9bf0;
+
+                svg {
+                  transform: translateX(2px);
+                }
+              }
+            }
+
+            // Status Banner
+            .statusBanner {
+              padding: 1.25rem 1.5rem;
+              border-radius: 16px 16px 0 0;
+
+              .statusContent {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                .statusInfo {
+                  display: flex;
+                  align-items: center;
+                  gap: 0.75rem;
+
+                  .statusIcon {
+                    font-size: 1.5rem;
+                    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+                  }
+
+                  .statusText {
+                    display: flex;
+                    flex-direction: column;
+
+                    .statusLabel {
+                      font-size: 0.75rem;
+                      color: #64748b;
+                      font-weight: 500;
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                    }
+
+                    .statusValue {
+                      font-size: 1.1rem;
+                      font-weight: 700;
+                      margin-top: 0.25rem;
+                    }
+                  }
+                }
+
+                .progressCircle {
+                  .circleBackground {
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+
+                    .circleInner {
+                      width: 50px;
+                      height: 50px;
+                      background: white;
+                      border-radius: 50%;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 0.8rem;
+                      font-weight: 700;
+                      color: #1e293b;
+                      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                    }
+                  }
+                }
+              }
+            }
+
+            .cropBasicInfo {
+              padding: 1.25rem 1.5rem 0;
+
+              .seedInfo {
+                h3 {
+                  font-size: 1.25rem;
+                  font-weight: 700;
+                  color: #1e293b;
+                  margin: 0 0 0.75rem 0;
+                  line-height: 1.3;
+                }
+
+                .cropMeta {
+                  display: flex;
+                  gap: 1rem;
+                  flex-wrap: wrap;
+
+                  span {
+                    font-size: 0.85rem;
+                    color: #64748b;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                    background: #f8fafc;
+                    padding: 0.4rem 0.75rem;
+                    border-radius: 8px;
+                    border: 1px solid #e2e8f0;
+                    font-weight: 500;
+
+                    svg {
+                      font-size: 0.8rem;
+                    }
+
+                    &.region svg {
+                      color: #ef4444;
+                    }
+
+                    &.acres svg {
+                      color: #10b981;
+                    }
+                  }
+                }
+              }
+            }
+
+            // Crop Date Info
+            .cropDateInfo {
+              padding: 1rem 1.5rem;
+
+              .dateCard {
+                background: linear-gradient(135deg, #1d9bf015, #1d9bf008);
+                border: 1px solid #1d9bf030;
+                border-radius: 12px;
+                padding: 1rem;
+                text-align: center;
+                transition: all 0.3s ease;
+
+                &.highlighted {
+                  background: linear-gradient(135deg, #10b98115, #10b98108);
+                  border: 1px solid #10b98130;
+                  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+                }
+
+                .dateLabel {
+                  font-size: 0.75rem;
+                  color: #64748b;
+                  font-weight: 600;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                  margin-bottom: 0.5rem;
+                }
+
+                .dateValue {
+                  font-size: 1rem;
+                  font-weight: 700;
+                  color: #37465e;
+                }
+              }
+            }
+
+            .cardFooter {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 1.25rem 1.5rem;
+              border-top: 1px solid #f1f5f9;
+              background: #fafbfc;
+
+              .lastUpdated {
+                font-size: 0.8rem;
+                color: #94a3b8;
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+
+                svg {
+                  font-size: 0.7rem;
+                }
+              }
+
+              .viewDetails {
                 font-size: 0.85rem;
                 font-weight: 600;
-                color: #1e293b;
+                color: #64748b;
+                transition: color 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+
+                svg {
+                  font-size: 0.7rem;
+                  transition: transform 0.3s ease;
+                }
               }
             }
-          }
-
-          .cropEarnings {
-            text-align: center;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #059669;
-            background: #f0fdf4;
-            padding: 0.8rem;
-            border-radius: 10px;
-            border: 1px solid #dcfce7;
           }
         }
       }
     }
   }
 
-  @media (max-width: 768px) {
-    font-size: 13px;
+  // Enhanced Loading State
+  .loadingState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 2rem;
 
-    .detailCard {
-      border-radius: 12px;
+    .loadingContent {
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
 
-      .detailHeader {
-        padding: 1rem 1.2rem;
+      .loadingSpinner {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
 
-        h1 {
-          font-size: 1.1rem;
+        .spinnerIcon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 2rem;
+          color: #1d9bf0;
+          z-index: 2;
         }
 
-        .backBtn {
-          width: 36px;
-          height: 36px;
-          padding: 0.6rem;
-        }
-
-        .editBtn {
-          padding: 0.5rem 1rem;
-          font-size: 0.8rem;
+        .spinnerRing {
+          width: 100%;
+          height: 100%;
+          border: 3px solid #f1f5f9;
+          border-top: 3px solid #1d9bf0;
+          border-radius: 50%;
+          animation: spin 1.5s linear infinite;
         }
       }
 
-      .profileSection {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.5rem;
-        padding: 1.5rem;
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0 0 0.75rem 0;
+      }
 
-        .profileMain {
-          width: 100%;
-          flex-direction: column;
-          text-align: center;
-          gap: 1rem;
+      p {
+        color: #64748b;
+        font-size: 1rem;
+        margin: 0 0 1.5rem 0;
+        line-height: 1.5;
+      }
 
-          .avatar {
-            margin-right: 0;
-            width: 60px;
-            height: 60px;
-            font-size: 1.2rem;
-          }
+      .loadingProgress {
+        width: 100%;
+        height: 4px;
+        background: #e2e8f0;
+        border-radius: 2px;
+        overflow: hidden;
 
-          .profileInfo {
-            h2 {
-              font-size: 1.4rem;
-            }
+        .progressBar {
+          height: 100%;
+          background: linear-gradient(90deg, #1d9bf0, #058ce7);
+          border-radius: 2px;
+          animation: progress 2s ease-in-out infinite;
+        }
+      }
+    }
+  }
 
-            .profileMeta {
-              justify-content: center;
-              flex-direction: column;
-              gap: 0.5rem;
-            }
+  // Enhanced Error State
+  .errorState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 2rem;
+
+    .errorContent {
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      background: white;
+      padding: 3rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border: 1px solid #f1f5f9;
+
+      .errorIcon {
+        font-size: 4rem;
+        color: #ef4444;
+        margin-bottom: 1.5rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #dc2626;
+        margin: 0 0 1rem 0;
+      }
+
+      p {
+        color: #64748b;
+        font-size: 1rem;
+        margin: 0 0 2rem 0;
+        line-height: 1.5;
+      }
+
+      .errorActions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        .retryBtn {
+          background: linear-gradient(135deg, #1d9bf0, #058ce7);
+          color: white;
+          border: none;
+          border-radius: 10px;
+          padding: 0.75rem 1.5rem;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(29, 155, 240, 0.3);
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 155, 240, 0.4);
           }
         }
 
-        .profileStats {
-          width: 100%;
-          justify-content: space-around;
+        .backBtn {
+          background: white;
+          color: #374151;
+          border: 2px solid #e2e8f0;
+          border-radius: 10px;
+          padding: 0.75rem 1.5rem;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+  }
+
+  // Responsive Design for Stats
+  @media (max-width: 768px) {
+    .pageContent {
+      padding: 1rem;
+
+      .farmerContainer {
+        padding: 1rem;
+        border-radius: 12px;
+
+        .statsOverview {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
           gap: 1rem;
 
-          .statCircle {
-            .circleIcon {
-              width: 60px;
-              height: 60px;
-              font-size: 1.2rem;
+          .statCard {
+            padding: 1.25rem;
+            gap: 1rem;
+
+            .statIcon {
+              width: 55px;
+              height: 55px;
+              border-radius: 50px;
+              font-size: 1.1rem;
             }
 
-            .circleInfo {
+            .statContent {
               h3 {
                 font-size: 1.3rem;
               }
@@ -675,84 +915,126 @@
             }
           }
         }
-      }
 
-      .infoSection {
-        padding: 1.5rem;
+        .infoSection {
+          .infoCardsGrid {
+            grid-template-columns: 1fr;
+            gap: .65rem;
 
-        .infoCardsGrid {
-          grid-template-columns: 1fr;
-          gap: 1rem;
+            .infoCard {
+              .cardHeader {
+                padding: .75rem;
+                gap: .5rem;
+                .cardIcon {
+                  height: 40px;
+                  width: 40px;
+                  font-size: 1rem;
+                }
+                h4 {
+                  font-size: .9rem;
+                }
+              }
+              .cardContent {
+                padding: 1.2rem;
+                .infoField {
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  label {
+                    font-size: .65rem;
+                    margin-bottom: .2rem;
+                  }
+                  p {
+                    font-size: 1rem;
+                  }
+                }
+              }
+            }
+          }
         }
-      }
 
-      .cropsSection {
-        padding: 0 1.5rem 1.5rem 1.5rem;
-
-        .cropsGrid {
-          grid-template-columns: 1fr;
-          gap: 1rem;
+        .cropsSection {
+          .cropsGrid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
         }
       }
     }
   }
 
   @media (max-width: 480px) {
-    font-size: 12px;
+    .pageContent {
+      padding: 0.5rem;
 
-    .detailCard {
-      .detailHeader {
-        flex-direction: row;
-        text-align: center;
+      .farmerContainer {
+        padding: 0.75rem;
 
-        h1 {
-          font-size: 1rem;
-        }
-      }
+        .statsOverview {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
 
-      .profileSection {
-        .profileMain {
-          .avatar {
-            width: 55px;
-            height: 55px;
-            font-size: 1.1rem;
-          }
-
-          .profileInfo {
-            h2 {
-              font-size: 1.2rem;
-            }
-          }
-        }
-
-        .profileStats {
-          .statCircle {
-            .circleIcon {
+          .statCard {
+            flex-direction: column;
+            padding: 1rem;
+            gap: 1rem;
+            
+            .statIcon {
               width: 55px;
               height: 55px;
+              border-radius: 50px;
               font-size: 1.1rem;
             }
 
-            .circleInfo {
+            .statContent {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: .2rem;
               h3 {
                 font-size: 1.2rem;
+              }
+
+              p {
+                font-size: 0.7rem;
               }
             }
           }
         }
       }
+    }
+  }
 
-      .infoSection {
-        padding: 1.2rem 1rem;
+  // Animations
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 
-        .infoCardsGrid {
-          grid-template-columns: 1fr;
-        }
+  @keyframes progress {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(0%); }
+    100% { transform: translateX(100%); }
+  }
+
+  // Reduced motion support
+  @media (prefers-reduced-motion: reduce) {
+    .cropCard,
+    .infoCard,
+    .statCard,
+    .iconBtn,
+    .backButton {
+      transition: none;
+      
+      &:hover {
+        transform: none;
       }
+    }
 
-      .cropsSection {
-        padding: 0 1rem 1.2rem 1rem;
-      }
+    .loadingSpinner .spinnerRing,
+    .loadingProgress .progressBar {
+      animation: none;
     }
   }
 }

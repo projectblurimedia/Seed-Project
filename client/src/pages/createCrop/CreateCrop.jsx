@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import './createCrop.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faPlus, faXmark, faChevronDown, faCalendar, faTrash, faUser, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faPlus, faXmark, faChevronDown, faCalendar, faTrash, faUser, faChevronUp, faMapMarkerAlt, faMobileAlt } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import { Toast } from '../../components/toast/Toast'
 
@@ -68,9 +68,9 @@ export const CreateCrop = () => {
 
   // State for section visibility
   const [sectionVisibility, setSectionVisibility] = useState({
-    pesticides: true,
-    coolies: true,
-    payments: true
+    pesticides: false,
+    coolies: false,
+    payments: false
   })
 
   // State for individual entry visibility
@@ -90,21 +90,30 @@ export const CreateCrop = () => {
   const formatDateToISOWithTime = (dateString) => {
     if (!dateString) return '';
     
-    // Create date object from input (sets to start of day in local time)
     const date = new Date(dateString);
-    
-    // Add current time to the date
     const now = new Date();
     date.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
     
-    // Return ISO string with time (this will include timezone info)
     return date.toISOString();
   }
 
   // Helper to format date for input value (YYYY-MM-DD for date input)
   const formatDateForInput = (isoString) => {
     if (!isoString) return '';
-    return isoString.split('T')[0]; // Returns YYYY-MM-DD
+    return isoString.split('T')[0];
+  }
+
+  // Get initials for avatar
+  const getInitials = (farmer) => {
+    if (!farmer) return 'NA'
+    const name = `${farmer.firstName || ''} ${farmer.lastName || ''}`.trim()
+    if (!name || name === ' ') return 'NA'
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
   }
 
   // Add toast function
@@ -169,11 +178,42 @@ export const CreateCrop = () => {
     return isValid
   }
 
+  // Validate dynamic entries
+  const validateEntries = () => {
+    // Validate pesticide entries
+    for (let i = 0; i < pesticideEntries.length; i++) {
+      const entry = pesticideEntries[i]
+      if (!entry.pesticide || !entry.quantity || !entry.amount || !entry.date) {
+        addToast(`Please fill all fields in Pesticide Entry ${i + 1}`, 'error')
+        return false
+      }
+    }
+
+    // Validate coolie entries
+    for (let i = 0; i < coolieEntries.length; i++) {
+      const entry = coolieEntries[i]
+      if (!entry.work || !entry.count || !entry.amount || !entry.date || !entry.days) {
+        addToast(`Please fill all fields in Coolie Entry ${i + 1}`, 'error')
+        return false
+      }
+    }
+
+    // Validate payment entries
+    for (let i = 0; i < paymentEntries.length; i++) {
+      const entry = paymentEntries[i]
+      if (!entry.amount || !entry.date || !entry.purpose || !entry.method) {
+        addToast(`Please fill all fields in Payment Entry ${i + 1}`, 'error')
+        return false
+      }
+    }
+
+    return true
+  }
+
   const handleChange = (e) => {
     const { name, value, type } = e.target
     
     if (type === 'date') {
-      // Convert date input to ISO string with current time
       const isoDateTime = value ? formatDateToISOWithTime(value) : '';
       setForm((prev) => ({ ...prev, [name]: isoDateTime }))
     } else {
@@ -190,7 +230,6 @@ export const CreateCrop = () => {
     const updatedEntries = [...pesticideEntries]
     
     if (field === 'date' && value) {
-      // Convert date to ISO string with current time
       const isoDateTime = formatDateToISOWithTime(value);
       updatedEntries[index] = { ...updatedEntries[index], [field]: isoDateTime }
     } else {
@@ -204,7 +243,6 @@ export const CreateCrop = () => {
     const updatedEntries = [...coolieEntries]
     
     if (field === 'date' && value) {
-      // Convert date to ISO string with current time
       const isoDateTime = formatDateToISOWithTime(value);
       updatedEntries[index] = { ...updatedEntries[index], [field]: isoDateTime }
     } else {
@@ -218,7 +256,6 @@ export const CreateCrop = () => {
     const updatedEntries = [...paymentEntries]
     
     if (field === 'date' && value) {
-      // Convert date to ISO string with current time
       const isoDateTime = formatDateToISOWithTime(value);
       updatedEntries[index] = { ...updatedEntries[index], [field]: isoDateTime }
     } else {
@@ -422,6 +459,11 @@ export const CreateCrop = () => {
       return
     }
 
+    // Validate dynamic entries
+    if (!validateEntries()) {
+      return
+    }
+
     try {
       const cropData = {
         farmerDetails,
@@ -467,7 +509,7 @@ export const CreateCrop = () => {
     }
   }
 
-  // Fixed: Close dropdowns on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       const refs = [
@@ -522,12 +564,14 @@ export const CreateCrop = () => {
           <div className="errorIcon">⚠️</div>
           <h3>Unable to Load Farmer Details</h3>
           <p>{error}</p>
-          <button className="retryBtn" onClick={() => window.location.reload()}>
-            Try Again
-          </button>
-          <button className="backBtn" onClick={handleUndo}>
-            Go Back
-          </button>
+          <div className="buttonGroup">
+            <button className="retryBtn" onClick={() => window.location.reload()}>
+              Try Again
+            </button>
+            <button className="backBtn" onClick={handleUndo}>
+              Go Back
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -553,37 +597,29 @@ export const CreateCrop = () => {
           <h2>Create Crop</h2>
         </div>
 
-        {/* Farmer Details Card */}
-        {farmerDetails && (
-          <div className="farmerDetailsCard">
-            <div className="farmerCardHeader">
-              <FontAwesomeIcon icon={faUser} className="userIcon" />
-              <h3>Farmer Information</h3>
-            </div>
-            <div className="farmerDetailsGrid">
-              <div className="farmerDetailItem">
-                <span className="detailLabel">Name:</span>
-                <span className="detailValue highlight">{farmerDetails.firstName} {farmerDetails.lastName}</span>
+        {/* Farmer Details Section - Redesigned like SelectFarmer */}
+        <div className={'section farmer-section'}>
+          <div className="sectionHeader" >
+            <div className="farmerBasicInfo">
+              <div className="farmerAvatar">
+                {getInitials(farmerDetails)}
               </div>
-              <div className="farmerDetailItem">
-                <span className="detailLabel">Aadhar:</span>
-                <span className="detailValue highlight">{farmerDetails.aadhar}</span>
+              <div className="farmerInfo">
+                <h3>{farmerDetails?.firstName} {farmerDetails?.lastName}</h3>
+                <div className="farmerMeta">
+                  <span className="location">
+                    <FontAwesomeIcon icon={faMapMarkerAlt} />
+                    {farmerDetails?.village || 'Unknown Village'}
+                  </span>
+                  <span className="mobile">
+                    <FontAwesomeIcon icon={faMobileAlt} />
+                    {farmerDetails?.mobile || 'N/A'}
+                  </span>
+                </div>
               </div>
-              {farmerDetails.mobile && (
-                <div className="farmerDetailItem">
-                  <span className="detailLabel">Mobile:</span>
-                  <span className="detailValue highlight">{farmerDetails.mobile}</span>
-                </div>
-              )}
-              {farmerDetails.village && (
-                <div className="farmerDetailItem">
-                  <span className="detailLabel">Village:</span>
-                  <span className="detailValue highlight">{farmerDetails.village}</span>
-                </div>
-              )}
             </div>
           </div>
-        )}
+        </div>
 
         <form onSubmit={handleSubmit}>
           {/* Seed & Region */}
@@ -727,28 +763,46 @@ export const CreateCrop = () => {
           <div className="inputRow">
             <div className="inputGroup">
               <label>Date of Sowing (Male)</label>
-              <div className="dateInputContainer" onClick={() => handleDateContainerClick(sowingDateMaleRef)}>
+              <div 
+                className="dateInputContainer" 
+                onClick={() => handleDateContainerClick(sowingDateMaleRef)}
+                data-placeholder="DD-MM-YYYY"
+              >
                 <input 
                   ref={sowingDateMaleRef} 
                   type="date" 
                   name="sowingDateMale" 
                   value={formatDateForInput(form.sowingDateMale)} 
                   onChange={handleChange} 
+                  placeholder="DD-MM-YYYY"
+                  className={!form.sowingDateMale ? 'empty' : ''}
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
+                <span className="datePlaceholder">
+                  {!form.sowingDateMale && 'DD-MM-YYYY'}
+                </span>
               </div>
             </div>
             <div className="inputGroup">
               <label>Date of Sowing (Female)</label>
-              <div className="dateInputContainer" onClick={() => handleDateContainerClick(sowingDateFemaleRef)}>
+              <div 
+                className="dateInputContainer" 
+                onClick={() => handleDateContainerClick(sowingDateFemaleRef)}
+                data-placeholder="DD-MM-YYYY"
+              >
                 <input 
                   ref={sowingDateFemaleRef} 
                   type="date" 
                   name="sowingDateFemale" 
                   value={formatDateForInput(form.sowingDateFemale)} 
                   onChange={handleChange} 
+                  placeholder="DD-MM-YYYY"
+                  className={!form.sowingDateFemale ? 'empty' : ''}
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
+                <span className="datePlaceholder">
+                  {!form.sowingDateFemale && 'DD-MM-YYYY'}
+                </span>
               </div>
             </div>
           </div>
@@ -757,28 +811,46 @@ export const CreateCrop = () => {
           <div className="inputRow">
             <div className="inputGroup">
               <label>First Detaching Date</label>
-              <div className="dateInputContainer" onClick={() => handleDateContainerClick(firstDetachingDateRef)}>
+              <div 
+                className="dateInputContainer" 
+                onClick={() => handleDateContainerClick(firstDetachingDateRef)}
+                data-placeholder="DD-MM-YYYY"
+              >
                 <input 
                   ref={firstDetachingDateRef} 
                   type="date" 
                   name="firstDetachingDate" 
                   value={formatDateForInput(form.firstDetachingDate)} 
                   onChange={handleChange} 
+                  placeholder="DD-MM-YYYY"
+                  className={!form.firstDetachingDate ? 'empty' : ''}
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
+                <span className="datePlaceholder">
+                  {!form.firstDetachingDate && 'DD-MM-YYYY'}
+                </span>
               </div>
             </div>
             <div className="inputGroup">
               <label>Second Detaching Date</label>
-              <div className="dateInputContainer" onClick={() => handleDateContainerClick(secondDetachingDateRef)}>
+              <div 
+                className="dateInputContainer" 
+                onClick={() => handleDateContainerClick(secondDetachingDateRef)}
+                data-placeholder="DD-MM-YYYY"
+              >
                 <input 
                   ref={secondDetachingDateRef} 
                   type="date" 
                   name="secondDetachingDate" 
                   value={formatDateForInput(form.secondDetachingDate)} 
                   onChange={handleChange} 
+                  placeholder="DD-MM-YYYY"
+                  className={!form.secondDetachingDate ? 'empty' : ''}
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
+                <span className="datePlaceholder">
+                  {!form.secondDetachingDate && 'DD-MM-YYYY'}
+                </span>
               </div>
             </div>
           </div>
@@ -801,15 +873,24 @@ export const CreateCrop = () => {
             </div>
             <div className="inputGroup">
               <label>Date of Harvesting</label>
-              <div className="dateInputContainer" onClick={() => handleDateContainerClick(harvestingDateRef)}>
+              <div 
+                className="dateInputContainer" 
+                onClick={() => handleDateContainerClick(harvestingDateRef)}
+                data-placeholder="DD-MM-YYYY"
+              >
                 <input 
                   ref={harvestingDateRef} 
                   type="date" 
                   name="harvestingDate" 
                   value={formatDateForInput(form.harvestingDate)} 
                   onChange={handleChange} 
+                  placeholder="DD-MM-YYYY"
+                  className={!form.harvestingDate ? 'empty' : ''}
                 />
                 <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
+                <span className="datePlaceholder">
+                  {!form.harvestingDate && 'DD-MM-YYYY'}
+                </span>
               </div>
             </div>
           </div>
@@ -958,13 +1039,18 @@ export const CreateCrop = () => {
                           {/* Date */}
                           <div className="inputGroup">
                             <label>Date</label>
-                            <div className="dateInputContainer">
+                            <div className="dateInputContainer" data-placeholder="DD-MM-YYYY">
                               <input 
                                 type="date" 
                                 value={formatDateForInput(entry.date)} 
                                 onChange={(e) => handlePesticideChange(index, 'date', e.target.value)} 
+                                placeholder="DD-MM-YYYY"
+                                className={!entry.date ? 'empty' : ''}
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
+                              <span className="datePlaceholder">
+                                {!entry.date && 'DD-MM-YYYY'}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -1113,13 +1199,18 @@ export const CreateCrop = () => {
                           {/* Date */}
                           <div className="inputGroup">
                             <label>Date</label>
-                            <div className="dateInputContainer">
+                            <div className="dateInputContainer" data-placeholder="DD-MM-YYYY">
                               <input 
                                 type="date" 
                                 value={formatDateForInput(entry.date)} 
                                 onChange={(e) => handleCoolieChange(index, 'date', e.target.value)} 
+                                placeholder="DD-MM-YYYY"
+                                className={!entry.date ? 'empty' : ''}
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
+                              <span className="datePlaceholder">
+                                {!entry.date && 'DD-MM-YYYY'}
+                              </span>
                             </div>
                           </div>
 
@@ -1207,13 +1298,18 @@ export const CreateCrop = () => {
                           {/* Date */}
                           <div className="inputGroup">
                             <label>Date</label>
-                            <div className="dateInputContainer">
+                            <div className="dateInputContainer" data-placeholder="DD-MM-YYYY">
                               <input 
                                 type="date" 
                                 value={formatDateForInput(entry.date)} 
                                 onChange={(e) => handlePaymentChange(index, 'date', e.target.value)} 
+                                placeholder="DD-MM-YYYY"
+                                className={!entry.date ? 'empty' : ''}
                               />
                               <FontAwesomeIcon icon={faCalendar} className="calendarIcon" />
+                              <span className="datePlaceholder">
+                                {!entry.date && 'DD-MM-YYYY'}
+                              </span>
                             </div>
                           </div>
                         </div>
