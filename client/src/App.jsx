@@ -20,7 +20,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [username, setUsername] = useState(null)
 
-  const axiosBaseUrl = 'http://192.168.31.232:8000/server'
+  // const axiosBaseUrl = 'http://192.168.31.232:8000/server'
+  const axiosBaseUrl = 'https://seed-project-backend.onrender.com/server'
 
   axios.defaults.baseURL = axiosBaseUrl
 
