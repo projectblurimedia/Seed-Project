@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import './SelectFarmer.scss'
+import './selectFarmer.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faUserGroup,
