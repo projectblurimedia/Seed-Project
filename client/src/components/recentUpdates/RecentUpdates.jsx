@@ -10,8 +10,8 @@ import {
   faClipboardCheck,
   faTractor,
   faSprayCan,
-  faWater,
   faCalendarAlt,
+  faPersonWalkingWithCane,
 } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -126,8 +126,8 @@ export const RecentUpdates = () => {
         return faTractor
       case 'pesticide':
         return faSprayCan
-      case 'irrigation':
-        return faWater
+      case 'coolie':
+        return faPersonWalkingWithCane
       default:
         return faSeedling
     }
@@ -142,13 +142,13 @@ export const RecentUpdates = () => {
       case 'detaching':
         return '#f59e0b'
       case 'harvested':
-        return '#10b981'
+        return '#6b7280'
       case 'pesticide':
         return '#eb3434'
-      case 'irrigation':
+      case 'coolie':
         return '#06b6d4'
       default:
-        return '#6b7280'
+        return '#10b981'
     }
   }
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import './login.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faEye, faEyeSlash, faLeaf, faTractor } from '@fortawesome/free-solid-svg-icons'
 
 export const Login = ({ setIsAuth, onLoginSuccess }) => {
   const [username, setUsername] = useState('')
@@ -73,16 +73,42 @@ export const Login = ({ setIsAuth, onLoginSuccess }) => {
 
   return (
     <div className="login-container">
+      {/* Background Decoration */}
+      <div className="agri-background">
+        <div className="floating-icon icon-1">
+          <FontAwesomeIcon icon={faLeaf} />
+        </div>
+        <div className="floating-icon icon-2">
+          <FontAwesomeIcon icon={faTractor} />
+        </div>
+        <div className="floating-icon icon-3">
+          <FontAwesomeIcon icon={faLeaf} />
+        </div>
+        <div className="floating-icon icon-4">
+          <FontAwesomeIcon icon={faTractor} />
+        </div>
+      </div>
+
       <div className="login-card">
-        <h2 className="login-title">Welcome Back</h2>
-        <p className="login-subtitle">Sign in to your account</p>
+        {/* Header */}
+        <div className="login-header">
+          <div className="logo">
+            <FontAwesomeIcon icon={faLeaf} className="logo-icon" />
+            <span className="logo-text">AgriCorp</span>
+          </div>
+          <h2 className="login-title">Welcome Back</h2>
+          <p className="login-subtitle">Sign in to your AgriCorp account</p>
+        </div>
         
+        {/* Error Message */}
         {error && (
           <div className="error-message">
-            <span>⚠️</span> {error}
+            <span className="error-icon">⚠️</span> 
+            <span className="error-text">{error}</span>
           </div>
         )}
         
+        {/* Login Form */}
         <form onSubmit={handleLogin} className="login-form">
           <div className="input-group">
             <input
@@ -119,14 +145,22 @@ export const Login = ({ setIsAuth, onLoginSuccess }) => {
             />
           </div>
           
+          {/* Login Button */}
           <button
             type="submit"
             className="login-button"
             disabled={!username || !password || isLoading}
           >
-            {isLoading ? 'Signing In...' : 'Sign In'}
+            {isLoading ? (
+              <div className="button-loading">
+                <div className="spinner"></div>
+                Signing In...
+              </div>
+            ) : (
+              'Sign In'
+            )}
           </button>
-        </form>
+        </form>    
       </div>
     </div>
   )

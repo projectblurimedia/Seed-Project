@@ -587,8 +587,17 @@ export const UpdateCrop = () => {
     return (
       <div className="updateCropContainer">
         <div className="loadingState">
-          <div className="spinner"></div>
-          <p>Loading crop details...</p>
+          <div className="loadingContent">
+            <div className="loadingSpinner">
+              <FontAwesomeIcon icon={faUser} className="spinnerIcon" />
+              <div className="spinnerRing"></div>
+            </div>
+            <h3>Loading Farmer Details</h3>
+            <p>Please wait while we fetch the information...</p>
+            <div className="loadingProgress">
+              <div className="progressBar"></div>
+            </div>
+          </div>
         </div>
       </div>
     )

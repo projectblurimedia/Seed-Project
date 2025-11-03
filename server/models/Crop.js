@@ -96,6 +96,14 @@ const isPastDate = (date) => date && date instanceof Date && date <= new Date()
 // Pre-save middleware
 cropSchema.pre('save', function(next) {
   const now = new Date()
+  
+  // === Auto-update status based on harvesting date ===
+  if (isPastDate(this.harvestingDate)) {
+    this.status = 'completed'
+  } else if (this.status === 'completed' && !isPastDate(this.harvestingDate)) {
+    // If status was completed but harvesting date is in future, revert to active
+    this.status = 'active'
+  }
 
   // === Calculate Totals ===
   this.totalPesticideCost = this.pesticideEntries.reduce((sum, e) => sum + (e.amount || 0), 0)

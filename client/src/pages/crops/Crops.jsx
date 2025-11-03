@@ -15,7 +15,9 @@ import {
   faExclamationTriangle,
   faChevronLeft,
   faFileExport,
-  faMobile
+  faMobile,
+  faLeaf,
+  faMobileAlt
 } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -112,12 +114,12 @@ export const Crops = () => {
   // Get status color
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Harvested': return '#10b981'
+      case 'Harvested': return '#6b7280'
       case 'Second Detaching': return '#f59e0b'
       case 'First Detaching': return '#f59e0b'
       case 'Female Sowing': return '#ec4899'
       case 'Male Sowing': return '#3b82f6'
-      case 'Field Created': return '#6b7280'
+      case 'Field Created': return '#10b981'
       default: return '#6b7280'
     }
   }
@@ -125,12 +127,12 @@ export const Crops = () => {
   // Get status background
   const getStatusBackground = (status) => {
     switch (status) {
-      case 'Harvested': return 'linear-gradient(135deg, #10b98115, #10b98108)'
+      case 'Harvested': return 'linear-gradient(135deg, #6b728015, #6b728008)'
       case 'Second Detaching': return 'linear-gradient(135deg, #f59e0b15, #f59e0b08)'
       case 'First Detaching': return 'linear-gradient(135deg, #f59e0b15, #f59e0b08)'
       case 'Female Sowing': return 'linear-gradient(135deg, #ec489915, #ec489908)'
       case 'Male Sowing': return 'linear-gradient(135deg, #3b82f615, #3b82f608)'
-      case 'Field Created': return 'linear-gradient(135deg, #6b728015, #6b728008)'
+      case 'Field Created': return 'linear-gradient(135deg, #10b98115, #10b98108)'
       default: return 'linear-gradient(135deg, #6b728015, #6b728008)'
     }
   }
@@ -479,7 +481,7 @@ export const Crops = () => {
       <div className="statsOverview">
         <div className="statCard">
           <div className="statIcon total">
-            <FontAwesomeIcon icon={faSeedling} />
+            <FontAwesomeIcon icon={faLeaf} />
           </div>
           <div className="statContent">
             <h3>{crops.length}</h3>
@@ -488,7 +490,7 @@ export const Crops = () => {
         </div>
         <div className="statCard">
           <div className="statIcon active">
-            <FontAwesomeIcon icon={faTractor} />
+            <FontAwesomeIcon icon={faSeedling} />
           </div>
           <div className="statContent">
             <h3>{crops.filter(crop => getCropStatus(crop).status !== 'Harvested').length}</h3>
@@ -496,12 +498,17 @@ export const Crops = () => {
           </div>
         </div>
         <div className="statCard">
-          <div className="statIcon farmers">
-            <FontAwesomeIcon icon={faUsers} />
+          <div className="statIcon acres">
+            <FontAwesomeIcon icon={faTractor} />
           </div>
           <div className="statContent">
-            <h3>{new Set(crops.map(crop => crop.farmerDetails?._id)).size}</h3>
-            <p>Active Farmers</p>
+            <h3>
+              {crops
+                .filter(crop => getCropStatus(crop).status !== 'Harvested')
+                .reduce((total, crop) => total + (parseFloat(crop.acres) || 0), 0)
+              }
+            </h3>
+            <p>Active Acres</p>
           </div>
         </div>
         <div className="statCard">
@@ -564,7 +571,7 @@ export const Crops = () => {
                     className="cropCard"
                     onClick={() => navigate(`/crops/${crop._id}`)}
                   >
-                    {/* Status Highlight Banner */}
+                    {/* Status Highlight Banner - Now with Seed Type */}
                     <div 
                       className="statusBanner"
                       style={{ 
@@ -580,13 +587,15 @@ export const Crops = () => {
                             style={{ color: getStatusColor(status.status) }}
                           />
                           <div className="statusText">
-                            <span className="statusLabel">Crop Status</span>
                             <span 
                               className="statusValue"
                               style={{ color: getStatusColor(status.status) }}
                             >
-                              {status.status}
+                              {crop.seedType || 'Unknown Seed'}
                             </span>
+                            <h3 style={{ color: `${getStatusColor(status.status)}dd` }}>
+                              {status.status}
+                            </h3>
                           </div>
                         </div>
                         <div className="progressCircle">
@@ -604,10 +613,9 @@ export const Crops = () => {
                       </div>
                     </div>
 
-                    {/* Crop Basic Info */}
+                    {/* Crop Basic Info - Now with Status */}
                     <div className="cropBasicInfo">
                       <div className="seedInfo">
-                        <h3>{crop.seedType || 'Unknown Seed'}</h3>
                         <div className="cropMeta">
                           <span className="region">
                             <FontAwesomeIcon icon={faMapMarkerAlt} />
@@ -621,27 +629,23 @@ export const Crops = () => {
                       </div>
                     </div>
 
-                    {/* Farmer Details Section */}
+                    {/* Farmer Details Section - Simplified like SelectFarmer */}
                     <div className="farmerSection">
-                      <div className="sectionHeader">
-                        <FontAwesomeIcon icon={faUsers} />
-                        <span>Farmer Details</span>
-                      </div>
                       <div className="farmerContent">
                         <div className="farmerAvatar">
                           {getInitials(crop.farmerDetails)}
                         </div>
                         <div className="farmerInfo">
                           <h4>{crop.farmerDetails?.firstName} {crop.farmerDetails?.lastName}</h4>
-                          <div className="farmerDetails">
-                            <div className="detailItem">
+                          <div className="farmerMeta">
+                            <span className="location">
                               <FontAwesomeIcon icon={faMapMarkerAlt} />
-                              <span>{crop.farmerDetails?.village || 'Unknown Village'}</span>
-                            </div>
-                            <div className="detailItem">
-                              <FontAwesomeIcon icon={faMobile} />
-                              <span>{crop.farmerDetails?.mobile || 'N/A'}</span>
-                            </div>
+                              {crop.farmerDetails?.village || 'Unknown Village'}
+                            </span>
+                            <span className="mobile">
+                              <FontAwesomeIcon icon={faMobileAlt} />
+                              {crop.farmerDetails?.mobile || 'N/A'}
+                            </span>
                           </div>
                         </div>
                       </div>

@@ -62,7 +62,7 @@ export const Crop = () => {
     }
   }, [id])
 
-  const handleBack = () => navigate(-1)
+  const handleBack = () => navigate('/crops')
   const handleEdit = () => navigate(`/update-crop/${id}`)
   const handleNavigateToFarmer = () => navigate(`/farmers/${cropData.farmerDetails.aadhar}`)
 

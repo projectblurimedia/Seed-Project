@@ -60,6 +60,13 @@ body {
   min-height: 100vh;
 }
 
+@media (max-width: 768px) {
+  body {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
